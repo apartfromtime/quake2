@@ -146,9 +146,6 @@
     <ClCompile Include="client\x86.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32\sys_win.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32\cd_win.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -204,6 +201,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="qcommon\cmodel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win32\main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
