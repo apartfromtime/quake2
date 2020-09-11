@@ -1,1 +1,9 @@
 build
+src/.vs
+src/quake2.VC.db
+src/quake2.VC.VC.opendb
+src/ctf/ctf.vcxproj.user
+src/game/game.vcxproj.user
+src/quake2.vcxproj.user
+src/ref_gl/ref_gl.vcxproj.user
+src/ref_soft/ref_soft.vcxproj.user
