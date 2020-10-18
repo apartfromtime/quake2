@@ -96,13 +96,13 @@
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>mkdir ..\..\build\$(Configuration)\baseq2
-xcopy /DY $(OutDir)$(TargetName)$(TargetExt) ..\..\build\$(Configuration)\baseq2
-xcopy /DY $(OutDir)$(TargetName).exp ..\..\build\$(Configuration)\baseq2
-xcopy /DY $(OutDir)$(TargetName).iobj ..\..\build\$(Configuration)\baseq2
-xcopy /DY $(OutDir)$(TargetName).ipdb ..\..\build\$(Configuration)\baseq2
-xcopy /DY $(OutDir)$(TargetName).lib ..\..\build\$(Configuration)\baseq2
-xcopy /DY $(OutDir)$(TargetName).pdb ..\..\build\$(Configuration)\baseq2
+      <Command>mkdir ..\..\build\$(Configuration)\ctf
+xcopy /DY $(OutDir)$(TargetName)$(TargetExt) ..\..\build\$(Configuration)\ctf
+xcopy /DY $(OutDir)$(TargetName).exp ..\..\build\$(Configuration)\ctf
+xcopy /DY $(OutDir)$(TargetName).iobj ..\..\build\$(Configuration)\ctf
+xcopy /DY $(OutDir)$(TargetName).ipdb ..\..\build\$(Configuration)\ctf
+xcopy /DY $(OutDir)$(TargetName).lib ..\..\build\$(Configuration)\ctf
+xcopy /DY $(OutDir)$(TargetName).pdb ..\..\build\$(Configuration)\ctf
 
 del $(OutDir)$(TargetName)$(TargetExt)
 del $(OutDir)$(TargetName).exp
