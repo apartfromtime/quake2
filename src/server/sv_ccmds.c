@@ -284,6 +284,7 @@ void SV_WriteLevelFile (void)
 
 	Com_sprintf (name, sizeof(name), "%s/save/current/%s.sv2", FS_Gamedir(), sv.name);
 	f = fopen(name, "wb");
+
 	if (!f)
 	{
 		Com_Printf ("Failed to open %s\n", name);
@@ -294,7 +295,7 @@ void SV_WriteLevelFile (void)
 	fclose (f);
 
 	Com_sprintf (name, sizeof(name), "%s/save/current/%s.sav", FS_Gamedir(), sv.name);
-	ge->WriteLevel (name);
+	game->WriteLevel (name);
 }
 
 /*
@@ -306,12 +307,13 @@ SV_ReadLevelFile
 void SV_ReadLevelFile (void)
 {
 	char	name[MAX_OSPATH];
-	FILE	*f;
+	file_t	*f;
 
 	Com_DPrintf("SV_ReadLevelFile()\n");
 
-	Com_sprintf (name, sizeof(name), "%s/save/current/%s.sv2", FS_Gamedir(), sv.name);
-	f = fopen(name, "rb");
+	Com_sprintf(name, sizeof(name), "save/current/%s.sv2", sv.name);
+	FS_FOpenFile(name, &f);
+
 	if (!f)
 	{
 		Com_Printf ("Failed to open %s\n", name);
@@ -319,10 +321,10 @@ void SV_ReadLevelFile (void)
 	}
 	FS_Read (sv.configstrings, sizeof(sv.configstrings), f);
 	CM_ReadPortalState (f);
-	fclose (f);
+	FS_FCloseFile(f);
 
 	Com_sprintf (name, sizeof(name), "%s/save/current/%s.sav", FS_Gamedir(), sv.name);
-	ge->ReadLevel (name);
+	game->ReadLevel (name);
 }
 
 /*
@@ -395,7 +397,7 @@ void SV_WriteServerFile (qboolean autosave)
 
 	// write game state
 	Com_sprintf (name, sizeof(name), "%s/save/current/game.ssv", FS_Gamedir());
-	ge->WriteGame (name, autosave);
+	game->WriteGame (name, autosave);
 }
 
 /*
@@ -406,15 +408,16 @@ SV_ReadServerFile
 */
 void SV_ReadServerFile (void)
 {
-	FILE	*f;
+	file_t	*f;
 	char	name[MAX_OSPATH], string[128];
 	char	comment[32];
 	char	mapcmd[MAX_TOKEN_CHARS];
 
 	Com_DPrintf("SV_ReadServerFile()\n");
 
-	Com_sprintf (name, sizeof(name), "%s/save/current/server.ssv", FS_Gamedir());
-	f = fopen (name, "rb");
+	Com_sprintf (name, sizeof(name), "save/current/server.ssv");
+	FS_FOpenFile(name, &f);
+
 	if (!f)
 	{
 		Com_Printf ("Couldn't read %s\n", name);
@@ -430,14 +433,16 @@ void SV_ReadServerFile (void)
 	// these will be things like coop, skill, deathmatch, etc
 	while (1)
 	{
-		if (!fread (name, 1, sizeof(name), f))
+		if (!FS_Read(name, sizeof(name), f)) {
 			break;
+		}
+
 		FS_Read (string, sizeof(string), f);
 		Com_DPrintf ("Set %s = %s\n", name, string);
 		Cvar_ForceSet (name, string);
 	}
 
-	fclose (f);
+	FS_FCloseFile(f);
 
 	// start a new game fresh with new cvars
 	SV_InitGame ();
@@ -446,7 +451,7 @@ void SV_ReadServerFile (void)
 
 	// read game state
 	Com_sprintf (name, sizeof(name), "%s/save/current/game.ssv", FS_Gamedir());
-	ge->ReadGame (name);
+	game->ReadGame (name);
 }
 
 
@@ -1005,13 +1010,13 @@ Let the game dll handle a command
 */
 void SV_ServerCommand_f (void)
 {
-	if (!ge)
+	if (!game)
 	{
 		Com_Printf ("No game loaded.\n");
 		return;
 	}
 
-	ge->ServerCommand();
+	game->ServerCommand();
 }
 
 //===========================================================

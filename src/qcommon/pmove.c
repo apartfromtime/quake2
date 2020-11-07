@@ -1232,12 +1232,12 @@ void PM_ClampAngles (void)
 
 /*
 ================
-Pmove
+PM_Move
 
 Can be called by either the server or the client
 ================
 */
-void Pmove (pmove_t *pmove)
+void PM_Move (pmove_t *pmove)
 {
 	pm = pmove;
 

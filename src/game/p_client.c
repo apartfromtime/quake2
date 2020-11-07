@@ -1640,7 +1640,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 		pm.pointcontents = gi.pointcontents;
 
 		// perform a pmove
-		gi.Pmove (&pm);
+		gi.pmove (&pm);
 
 		// save results of pmove
 		client->ps.pmove = pm.s;

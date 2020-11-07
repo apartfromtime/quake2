@@ -191,76 +191,51 @@ char *Sys_ConsoleInput(void)
 
 /*****************************************************************************/
 
-static void *game_library;
+
+/*
+========================================================================
+
+DLL LOADING
+
+========================================================================
+*/
 
 /*
 =================
-Sys_UnloadGame
+Sys_DLL_Load
 =================
 */
-void Sys_UnloadGame (void)
+int Sys_DLL_Load(const char * dllName)
 {
-	if (game_library) 
-		dlclose (game_library);
-	game_library = NULL;
+    void * libHandle = dlopen( dllName, RTLD_LAZY );
+    return ( int )libHandle;
 }
 
 /*
 =================
-Sys_GetGameAPI
-
-Loads the game dll
+Sys_DLL_GetProcAddress
 =================
 */
-void *Sys_GetGameAPI (void *parms)
+void * Sys_DLL_GetProcAddress(int dllHandle, const char * procName)
 {
-	void	*(*GetGameAPI) (void *);
+    return dlsym( dllHandle, procName );
+}
 
-	char	name[MAX_OSPATH];
-	char	curpath[MAX_OSPATH];
-	char	*path;
-#ifdef __i386__
-	const char *gamename = "gamei386.so";
-#elif defined __alpha__
-	const char *gamename = "gameaxp.so";
-#else
-#error Unknown arch
-#endif
-
-	setreuid(getuid(), getuid());
-	setegid(getgid());
-
-	if (game_library)
-		Com_Error (ERR_FATAL, "Sys_GetGameAPI without Sys_UnloadingGame");
-
-	getcwd(curpath, sizeof(curpath));
-
-	Com_Printf("------- Loading %s -------\n", gamename);
-
-	// now run through the search paths
-	path = NULL;
-	while (1)
-	{
-		path = FS_NextPath (path);
-		if (!path)
-			return NULL;		// couldn't find one anywhere
-		sprintf (name, "%s/%s/%s", curpath, path, gamename);
-		game_library = dlopen (name, RTLD_LAZY );
-		if (game_library)
-		{
-			Com_Printf ("LoadLibrary (%s)\n",name);
-			break;
-		}
+/*
+=================
+Sys_DLL_Unload
+=================
+*/
+void Sys_DLL_Unload(int dllHandle)
+{
+	if ( !dllHandle ) {
+		return;
 	}
 
-	GetGameAPI = (void *)dlsym (game_library, "GetGameAPI");
-	if (!GetGameAPI)
-	{
-		Sys_UnloadGame ();		
-		return NULL;
-	}
-
-	return GetGameAPI (parms);
+    if ( dlclose( handle ) ) {
+        Com_Error( ERR_FATAL, "Sys_DLL_Unload: dlclose failed - %s (%d)",
+        	dlerror(), handle );
+    }
 }
 
 /*****************************************************************************/

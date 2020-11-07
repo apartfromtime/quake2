@@ -19,6 +19,7 @@
 */
 
 #include "../qcommon/qcommon.h"
+#include "../server/server.h"
 #include "winquake.h"
 #include "resource.h"
 #include <errno.h>
@@ -122,6 +123,24 @@ void WinError (void)
 
 	// Free the buffer.
 	LocalFree( lpMsgBuf );
+}
+
+
+//================================================================
+
+/*
+==============
+Sys_Cwd
+==============
+*/
+const char * Sys_Cwd(void)
+{
+	static char cwd[MAX_OSPATH];
+
+	_getcwd( cwd, sizeof( cwd ) - 1 );
+	cwd[MAX_OSPATH-1] = 0;
+
+	return cwd;
 }
 
 //================================================================
@@ -440,113 +459,79 @@ void Sys_AppActivate (void)
 }
 
 /*
-========================================================================
+===============================================================================
 
-GAME DLL
+DLL LOADING
 
-========================================================================
+===============================================================================
 */
-
-static HINSTANCE	game_library;
 
 /*
-=================
-Sys_UnloadGame
-=================
+=====================
+Sys_DLL_Load
+=====================
 */
-void Sys_UnloadGame (void)
+int Sys_DLL_Load(const char * dllName)
 {
-	if (!FreeLibrary (game_library))
-		Com_Error (ERR_FATAL, "FreeLibrary failed for game library");
-	game_library = NULL;
+	HINSTANCE libHandle = LoadLibrary( dllName );
+	return ( int )libHandle;
 }
 
 /*
-=================
-Sys_GetGameAPI
-
-Loads the game dll
-=================
+=====================
+Sys_DLL_GetProcAddress
+=====================
 */
-void *Sys_GetGameAPI (void *parms)
+void * Sys_DLL_GetProcAddress(int dllHandle, const char * procName)
 {
-	void	*(*GetGameAPI) (void *);
-	char	name[MAX_OSPATH];
-	char	*path;
-	char	cwd[MAX_OSPATH];
-#if defined _M_IX86
-	const char *gamename = "gamex86.dll";
-
-#ifdef NDEBUG
-	const char *debugdir = "release";
-#else
-	const char *debugdir = "debug";
-#endif
-
-#elif defined _M_ALPHA
-	const char *gamename = "gameaxp.dll";
-
-#ifdef NDEBUG
-	const char *debugdir = "releaseaxp";
-#else
-	const char *debugdir = "debugaxp";
-#endif
-
-#endif
-
-	if (game_library)
-		Com_Error (ERR_FATAL, "Sys_GetGameAPI without Sys_UnloadingGame");
-
-	// check the current debug directory first for development purposes
-	_getcwd (cwd, sizeof(cwd));
-	Com_sprintf (name, sizeof(name), "%s/%s/%s", cwd, debugdir, gamename);
-	game_library = LoadLibrary ( name );
-	if (game_library)
-	{
-		Com_DPrintf ("LoadLibrary (%s)\n", name);
-	}
-	else
-	{
-#ifdef DEBUG
-		// check the current directory for other development purposes
-		Com_sprintf (name, sizeof(name), "%s/%s", cwd, gamename);
-		game_library = LoadLibrary ( name );
-		if (game_library)
-		{
-			Com_DPrintf ("LoadLibrary (%s)\n", name);
-		}
-		else
-#endif
-		{
-			// now run through the search paths
-			path = NULL;
-			while (1)
-			{
-				path = FS_NextPath (path);
-				if (!path)
-					return NULL;		// couldn't find one anywhere
-				Com_sprintf (name, sizeof(name), "%s/%s", path, gamename);
-				game_library = LoadLibrary (name);
-				if (game_library)
-				{
-					Com_DPrintf ("LoadLibrary (%s)\n",name);
-					break;
-				}
-			}
-		}
-	}
-
-	GetGameAPI = (void *)GetProcAddress (game_library, "GetGameAPI");
-	if (!GetGameAPI)
-	{
-		Sys_UnloadGame ();		
-		return NULL;
-	}
-
-	return GetGameAPI (parms);
+	return GetProcAddress( ( HINSTANCE )dllHandle, procName );
 }
 
-//=======================================================================
+/*
+=====================
+Sys_DLL_Unload
+=====================
+*/
+void Sys_DLL_Unload(int dllHandle)
+{
+	if ( !dllHandle ) {
+		return;
+	}
+
+	if ( FreeLibrary( ( HINSTANCE )dllHandle ) == 0 ) {
+
+		int lastError = GetLastError();
+		LPVOID lpMsgBuf;
+		FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER,
+		    NULL,
+			lastError,
+			MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), // Default language
+			(LPTSTR) &lpMsgBuf,
+			0,
+			NULL 
+		);
+
+		Sys_Error( "Sys_DLL_Unload: FreeLibrary failed - %s (%d)", lpMsgBuf,
+			lastError );
+	}
+}
+
+/*
+=====================
+Sys_DLL_GetFileName
+=====================
+*/
+void Sys_DLL_GetFileName(const char * baseName, char * dllName, int maxLength)
+{
+#ifndef _WIN32
+	Com_sprintf( dllName, maxLength, "%s" CPUSTRING ".so", baseName );
+#else
+	Com_sprintf( dllName, maxLength, "%s" CPUSTRING ".dll", baseName );
+#endif
+}
+
+//=============================================================================
 
 
 /*

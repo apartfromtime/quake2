@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 // common.c -- misc functions used in client and server
+#include "../server/server.h"
 #include "qcommon.h"
 #include <setjmp.h>
 
@@ -1392,6 +1393,145 @@ void Com_Error_f (void)
 	Com_Error (ERR_FATAL, "%s", Cmd_Argv(1));
 }
 
+static int gameDLL;
+
+/*
+=================
+Common_UnloadGameDLL
+=================
+*/
+void Common_UnloadGameDLL(void)
+{
+	if ( game ) {
+		game->Shutdown();
+	}
+
+	game = NULL;
+
+	if ( gameDLL ) {
+		Sys_DLL_Unload( gameDLL );
+	}
+
+	gameDLL = NULL;
+}
+
+/*
+=================
+Common_LoadGameDLL
+=================
+*/
+void Common_LoadGameDLL(void)
+{
+	game_export_t gameExport;
+	game_import_t gameImport;
+	GetGameAPI_t GetGameAPI;
+	char dllPath[MAX_OSPATH];
+
+#ifndef _WIN32
+	setreuid(getuid(), getuid());
+	setegid(getgid());
+#endif // #ifndef _WIN32
+
+	if ( gameDLL ) {
+		Com_Error( ERR_FATAL, "Common_LoadGameDLL without Sys_UnloadingGame" );
+		return;
+	}
+
+	FS_FindDLL("game", dllPath);
+
+	if ( !dllPath[0] ) {
+		Com_Error( ERR_FATAL, "couldn't find game dynamic library" );
+		return;
+	}
+
+	Com_Printf( "Loading game DLL: '%s'\n", dllPath );
+	gameDLL = Sys_DLL_Load( dllPath );
+
+	if ( !gameDLL ) {
+		Com_Error( ERR_FATAL, "couldn't load game dynamic library" );
+		return;
+	}
+
+	GetGameAPI = ( void * )Sys_DLL_GetProcAddress( gameDLL, "GetGameAPI" );
+
+	if ( !GetGameAPI ) {
+
+		Common_UnloadGameDLL();
+		Com_Error( ERR_FATAL, "couldn't find game DLL API" );
+		
+		return;
+	}
+
+	// load a new game dll
+	gameImport.multicast 			= SV_Multicast;
+	gameImport.unicast 				= SV_Unicast;
+	gameImport.bprintf 				= SV_BroadcastPrintf;
+	gameImport.dprintf 				= SV_DebugPrintf;
+	gameImport.cprintf 				= SV_GameClientPrintf;
+	gameImport.centerprintf 		= SV_GameClientCenterPrintf;
+	gameImport.error 				= SV_Error;
+
+	gameImport.linkentity 			= SV_LinkEdict;
+	gameImport.unlinkentity 		= SV_UnlinkEdict;
+	gameImport.BoxEdicts 			= SV_AreaEdicts;
+	gameImport.trace 				= SV_Trace;
+	gameImport.pointcontents 		= SV_PointContents;
+	gameImport.setmodel 			= SV_SetModel;
+	gameImport.inPVS 				= SV_inPVS;
+	gameImport.inPHS 				= SV_inPHS;
+	gameImport.pmove 				= PM_Move;
+
+	gameImport.modelindex 			= SV_ModelIndex;
+	gameImport.soundindex 			= SV_SoundIndex;
+	gameImport.imageindex 			= SV_ImageIndex;
+
+	gameImport.configstring 		= SV_ConfigString;
+	gameImport.sound 				= SV_GameStartSound;
+	gameImport.positioned_sound 	= SV_StartSound;
+
+	gameImport.WriteChar 			= SV_WriteChar;
+	gameImport.WriteByte 			= SV_WriteByte;
+	gameImport.WriteShort 			= SV_WriteShort;
+	gameImport.WriteLong 			= SV_WriteLong;
+	gameImport.WriteFloat 			= SV_WriteFloat;
+	gameImport.WriteString 			= SV_WriteString;
+	gameImport.WritePosition 		= SV_WritePos;
+	gameImport.WriteDir 			= SV_WriteDir;
+	gameImport.WriteAngle 			= SV_WriteAngle;
+
+	gameImport.TagMalloc 			= Z_TagMalloc;
+	gameImport.TagFree 				= Z_Free;
+	gameImport.FreeTags 			= Z_FreeTags;
+
+	gameImport.cvar 				= Cvar_Get;
+	gameImport.cvar_set 			= Cvar_Set;
+	gameImport.cvar_forceset 		= Cvar_ForceSet;
+
+	gameImport.argc 				= Cmd_Argc;
+	gameImport.argv 				= Cmd_Argv;
+	gameImport.args 				= Cmd_Args;
+	gameImport.AddCommandString 	= Cbuf_AddText;
+
+	gameImport.DebugGraph 			= SCR_DebugGraph;
+	gameImport.SetAreaPortalState 	= CM_SetAreaPortalState;
+	gameImport.AreasConnected 		= CM_AreasConnected;
+
+	gameExport = *GetGameAPI(&gameImport);
+
+	if ( gameExport.apiversion != GAME_API_VERSION ) {
+		
+		Com_Error( ERR_DROP, "game is version %i, not %i", gameExport.apiversion,
+			GAME_API_VERSION );
+		Common_UnloadGameDLL();
+		Com_Error( ERR_FATAL, "wrong game DLL API version" );
+	}
+
+	game = gameExport.game;
+
+	if ( game != NULL ) {
+		game->Init();
+	}
+}
 
 /*
 =================

@@ -18,6 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#ifndef __GAME_H__
+#define __GAME_H__
+
 // game.h -- game dll information visible to server
 
 #define	GAME_API_VERSION	3
@@ -145,7 +148,7 @@ typedef struct
 	void	(*linkentity) (edict_t *ent);
 	void	(*unlinkentity) (edict_t *ent);		// call before removing an interactive edict
 	int		(*BoxEdicts) (vec3_t mins, vec3_t maxs, edict_t **list,	int maxcount, int areatype);
-	void	(*Pmove) (pmove_t *pmove);		// player movement code common with client prediction
+	void	(*pmove) (pmove_t *pmove);		// player movement code common with client prediction
 
 	// network messaging
 	void	(*multicast) (vec3_t origin, multicast_t to);
@@ -237,6 +240,14 @@ typedef struct
 	int			edict_size;
 	int			num_edicts;		// current number, <= max_edicts
 	int			max_edicts;
+} game_t;
+
+typedef struct
+{
+	int apiversion;
+	game_t * game;
 } game_export_t;
 
-game_export_t *GetGameApi (game_import_t *import);
+typedef game_export_t * (*GetGameAPI_t)(game_import_t * import);
+
+#endif // ifndef __GAME_H__

@@ -91,7 +91,7 @@ void SV_CreateBaseline (void)
 	edict_t			*svent;
 	int				entnum;	
 
-	for (entnum = 1; entnum < ge->num_edicts ; entnum++)
+	for (entnum = 1; entnum < game->num_edicts ; entnum++)
 	{
 		svent = EDICT_NUM(entnum);
 		if (!svent->inuse)
@@ -150,7 +150,7 @@ void SV_CheckForSavegame (void)
 		previousState = sv.state;				// PGM
 		sv.state = ss_loading;					// PGM
 		for (i=0 ; i<100 ; i++)
-			ge->RunFrame ();
+			game->RunFrame ();
 
 		sv.state = previousState;				// PGM
 	}
@@ -178,7 +178,7 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 
 	Com_DPrintf ("SpawnServer: %s\n",server);
 	if (sv.demofile)
-		fclose (sv.demofile);
+		FS_FCloseFile(sv.demofile);
 
 	svs.spawncount++;		// any partially connected client will be
 							// restarted
@@ -257,11 +257,11 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	Com_SetServerState (sv.state);
 
 	// load and spawn all other entities
-	ge->SpawnEntities ( sv.name, CM_EntityString(), spawnpoint );
+	game->SpawnEntities ( sv.name, CM_EntityString(), spawnpoint );
 
 	// run two frames to allow everything to settle
-	ge->RunFrame ();
-	ge->RunFrame ();
+	game->RunFrame ();
+	game->RunFrame ();
 
 	// all precaches are complete
 	sv.state = serverstate;

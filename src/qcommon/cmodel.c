@@ -1731,7 +1731,7 @@ Reads the portal state from a savegame file
 and recalculates the area connections
 ===================
 */
-void	CM_ReadPortalState (FILE *f)
+void	CM_ReadPortalState (file_t *f)
 {
 	FS_Read (portalopen, sizeof(portalopen), f);
 	FloodAreaConnections ();

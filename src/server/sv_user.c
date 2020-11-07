@@ -250,7 +250,7 @@ void SV_Begin_f (void)
 	sv_client->state = cs_spawned;
 	
 	// call the game begin function
-	ge->ClientBegin (sv_player);
+	game->ClientBegin (sv_player);
 
 	Cbuf_InsertFromDefer ();
 }
@@ -491,7 +491,7 @@ void SV_ExecuteUserCommand (char *s)
 		}
 
 	if (!u->name && sv.state == ss_game)
-		ge->ClientCommand (sv_player);
+		game->ClientCommand (sv_player);
 
 //	SV_EndRedirect ();
 }
@@ -517,7 +517,7 @@ void SV_ClientThink (client_t *cl, usercmd_t *cmd)
 		return;
 	}
 
-	ge->ClientThink (cl->edict, cmd);
+	game->ClientThink (cl->edict, cmd);
 }
 
 

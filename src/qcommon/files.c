@@ -39,10 +39,22 @@ QUAKE FILESYSTEM
 =============================================================================
 */
 
+#define MAX_FILE_HANDLES  64
+static const char PATHSEPERATOR_CHAR = '\\';
 
 //
 // in memory
 //
+
+typedef struct file_s
+{
+	char name[MAX_OSPATH];
+	int mode;
+	int size;
+	FILE * handle;
+} file_t;
+
+static file_t fs_files[MAX_FILE_HANDLES];
 
 typedef struct
 {
@@ -59,6 +71,8 @@ typedef struct pack_s
 } pack_t;
 
 char	fs_gamedir[MAX_OSPATH];
+
+cvar_t * fs_debug;
 cvar_t	*fs_basedir;
 cvar_t	*fs_cddir;
 cvar_t	*fs_gamedirvar;
@@ -86,15 +100,65 @@ searchpath_t	*fs_base_searchpaths;	// without gamedirs
 
 /*
 
-All of Quake's data access is through a hierchal file system, but the contents of the file system can be transparently merged from several sources.
+All of Quake's data access is through a hierchal file system, but the contents
+of the file system can be transparently merged from several sources.
 
-The "base directory" is the path to the directory holding the quake.exe and all game directories.  The sys_* files pass this to host_init in quakeparms_t->basedir.  This can be overridden with the "-basedir" command line parm to allow code debugging in a different directory.  The base directory is
-only used during filesystem initialization.
+The "base directory" is the path to the directory holding the quake.exe and
+all game directories.  The sys_* files pass this to host_init in
+quakeparms_t->basedir.  This can be overridden with the "-basedir" command
+line parm to allow code debugging in a different directory.  The base
+directory is only used during filesystem initialization.
 
-The "game directory" is the first tree on the search path and directory that all generated files (savegames, screenshots, demos, config files) will be saved to.  This can be overridden with the "-game" command line parameter.  The game directory can never be changed while quake is executing.  This is a precacution against having a malicious server instruct clients to write files over areas they shouldn't.
+The "game directory" is the first tree on the search path and directory that
+all generated files (savegames, screenshots, demos, config files) will be
+saved to.  This can be overridden with the "-game" command line parameter.
+The game directory can never be changed while quake is executing. This is a
+precacution against having a malicious server instruct clients to write files
+over areas they shouldn't.
 
 */
 
+/*
+================
+FS_ReplaceSeperators
+
+replaces any occurance of directory seperators with seperator parameter.
+================
+*/
+void FS_ReplaceSeperators(char * str, char sep)
+{
+	char * s;
+
+	if (str == NULL) {
+		return;
+	}
+
+	for (s = &str[0]; *s; s++) {
+		if (*s == '/' || *s == '\\') {
+			*s = sep;
+		}
+	}
+}
+
+/*
+================
+FS_HandleForFile
+
+returns a free file handle.
+================
+*/
+static int FS_HandleForFile(void)
+{
+	for ( int i = 1 ; i < MAX_FILE_HANDLES ; i++ ) {
+		if ( fs_files[i].handle == NULL ) {
+			return i;
+		}
+	}
+
+	Com_Error( ERR_DROP, "FS_HandleForFile: none free" );
+	
+	return 0;
+}
 
 /*
 ================
@@ -146,9 +210,17 @@ For some reason, other dll's can't just cal fclose()
 on files returned by FS_FOpenFile...
 ==============
 */
-void FS_FCloseFile (FILE *f)
+
+void FS_FCloseFile(file_t * file)
 {
-	fclose (f);
+	if (file) {
+		if (file->handle != NULL) {
+
+			fclose(file->handle);
+			file->handle = NULL;
+			memset(file, 0, sizeof(file_t));
+		}
+	}
 }
 
 
@@ -189,7 +261,28 @@ int	Developer_searchpath (int who)
 	return (0);
 
 }
+/*
+===========
+FS_OpenFileRead
+===========
+*/
+file_t * FS_OpenFileRead(const char * path)
+{
+	int handle = FS_HandleForFile();
+	file_t * f = &fs_files[handle];
 
+	f->handle = fopen(path, "rb");
+
+	if ( !f->handle ) {
+
+		f->handle = NULL;
+		return NULL;
+	}
+
+	Com_sprintf(f->name, MAX_OSPATH, "%s", path);
+
+	return f;
+}
 
 /*
 ===========
@@ -202,137 +295,79 @@ a seperate file.
 ===========
 */
 int file_from_pak = 0;
-#ifndef NO_ADDONS
-int FS_FOpenFile (char *filename, FILE **file)
+
+int FS_FOpenFile(char * filename, file_t ** file)
 {
-	searchpath_t	*search;
-	char			netpath[MAX_OSPATH];
-	pack_t			*pak;
-	int				i;
-	filelink_t		*link;
+	int handle = FS_HandleForFile();
 
-	file_from_pak = 0;
+	file_t *f = &fs_files[handle];
+	*file = f;
 
-	// check for links first
-	for (link = fs_links ; link ; link=link->next)
-	{
-		if (!strncmp (filename, link->from, link->fromlength))
-		{
-			Com_sprintf (netpath, sizeof(netpath), "%s%s",link->to, filename+link->fromlength);
-			*file = fopen (netpath, "rb");
-			if (*file)
-			{		
-				Com_DPrintf ("link file: %s\n",netpath);
-				return FS_filelength (*file);
-			}
-			return -1;
-		}
-	}
+	/* search through the path, one element at a time */
+	for (searchpath_t * search = fs_searchpaths; search != NULL; search =
+		search->next) {
 
-//
-// search through the path, one element at a time
-//
-	for (search = fs_searchpaths ; search ; search = search->next)
-	{
-	// is the element a pak file?
-		if (search->pack)
-		{
-		// look through all the pak file elements
-			pak = search->pack;
-			for (i=0 ; i<pak->numfiles ; i++)
-				if (!Q_strcasecmp (pak->files[i].name, filename))
-				{	// found it!
-					file_from_pak = 1;
-					Com_DPrintf ("PackFile: %s : %s\n",pak->filename, filename);
-				// open a new file on the pakfile
-					*file = fopen (pak->filename, "rb");
-					if (!*file)
-						Com_Error (ERR_FATAL, "Couldn't reopen %s", pak->filename);	
-					fseek (*file, pak->files[i].filepos, SEEK_SET);
-					return pak->files[i].filelen;
+		/* is the element a pack file */
+		if (search->pack) {
+
+			/* look through all the pack file elements */
+			pack_t * pack = search->pack;
+
+			for (int i = 0; i < pack->numfiles; ++i) {
+
+				if (!Q_strcasecmp(pack->files[i].name, filename)) {
+					
+					/* found it! */
+					if (fs_debug->value) {
+						Com_DPrintf("FS_FOpenFile: '%s' (found in '%s').\n",
+							filename, pack->filename);
+					}
+
+					/* open a new file on the packfile */
+					f->handle = fopen(pack->filename, "rb");
+
+					if (f->handle == NULL) {
+						Com_Error(ERR_FATAL, "Couldn't reopen %s", pack->filename);
+						return -1;
+					}
+
+					strncpy(f->name, pack->files[i].name, sizeof(f->name));
+					fseek(f->handle, pack->files[i].filepos, SEEK_SET);
+
+					return pack->files[i].filelen;
 				}
-		}
-		else
-		{		
-	// check a file in the directory tree
-			
-			Com_sprintf (netpath, sizeof(netpath), "%s/%s",search->filename, filename);
-			
-			*file = fopen (netpath, "rb");
-			if (!*file)
+			}
+		} else {
+
+			/* check in the file directory */
+			char pathname[MAX_OSPATH];
+
+			Com_sprintf(pathname, MAX_OSPATH, "%s/%s", search->filename, filename);
+
+			/* open it */
+			f->handle = fopen(pathname, "rb");
+
+			if (f->handle == NULL) {
 				continue;
-			
-			Com_DPrintf ("FindFile: %s\n",netpath);
+			}
 
-			return FS_filelength (*file);
+			strncpy(f->name, pathname, sizeof(f->name));
+
+			if (fs_debug->value) {
+				Com_DPrintf("FS_FOpenFile: '%s' (found in '%s').\n",
+					filename, search->filename);
+			}
+
+			return FS_filelength(f->handle);
 		}
-		
 	}
-	
-	Com_DPrintf ("FindFile: can't find %s\n", filename);
-	
+
+	Com_DPrintf ("Can't find %s\n", filename);
+
 	*file = NULL;
+
 	return -1;
 }
-
-#else
-
-// this is just for demos to prevent add on hacking
-
-int FS_FOpenFile (char *filename, FILE **file)
-{
-	searchpath_t	*search;
-	char			netpath[MAX_OSPATH];
-	pack_t			*pak;
-	int				i;
-
-	file_from_pak = 0;
-
-	// get config from directory, everything else from pak
-	if (!strcmp(filename, "config.cfg") || !strncmp(filename, "players/", 8))
-	{
-		Com_sprintf (netpath, sizeof(netpath), "%s/%s",FS_Gamedir(), filename);
-		
-		*file = fopen (netpath, "rb");
-		if (!*file)
-			return -1;
-		
-		Com_DPrintf ("FindFile: %s\n",netpath);
-
-		return FS_filelength (*file);
-	}
-
-	for (search = fs_searchpaths ; search ; search = search->next)
-		if (search->pack)
-			break;
-	if (!search)
-	{
-		*file = NULL;
-		return -1;
-	}
-
-	pak = search->pack;
-	for (i=0 ; i<pak->numfiles ; i++)
-		if (!Q_strcasecmp (pak->files[i].name, filename))
-		{	// found it!
-			file_from_pak = 1;
-			Com_DPrintf ("PackFile: %s : %s\n",pak->filename, filename);
-		// open a new file on the pakfile
-			*file = fopen (pak->filename, "rb");
-			if (!*file)
-				Com_Error (ERR_FATAL, "Couldn't reopen %s", pak->filename);	
-			fseek (*file, pak->files[i].filepos, SEEK_SET);
-			return pak->files[i].filelen;
-		}
-	
-	Com_DPrintf ("FindFile: can't find %s\n", filename);
-	
-	*file = NULL;
-	return -1;
-}
-
-#endif
-
 
 /*
 =================
@@ -342,45 +377,57 @@ Properly handles partial reads
 =================
 */
 void CDAudio_Stop(void);
-#define	MAX_READ	0x10000		// read in blocks of 64k
-void FS_Read (void *buffer, int len, FILE *f)
+#define	MAX_READ 			0x10000 			/* read in blocks of 64k */
+
+int FS_Read(void * buffer, int len, file_t * file)
 {
-	int		block, remaining;
-	int		read;
-	byte	*buf;
-	int		tries;
+	int block;
+	int remaining;
+	int read;
+	byte * buf;
+	int tries;
 
 	buf = (byte *)buffer;
 
-	// read in chunks for progress bar
+	/* read in chunks for progress bar */
 	remaining = len;
 	tries = 0;
-	while (remaining)
-	{
+	
+	while (remaining) {
+		
 		block = remaining;
-		if (block > MAX_READ)
+		
+		if (block > MAX_READ) {
 			block = MAX_READ;
-		read = fread (buf, 1, block, f);
-		if (read == 0)
-		{
-			// we might have been trying to read from a CD
-			if (!tries)
-			{
-				tries = 1;
-				CDAudio_Stop();
-			}
-			else
-				Com_Error (ERR_FATAL, "FS_Read: 0 bytes read");
 		}
 
-		if (read == -1)
-			Com_Error (ERR_FATAL, "FS_Read: -1 bytes read");
+		read = fread(buf, 1, block, file->handle);
+		
+		if (read == 0) {
 
-		// do some progress bar thing here...
+			// we might have been trying to read from a CD
+			if (!tries) {
+
+				tries = 1;
+				CDAudio_Stop();
+
+			} else {
+				//Com_Error(ERR_FATAL, "FS_Read: 0 bytes read");
+				return len - remaining;
+			}
+		}
+
+		if (read == -1) {
+			Com_Error(ERR_FATAL, "FS_Read: -1 bytes read");
+		}
+
+		/* do some progress bar thing here... */
 
 		remaining -= read;
 		buf += read;
 	}
+
+	return len;
 }
 
 /*
@@ -391,26 +438,30 @@ Filename are reletive to the quake search path
 a null buffer will just return the file length without loading
 ============
 */
-int FS_LoadFile (char *path, void **buffer)
+int FS_LoadFile(char *path, void **buffer)
 {
-	FILE	*h;
-	byte	*buf;
-	int		len;
+	file_t * h;
+	byte * buf;
+	int	len;
 
+	h = NULL;
 	buf = NULL;	// quiet compiler warning
 
-// look for it in the filesystem or pack files
-	len = FS_FOpenFile (path, &h);
-	if (!h)
-	{
-		if (buffer)
+	// look for it in the filesystem or pack files
+	len = FS_FOpenFile(path, &h);
+
+	if (!h) {
+		
+		if (buffer) {
 			*buffer = NULL;
+		}
+
 		return -1;
 	}
 	
-	if (!buffer)
-	{
-		fclose (h);
+	if (!buffer) {
+
+		FS_FCloseFile(h);
 		return len;
 	}
 
@@ -418,8 +469,7 @@ int FS_LoadFile (char *path, void **buffer)
 	*buffer = buf;
 
 	FS_Read (buf, len, h);
-
-	fclose (h);
+	FS_FCloseFile(h);
 
 	return len;
 }
@@ -501,6 +551,48 @@ pack_t *FS_LoadPackFile (char *packfile)
 	return pack;
 }
 
+/*
+================
+FS_FindDLL
+================
+*/
+void FS_FindDLL(const char * name, char _dllPath[MAX_OSPATH])
+{
+	file_t * dllFile = NULL;
+	const char * cwd;
+	char dllName[MAX_OSPATH];
+	char dllPath[MAX_OSPATH];
+
+	Sys_DLL_GetFileName( name, dllName, MAX_OSPATH );
+
+	// check the current directory first for development purposes
+	cwd = Sys_Cwd();
+
+	// relative path to full path
+	Com_sprintf( dllPath, sizeof( dllPath ), "%s/%s", cwd, dllName );
+	FS_ReplaceSeperators( dllPath, PATHSEPERATOR_CHAR );
+	
+	dllFile = FS_OpenFileRead( dllPath );
+
+	if ( dllFile ) {
+		Com_DPrintf( "found dll file %s\n", dllPath );
+	} else {
+		// run through the search paths
+		FS_FOpenFile( dllName, &dllFile );
+	}
+
+	if ( dllFile ) {
+
+		Com_sprintf( dllPath, sizeof( dllPath ), "%s", dllFile->name );
+		FS_FCloseFile( dllFile );
+		dllFile = NULL;
+
+	} else {
+		Com_sprintf( dllPath, sizeof( dllPath ), "");
+	}
+
+	Com_sprintf( _dllPath, MAX_OSPATH, "%s", dllPath );
+}
 
 /*
 ================
@@ -583,57 +675,64 @@ void FS_ExecAutoexec (void)
 
 /*
 ================
-FS_SetGamedir
+FS_SetGameDir
 
 Sets the gamedir and path to a different directory.
 ================
 */
-void FS_SetGamedir (char *dir)
+void FS_SetGameDir(char * dir)
 {
-	searchpath_t	*next;
+	searchpath_t * next;
 
-	if (strstr(dir, "..") || strstr(dir, "/")
-		|| strstr(dir, "\\") || strstr(dir, ":") )
-	{
-		Com_Printf ("Gamedir should be a single filename, not a path\n");
+	if (strstr(dir, "..") || strstr(dir, "/") || strstr(dir, "\\") ||
+		strstr(dir, ":") ) {
+		
+		Com_Printf("Gamedir should be a single filename, not a path\n");
 		return;
 	}
 
-	//
 	// free up any current game dir info
-	//
-	while (fs_searchpaths != fs_base_searchpaths)
-	{
-		if (fs_searchpaths->pack)
-		{
-			fclose (fs_searchpaths->pack->handle);
-			Z_Free (fs_searchpaths->pack->files);
-			Z_Free (fs_searchpaths->pack);
+	while (fs_searchpaths != fs_base_searchpaths) {
+
+		if (fs_searchpaths->pack) {
+
+			fclose(fs_searchpaths->pack->handle);
+			Z_Free(fs_searchpaths->pack->files);
+			Z_Free(fs_searchpaths->pack);
 		}
+
 		next = fs_searchpaths->next;
-		Z_Free (fs_searchpaths);
+		Z_Free(fs_searchpaths);
 		fs_searchpaths = next;
 	}
 
-	//
 	// flush all data, so it will be forced to reload
-	//
-	if (dedicated && !dedicated->value)
-		Cbuf_AddText ("vid_restart\nsnd_restart\n");
-
-	Com_sprintf (fs_gamedir, sizeof(fs_gamedir), "%s/%s", fs_basedir->string, dir);
-
-	if (!strcmp(dir,BASEDIRNAME) || (*dir == 0))
-	{
-		Cvar_FullSet ("gamedir", "", CVAR_SERVERINFO|CVAR_NOSET);
-		Cvar_FullSet ("game", "", CVAR_LATCH|CVAR_SERVERINFO);
+	if (dedicated && !dedicated->value) {
+		Cbuf_AddText("vid_restart\nsnd_restart\n");
 	}
-	else
-	{
-		Cvar_FullSet ("gamedir", dir, CVAR_SERVERINFO|CVAR_NOSET);
-		if (fs_cddir->string[0])
-			FS_AddGameDirectory (va("%s/%s", fs_cddir->string, dir) );
-		FS_AddGameDirectory (va("%s/%s", fs_basedir->string, dir) );
+
+	Com_sprintf(fs_gamedir, sizeof(fs_gamedir), "%s/%s", fs_basedir->string,
+		dir);
+
+	if (!strcmp(dir, BASEDIRNAME) || (*dir == 0)) {
+
+		Cvar_FullSet("gamedir", "", CVAR_SERVERINFO | CVAR_NOSET);
+		Cvar_FullSet("game", "", CVAR_LATCH | CVAR_SERVERINFO);
+
+	} else {
+
+		Cvar_FullSet ("gamedir", dir, CVAR_SERVERINFO | CVAR_NOSET);
+		
+		if (fs_cddir->string[0]) {
+			FS_AddGameDirectory(va("%s/%s", fs_cddir->string, dir) );
+		}
+
+		// TODO: fix basedir
+		if (!strcmp(fs_basedir->string, "")) {
+			FS_AddGameDirectory(va("%s/", dir));
+		} else {
+			FS_AddGameDirectory(va("%s/%s", fs_basedir->string, dir));
+		}
 	}
 }
 
@@ -847,33 +946,32 @@ void FS_InitFilesystem (void)
 	Cmd_AddCommand ("link", FS_Link_f);
 	Cmd_AddCommand ("dir", FS_Dir_f );
 
+	fs_debug = Cvar_Get("developer", "0", 0);
 	//
 	// basedir <path>
-	// allows the game to run from outside the data tree
-	//
-	fs_basedir = Cvar_Get ("basedir", ".", CVAR_NOSET);
+	// base directory "basedir" is the path to the directory holding "quake2.exe"
+	fs_basedir = Cvar_Get("basedir", "", CVAR_NOSET);
 
 	//
 	// cddir <path>
 	// Logically concatenates the cddir after the basedir for 
 	// allows the game to run from outside the data tree
 	//
-	fs_cddir = Cvar_Get ("cddir", "", CVAR_NOSET);
+	fs_cddir = Cvar_Get("cddir", "", CVAR_NOSET);
 	if (fs_cddir->string[0])
-		FS_AddGameDirectory (va("%s/"BASEDIRNAME, fs_cddir->string) );
+		FS_AddGameDirectory(va("%s"BASEDIRNAME, fs_cddir->string));
 
-	//
 	// start up with baseq2 by default
-	//
-	FS_AddGameDirectory (va("%s/"BASEDIRNAME, fs_basedir->string) );
+	FS_AddGameDirectory (va("%s"BASEDIRNAME, fs_basedir->string) );
 
 	// any set gamedirs will be freed up to here
 	fs_base_searchpaths = fs_searchpaths;
 
 	// check for game override
-	fs_gamedirvar = Cvar_Get ("game", "", CVAR_LATCH|CVAR_SERVERINFO);
-	if (fs_gamedirvar->string[0])
-		FS_SetGamedir (fs_gamedirvar->string);
+	fs_gamedirvar = Cvar_Get("game", "", CVAR_LATCH | CVAR_SERVERINFO);
+	if (fs_gamedirvar->string[0]) {
+		FS_SetGameDir(fs_gamedirvar->string);
+	}
 }
 
 

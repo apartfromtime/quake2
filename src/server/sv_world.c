@@ -175,7 +175,7 @@ void SV_LinkEdict (edict_t *ent)
 	if (ent->area.prev)
 		SV_UnlinkEdict (ent);	// unlink from old position
 		
-	if (ent == ge->edicts)
+	if (ent == game->edicts)
 		return;		// don't add the world
 
 	if (!ent->inuse)
@@ -634,7 +634,7 @@ trace_t SV_Trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *p
 
 	// clip to world
 	clip.trace = CM_BoxTrace (start, end, mins, maxs, 0, contentmask);
-	clip.trace.ent = ge->edicts;
+	clip.trace.ent = game->edicts;
 	if (clip.trace.fraction == 0)
 		return clip.trace;		// blocked by the world
 

@@ -20,7 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	
 // q_shared.h -- included first by ALL program modules
 
+#ifndef __SHARED_H__
+#define __SHARED_H__
+
 #ifdef _WIN32
+#pragma warning (disable : 4047 ) // 'type_to' differs in levels of indirection from 'type_from'
 // unknown pragmas are SUPPOSED to be ignored, but....
 #pragma warning(disable : 4244)     // MIPS
 #pragma warning(disable : 4136)     // X86
@@ -1199,3 +1203,5 @@ typedef struct
 extern int vidref_val;
 // PGM
 // ==================
+
+#endif // #ifndef __SHARED_H__

@@ -170,7 +170,7 @@ void SCR_StopCinematic (void)
 	}
 	if (cl.cinematic_file)
 	{
-		fclose (cl.cinematic_file);
+		FS_FCloseFile(cl.cinematic_file);
 		cl.cinematic_file = NULL;
 	}
 	if (cin.hnodes1)
@@ -436,9 +436,9 @@ byte *SCR_ReadNextFrame (void)
 	int		start, end, count;
 
 	// read the next frame
-	r = fread (&command, 4, 1, cl.cinematic_file);
+	r = FS_Read(&command, 4, cl.cinematic_file);
 	if (r == 0)		// we'll give it one more chance
-		r = fread (&command, 4, 1, cl.cinematic_file);
+		r = FS_Read(&command, 4, cl.cinematic_file);
 
 	if (r != 1)
 		return NULL;

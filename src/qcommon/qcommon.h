@@ -20,7 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // qcommon.h -- definitions common between client and server, but not game.dll
 
+#ifndef __COMMON_H__
+#define __COMMON_H__
+
 #include "../game/q_shared.h"
+#include "../game/game.h"
 
 
 #define	VERSION		3.21
@@ -70,6 +74,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #endif
 
+extern char cgame[MAX_QPATH];
 //============================================================================
 
 typedef struct sizebuf_s
@@ -668,7 +673,7 @@ int			CM_WriteAreaBits (byte *buffer, int area);
 qboolean	CM_HeadnodeVisible (int headnode, byte *visbits);
 
 void		CM_WritePortalState (FILE *f);
-void		CM_ReadPortalState (FILE *f);
+void		CM_ReadPortalState (file_t *f);
 
 /*
 ==============================================================
@@ -682,7 +687,7 @@ Common between server and client so prediction matches
 
 extern float pm_airaccelerate;
 
-void Pmove (pmove_t *pmove);
+void PM_Move (pmove_t *pmove);
 
 /*
 ==============================================================
@@ -692,21 +697,22 @@ FILESYSTEM
 ==============================================================
 */
 
+void FS_FindDLL(const char * name, char _dllPath[MAX_OSPATH]);
 void	FS_InitFilesystem (void);
-void	FS_SetGamedir (char *dir);
+void FS_SetGameDir(char * dir);
 char	*FS_Gamedir (void);
 char	*FS_NextPath (char *prevpath);
 void	FS_ExecAutoexec (void);
 
-int		FS_FOpenFile (char *filename, FILE **file);
-void	FS_FCloseFile (FILE *f);
+int		FS_FOpenFile (char *filename, file_t **file);
+void	FS_FCloseFile (file_t *f);
 // note: this can't be called from another DLL, due to MS libc issues
 
 int		FS_LoadFile (char *path, void **buffer);
 // a null buffer will just return the file length without loading
 // a -1 length is not present
 
-void	FS_Read (void *buffer, int len, FILE *f);
+int	FS_Read (void *buffer, int len, file_t *f);
 // properly handles partial reads
 
 void	FS_FreeFile (void *buffer);
@@ -768,6 +774,8 @@ void *Z_Malloc (int size);			// returns 0 filled memory
 void *Z_TagMalloc (int size, int tag);
 void Z_FreeTags (int tag);
 
+void Common_UnloadGameDLL(void);
+void Common_LoadGameDLL(void);
 void Qcommon_Init (int argc, char **argv);
 void Qcommon_Frame (int msec);
 void Qcommon_Shutdown (void);
@@ -791,8 +799,12 @@ void	Sys_Init (void);
 
 void	Sys_AppActivate (void);
 
-void	Sys_UnloadGame (void);
-void	*Sys_GetGameAPI (void *parms);
+const char * Sys_Cwd(void);
+int Sys_DLL_Load(const char * dllName);
+void * Sys_DLL_GetProcAddress(int dllHandle, const char * procName);
+void Sys_DLL_Unload(int dllHandle);
+void Sys_DLL_GetFileName(const char * baseName, char * dllName,
+	int maxLength);
 // loads the game dll and calls the api init function
 
 char	*Sys_ConsoleInput (void);
@@ -822,5 +834,4 @@ void SV_Init (void);
 void SV_Shutdown (char *finalmsg, qboolean reconnect);
 void SV_Frame (int msec);
 
-
-
+#endif // #ifndef __COMMON_H__

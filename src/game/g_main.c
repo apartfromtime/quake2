@@ -23,7 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 game_locals_t	game;
 level_locals_t	level;
 game_import_t	gi;
-game_export_t	globals;
+static game_export_t	ge;
+game_t	globals;
 spawn_temp_t	st;
 
 int	sm_meat_index;
@@ -134,8 +135,13 @@ game_export_t *GetGameAPI (game_import_t *import)
 	globals.ServerCommand = ServerCommand;
 
 	globals.edict_size = sizeof(edict_t);
+	
+	// setup export interface
+	ge.apiversion = GAME_API_VERSION;
+	ge.game = &globals;
 
-	return &globals;
+
+	return &ge;
 }
 
 #ifndef GAME_HARD_LINKED

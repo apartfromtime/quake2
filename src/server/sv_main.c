@@ -76,7 +76,7 @@ void SV_DropClient (client_t *drop)
 	{
 		// call the prog function for removing a client
 		// this will remove the body, among other things
-		ge->ClientDisconnect (drop->edict);
+		game->ClientDisconnect (drop->edict);
 	}
 
 	if (drop->download)
@@ -382,7 +382,7 @@ gotnewcl:
 	newcl->challenge = challenge; // save challenge for checksumming
 
 	// get the game a chance to reject this connection or modify the userinfo
-	if (!(ge->ClientConnect (ent, userinfo)))
+	if (!(game->ClientConnect (ent, userinfo)))
 	{
 		if (*Info_ValueForKey (userinfo, "rejmsg")) 
 			Netchan_OutOfBandPrint (NS_SERVER, adr, "print\n%s\nConnection refused.\n",  
@@ -705,7 +705,7 @@ void SV_PrepWorldFrame (void)
 	edict_t	*ent;
 	int		i;
 
-	for (i=0 ; i<ge->num_edicts ; i++, ent++)
+	for (i=0 ; i<game->num_edicts ; i++, ent++)
 	{
 		ent = EDICT_NUM(i);
 		// events only last for a single message
@@ -735,7 +735,7 @@ void SV_RunGameFrame (void)
 	// don't run if paused
 	if (!sv_paused->value || maxclients->value > 1)
 	{
-		ge->RunFrame ();
+		game->RunFrame ();
 
 		// never get more than one tic behind
 		if (sv.time < svs.realtime)
@@ -764,8 +764,8 @@ void SV_Frame (int msec)
 	// if server is not active, do nothing
 	if (!svs.initialized)
 		return;
-
-    svs.realtime += msec;
+    
+	svs.realtime += msec;
 
 	// keep the random time dependent
 	rand ();
@@ -810,7 +810,6 @@ void SV_Frame (int msec)
 
 	// clear teleport flags, etc for next frame
 	SV_PrepWorldFrame ();
-
 }
 
 //============================================================================
@@ -904,7 +903,7 @@ void SV_UserinfoChanged (client_t *cl)
 	int		i;
 
 	// call prog code to allow overrides
-	ge->ClientUserinfoChanged (cl->edict, cl->userinfo);
+	game->ClientUserinfoChanged (cl->edict, cl->userinfo);
 	
 	// name for C code
 	strncpy (cl->name, Info_ValueForKey (cl->userinfo, "name"), sizeof(cl->name)-1);
@@ -1042,7 +1041,7 @@ void SV_Shutdown (char *finalmsg, qboolean reconnect)
 
 	// free current level
 	if (sv.demofile)
-		fclose (sv.demofile);
+		FS_FCloseFile(sv.demofile);
 	memset (&sv, 0, sizeof(sv));
 	Com_SetServerState (sv.state);
 

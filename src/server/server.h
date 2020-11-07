@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //define	PARANOID			// speed sapping error checking
 
 #include "../qcommon/qcommon.h"
-#include "../game/game.h"
 
 //=============================================================================
 
@@ -62,12 +61,12 @@ typedef struct
 	byte		multicast_buf[MAX_MSGLEN];
 
 	// demo server information
-	FILE		*demofile;
+	file_t		*demofile;
 	qboolean	timedemo;		// don't time sync
 } server_t;
 
-#define EDICT_NUM(n) ((edict_t *)((byte *)ge->edicts + ge->edict_size*(n)))
-#define NUM_FOR_EDICT(e) ( ((byte *)(e)-(byte *)ge->edicts ) / ge->edict_size)
+#define EDICT_NUM(n) ((edict_t *)((byte *)game->edicts + game->edict_size*(n)))
+#define NUM_FOR_EDICT(e) ( ((byte *)(e)-(byte *)game->edicts ) / game->edict_size)
 
 
 typedef enum
@@ -276,16 +275,34 @@ void SV_WriteFrameToClient (client_t *client, sizebuf_t *msg);
 void SV_RecordDemoMessage (void);
 void SV_BuildClientFrame (client_t *client);
 
-
-void SV_Error (char *error, ...);
-
 //
 // sv_game.c
 //
-extern	game_export_t	*ge;
+extern game_t * game;
 
-void SV_InitGameProgs (void);
-void SV_ShutdownGameProgs (void);
+void SV_Unicast(edict_t * ent, qboolean reliable);
+void SV_DebugPrintf(const char * fmt, ...);
+void SV_GameClientPrintf(edict_t * ent, int level, const char * fmt, ...);
+void SV_GameClientCenterPrintf(edict_t * ent, const char * fmt, ...);
+void SV_Error (const char * fmt, ...);
+void SV_SetModel(edict_t * ent, const char * name);
+void SV_ConfigString(int index, const char * val);
+void SV_WriteChar(int c);
+void SV_WriteChar(int c);
+void SV_WriteByte(int c);
+void SV_WriteShort(int c);
+void SV_WriteLong(int c);
+void SV_WriteFloat(float f);
+void SV_WriteString(char *s);
+void SV_WritePos(vec3_t pos);
+void SV_WriteDir(vec3_t dir);
+void SV_WriteAngle(float f);
+qboolean SV_inPVS(vec3_t p1, vec3_t p2);
+qboolean SV_inPHS(vec3_t p1, vec3_t p2);
+void SV_GameStartSound(edict_t * entity, int channel, int sound_num,
+	float volume, float attenuation, float timeofs);
+void SV_InitGameProgs(void);
+void SV_ShutdownGameProgs(void);
 void SV_InitEdict (edict_t *e);
 
 

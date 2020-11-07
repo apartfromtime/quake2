@@ -327,8 +327,12 @@ void CL_ParseServerData (void)
 	strncpy (cl.gamedir, str, sizeof(cl.gamedir)-1);
 
 	// set gamedir
-	if ((*str && (!fs_gamedirvar->string || !*fs_gamedirvar->string || strcmp(fs_gamedirvar->string, str))) || (!*str && (fs_gamedirvar->string || *fs_gamedirvar->string)))
+	if ((*str && (!fs_gamedirvar->string || !*fs_gamedirvar->string ||
+		strcmp(fs_gamedirvar->string, str))) ||
+		(!*str && (fs_gamedirvar->string && !*fs_gamedirvar->string)))
+	{
 		Cvar_Set("game", str);
+	}
 
 	// parse player entity number
 	cl.playernum = MSG_ReadShort (&net_message);
