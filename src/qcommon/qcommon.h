@@ -774,6 +774,26 @@ void *Z_Malloc (int size);			// returns 0 filled memory
 void *Z_TagMalloc (int size, int tag);
 void Z_FreeTags (int tag);
 
+enum {
+	EVENT_NONE = 0,
+	EVENT_KEYBD,
+	EVENT_MOUSE,
+	EVENT_NUM
+};
+
+typedef struct event_s
+{
+	unsigned time;
+	unsigned type;
+	int x;
+	int y;
+} event_t;
+
+extern const event_t null_event;
+
+void Event_Queue(unsigned time, unsigned int type, int x, int y);
+event_t Event_Get(int type);
+
 void Common_UnloadGameDLL(void);
 void Common_LoadGameDLL(void);
 void Qcommon_Init (int argc, char **argv);
@@ -807,6 +827,7 @@ void Sys_DLL_GetFileName(const char * baseName, char * dllName,
 	int maxLength);
 // loads the game dll and calls the api init function
 
+void Sys_PumpMouseInput(void);
 char	*Sys_ConsoleInput (void);
 void	Sys_ConsoleOutput (char *string);
 void	Sys_SendKeyEvents (void);
@@ -823,6 +844,7 @@ CLIENT / SERVER SYSTEMS
 ==============================================================
 */
 
+void CL_MouseEvent(int dx, int dy, int time);
 void CL_Init (void);
 void CL_Drop (void);
 void CL_Shutdown (void);

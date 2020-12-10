@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../server/server.h"
 #include "qcommon.h"
 #include <setjmp.h>
+#include "../client/keys.h"
 
 #define	MAXPRINTMSG	4096
 
@@ -1393,6 +1394,112 @@ void Com_Error_f (void)
 	Com_Error (ERR_FATAL, "%s", Cmd_Argv(1));
 }
 
+/*
+===============================================================================
+Common Event
+===============================================================================
+*/
+
+#define MAX_EVENTS 		128
+static const event_t null_event = { 0 };
+
+typedef struct queue_s
+{
+	event_t events[MAX_EVENTS];
+	int head;
+	int tail;
+} queue_t;
+
+static queue_t queues[EVENT_NUM-1];
+
+/*
+=================
+Event Queue
+=================
+*/
+void Event_Queue(unsigned time, unsigned int type, int x, int y)
+{
+	if (type >= EVENT_NUM) {
+		return;
+	}
+
+	queue_t * queue = &queues[type - 1];
+	event_t * event = &queue->events[queue->head & ( MAX_EVENTS - 1 )];
+	
+	if ( queue->head - queue->tail >= MAX_EVENTS ) {
+		
+		Com_Printf( "Event_Queue: overflow\n" );
+		queue->tail++;
+	}
+
+	queue->head++;
+
+	if ( time == 0 ) {
+		time = Sys_Milliseconds();
+	}
+
+	event->time = time;
+	event->type = type;
+	event->x = x;
+	event->y = y;
+}
+
+/*
+=================
+Event Get
+=================
+*/
+event_t Event_Get(unsigned int type)
+{
+	if (type >= EVENT_NUM) {
+		return null_event;
+	}
+
+	queue_t * queue = &queues[type - 1];
+
+	if ( queue->head > queue->tail ) {
+
+		queue->tail++;
+		return queue->events[( queue->tail - 1 ) & ( MAX_EVENTS - 1 )];
+	}
+
+	return null_event;
+}
+
+/*
+=================
+Common Event
+=================
+*/
+void Com_Event(void)
+{
+	event_t event;
+
+	while ( 1 ) {
+
+		event = Event_Get( EVENT_KEYBD );
+
+		if ( event.type == EVENT_NONE ) {
+			break;
+		}
+
+		Key_Event( event.x, event.y, event.time );
+	}
+
+	while ( 1 ) {
+
+		event = Event_Get( EVENT_MOUSE );
+
+		if ( event.type == EVENT_NONE ) {
+			break;
+		}
+
+		CL_MouseEvent( event.x, event.y, event.time );
+	}
+}
+
+/*===========================================================================*/
+
 static int gameDLL;
 
 /*
@@ -1682,6 +1789,9 @@ void Qcommon_Frame (int msec)
 		c_brush_traces = 0;
 		c_pointcontents = 0;
 	}
+
+	/* Com_Event */
+	Com_Event();
 
 	do
 	{

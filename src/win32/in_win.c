@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/client.h"
 #include "winquake.h"
 
-extern	unsigned	sys_msg_time;
+qboolean in_appactive;
 
 // joystick defines and variables
 // where should defines be moved?
@@ -51,9 +51,8 @@ DWORD	dwAxisMap[JOY_MAX_AXES];
 DWORD	dwControlMap[JOY_MAX_AXES];
 PDWORD	pdwRawValue[JOY_MAX_AXES];
 
-cvar_t	*in_mouse;
 cvar_t	*in_joystick;
-
+extern qboolean	mlooking;
 
 // none of these cvars are saved over a session
 // this means that advanced controller configuration needs to be executed
@@ -88,8 +87,6 @@ DWORD		joy_numbuttons;
 
 static JOYINFOEX	ji;
 
-qboolean	in_appactive;
-
 // forward-referenced functions
 void IN_StartupJoystick (void);
 void Joy_AdvancedUpdate_f (void);
@@ -103,24 +100,11 @@ void IN_JoyMove (usercmd_t *cmd);
 ============================================================
 */
 
-// mouse variables
-cvar_t	*m_filter;
-
-qboolean	mlooking;
-
-void IN_MLookDown (void) { mlooking = true; }
-void IN_MLookUp (void) {
-mlooking = false;
-if (!freelook->value && lookspring->value)
-		IN_CenterView ();
-}
+/* mouse variables */
+cvar_t * in_mouse;
 
 int			mouse_buttons;
 int			mouse_oldbuttonstate;
-POINT		current_pos;
-int			mouse_x, mouse_y, old_mouse_x, old_mouse_y, mx_accum, my_accum;
-
-int			old_x, old_y;
 
 qboolean	mouseactive;	// false when not focus app
 
@@ -130,199 +114,271 @@ int		originalmouseparms[3], newmouseparms[3] = {0, 0, 1};
 qboolean	mouseparmsvalid;
 
 int			window_center_x, window_center_y;
-RECT		window_rect;
-
 
 /*
-===========
-IN_ActivateMouse
+=================
+Sys_ActivateMouse
 
-Called when the window gains focus or changes in some way
-===========
+captures and hides the windows cursor
+=================
 */
-void IN_ActivateMouse (void)
+void Sys_ActivateMouse(void)
 {
-	int		width, height;
+	int width, height;
+	RECT window_rect;
 
-	if (!mouseinitialized)
-		return;
-	if (!in_mouse->value)
-	{
-		mouseactive = false;
-		return;
+	/* sets mouse x, y threshold and acceleration parameters */
+	if ( mouseparmsvalid ) {
+		restore_spi = SystemParametersInfo( SPI_SETMOUSE, 0, newmouseparms,
+			0 );
 	}
-	if (mouseactive)
-		return;
 
-	mouseactive = true;
+	width = GetSystemMetrics( SM_CXSCREEN );
+	height = GetSystemMetrics( SM_CYSCREEN );
 
-	if (mouseparmsvalid)
-		restore_spi = SystemParametersInfo (SPI_SETMOUSE, 0, newmouseparms, 0);
-
-	width = GetSystemMetrics (SM_CXSCREEN);
-	height = GetSystemMetrics (SM_CYSCREEN);
-
-	GetWindowRect ( cl_hwnd, &window_rect);
-	if (window_rect.left < 0)
+	GetWindowRect( cl_hwnd, &window_rect );
+	
+	if ( window_rect.left < 0 ) {
 		window_rect.left = 0;
-	if (window_rect.top < 0)
+	}
+	
+	if ( window_rect.top < 0 ) {
 		window_rect.top = 0;
-	if (window_rect.right >= width)
-		window_rect.right = width-1;
-	if (window_rect.bottom >= height-1)
+	}
+	
+	if ( window_rect.right >= ( width - 1 ) ) {
+		window_rect.right = width - 1;
+	}
+
+	if ( window_rect.bottom >= ( height - 1 ) ) {
 		window_rect.bottom = height-1;
+	}
 
-	window_center_x = (window_rect.right + window_rect.left)/2;
-	window_center_y = (window_rect.top + window_rect.bottom)/2;
+	window_center_x = ( window_rect.right + window_rect.left ) / 2;
+	window_center_y = ( window_rect.top + window_rect.bottom ) / 2;
 
-	SetCursorPos (window_center_x, window_center_y);
+	SetCursorPos( window_center_x, window_center_y );
 
-	old_x = window_center_x;
-	old_y = window_center_y;
+	SetCapture( cl_hwnd );
+	ClipCursor( &window_rect );
 
-	SetCapture ( cl_hwnd );
-	ClipCursor (&window_rect);
-	while (ShowCursor (FALSE) >= 0)
+	while ( ShowCursor( FALSE ) >= 0 )
 		;
 }
 
+/*
+=================
+Sys_DeactivateMouse
+
+releases and shows the windows cursor
+=================
+*/
+void Sys_DeactivateMouse(void)
+{
+	/* restores original mouse parameters */
+	if ( restore_spi ) {
+		SystemParametersInfo( SPI_SETMOUSE, 0, originalmouseparms, 0 );
+	}
+
+	ClipCursor( NULL );
+	ReleaseCapture();
+
+	while ( ShowCursor( TRUE ) < 0 )
+		;
+}
 
 /*
-===========
+=================
+Win_MouseActive
+
+returns true if active
+=================
+*/
+qboolean Win_MouseActive(void)
+{
+	if ( !mouseinitialized || !in_mouse->value ) {
+		return false;
+	}
+
+	return mouseactive;		
+}
+
+/*
+=================
+IN_ActivateMouse
+
+Called when the window gains focus
+=================
+*/
+void IN_ActivateMouse(void)
+{
+	if ( Win_MouseActive() == false ) {
+		Sys_ActivateMouse();
+	}
+
+	mouseactive = true;
+}
+
+/*
+=================
 IN_DeactivateMouse
 
 Called when the window loses focus
-===========
+=================
 */
-void IN_DeactivateMouse (void)
+void IN_DeactivateMouse(void)
 {
-	if (!mouseinitialized)
-		return;
-	if (!mouseactive)
-		return;
-
-	if (restore_spi)
-		SystemParametersInfo (SPI_SETMOUSE, 0, originalmouseparms, 0);
+	if ( Win_MouseActive() == true ) {
+		Sys_DeactivateMouse();
+	}
 
 	mouseactive = false;
-
-	ClipCursor (NULL);
-	ReleaseCapture ();
-	while (ShowCursor (TRUE) < 0)
-		;
 }
 
-
-
 /*
-===========
+=================
 IN_StartupMouse
-===========
+=================
 */
-void IN_StartupMouse (void)
+void IN_StartupMouse(void)
 {
-	cvar_t		*cv;
-
-	cv = Cvar_Get ("in_initmouse", "1", CVAR_NOSET);
-	if ( !cv->value ) 
-		return; 
-
 	mouseinitialized = true;
-	mouseparmsvalid = SystemParametersInfo (SPI_GETMOUSE, 0, originalmouseparms, 0);
+
+	/* gets mouse x, y threshold and acceleration */
+	mouseparmsvalid = SystemParametersInfo( SPI_GETMOUSE, 0,
+		originalmouseparms, 0 );
+
+	// TODO: extend support up to 5 buttons via WM_XBUTTON
 	mouse_buttons = 3;
 }
 
 /*
-===========
+=================
 IN_MouseEvent
-===========
+
+post mouse button events
+=================
 */
-void IN_MouseEvent (int mstate)
+void IN_MouseEvent(int mstate)
 {
-	int		i;
-
-	if (!mouseinitialized)
+	if ( !mouseinitialized ) {
 		return;
+	}
 
-// perform button actions
-	for (i=0 ; i<mouse_buttons ; i++)
-	{
-		if ( (mstate & (1<<i)) &&
-			!(mouse_oldbuttonstate & (1<<i)) )
-		{
-			Key_Event (K_MOUSE1 + i, true, sys_msg_time);
+	unsigned time;
+
+	Sys_GetWndMsgTimeStamp(&time);
+
+	/* perform button actions */
+	for (int i = 0; i < mouse_buttons; i++) {
+		
+		if ( ( mstate & ( 1 << i ) )
+			&& !( mouse_oldbuttonstate & ( 1 << i ) ) ) {
+			Event_Queue(time, EVENT_KEYBD, K_MOUSE1 + i, true);
 		}
 
-		if ( !(mstate & (1<<i)) &&
-			(mouse_oldbuttonstate & (1<<i)) )
-		{
-				Key_Event (K_MOUSE1 + i, false, sys_msg_time);
+		if ( !( mstate & ( 1 << i ) )
+			&& ( mouse_oldbuttonstate & ( 1 << i ) ) ) {
+			Event_Queue(time, EVENT_KEYBD, K_MOUSE1 + i, false);
 		}
-	}	
+	}
 		
 	mouse_oldbuttonstate = mstate;
 }
 
+/* current mouse x, y */
+int sys_mx = 0;
+int sys_my = 0;
 
 /*
-===========
-IN_MouseMove
-===========
+=================
+Win_MouseX
+=================
 */
-void IN_MouseMove (usercmd_t *cmd)
+int Win_MouseX(int * mx)
 {
-	int		mx, my;
+	if ( mx != NULL ) {
+		sys_mx = *mx;
+	}
 
-	if (!mouseactive)
-		return;
+	return sys_mx;
+}
+
+/*
+=================
+Win_MouseY
+=================
+*/
+int Win_MouseY(int * my)
+{
+	if ( my != NULL ) {
+		sys_my = *my;
+	}
+
+	return sys_my;
+}
+
+/*
+=================
+Sys_PollMouseInput
+=================
+*/
+void Sys_PollMouseInput(void)
+{
+	POINT pos;
 
 	// find mouse movement
-	if (!GetCursorPos (&current_pos))
-		return;
-
-	mx = current_pos.x - window_center_x;
-	my = current_pos.y - window_center_y;
-
-#if 0
-	if (!mx && !my)
-		return;
-#endif
-
-	if (m_filter->value)
-	{
-		mouse_x = (mx + old_mouse_x) * 0.5;
-		mouse_y = (my + old_mouse_y) * 0.5;
-	}
-	else
-	{
-		mouse_x = mx;
-		mouse_y = my;
-	}
-
-	old_mouse_x = mx;
-	old_mouse_y = my;
-
-	mouse_x *= sensitivity->value;
-	mouse_y *= sensitivity->value;
-
-// add mouse X/Y movement to cmd
-	if ( (in_strafe.state & 1) || (lookstrafe->value && mlooking ))
-		cmd->sidemove += m_side->value * mouse_x;
-	else
-		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
-
-	if ( (mlooking || freelook->value) && !(in_strafe.state & 1))
-	{
-		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
-	}
-	else
-	{
-		cmd->forwardmove -= m_forward->value * mouse_y;
-	}
+	GetCursorPos( &pos );
 
 	// force the mouse to the center, so there's room to move
-	if (mx || my)
-		SetCursorPos (window_center_x, window_center_y);
+	SetCursorPos( window_center_x, window_center_y );
+
+	sys_mx = pos.x - window_center_x;
+	sys_my = pos.y - window_center_y;
+}
+
+/*
+=================
+Sys_GetMouseInput
+=================
+*/
+void Sys_GetMouseInput(int * mx, int * my)
+{
+	// get new mouse events
+	Sys_PollMouseInput();
+
+	if ( mx != NULL ) {
+		*mx = Win_MouseX( NULL );
+	}
+
+	if ( my != NULL ) {
+		*my = Win_MouseY( NULL );
+	}
+}
+
+/*
+=================
+IN_MouseMove
+
+post mouse move events
+=================
+*/
+void IN_MouseMove(void)
+{
+	int mx, my;
+
+	mx = 0;
+	my = 0;
+
+	// get mouse movement
+	Sys_GetMouseInput( &mx, &my );
+
+	if ( !mx && !my ) {
+		return;
+	}
+
+	// queue mouse event
+	Event_Queue( Sys_Milliseconds(), EVENT_MOUSE, mx, my );
 }
 
 
@@ -345,9 +401,13 @@ IN_Init
 */
 void IN_Init (void)
 {
-	// mouse variables
-	m_filter				= Cvar_Get ("m_filter",					"0",		0);
-    in_mouse				= Cvar_Get ("in_mouse",					"1",		CVAR_ARCHIVE);
+	Com_Printf("------- input initialization -------\n");
+
+	/* start with focus */
+	in_appactive = true;
+
+	/* mouse variables */
+    in_mouse = Cvar_Get ("in_mouse", "1", CVAR_ARCHIVE);
 
 	// joystick variables
 	in_joystick				= Cvar_Get ("in_joystick",				"0",		CVAR_ARCHIVE);
@@ -374,73 +434,75 @@ void IN_Init (void)
 	v_centermove			= Cvar_Get ("v_centermove",				"0.15",		0);
 	v_centerspeed			= Cvar_Get ("v_centerspeed",			"500",		0);
 
-	Cmd_AddCommand ("+mlook", IN_MLookDown);
-	Cmd_AddCommand ("-mlook", IN_MLookUp);
-
 	Cmd_AddCommand ("joy_advancedupdate", Joy_AdvancedUpdate_f);
 
-	IN_StartupMouse ();
+	IN_StartupMouse();
 	IN_StartupJoystick ();
+
+	Com_Printf("------------------------------------\n\n");
 }
 
 /*
-===========
+=================
 IN_Shutdown
-===========
+=================
 */
-void IN_Shutdown (void)
+void IN_Shutdown(void)
 {
-	IN_DeactivateMouse ();
+	IN_DeactivateMouse();
 }
 
 
 /*
-===========
+=================
 IN_Activate
 
 Called when the main window gains or loses focus.
 The window may have been destroyed and recreated
 between a deactivate and an activate.
-===========
+=================
 */
-void IN_Activate (qboolean active)
+void IN_Activate(qboolean active)
 {
 	in_appactive = active;
-	mouseactive = !active;		// force a new window check or turn off
 }
 
 
 /*
-==================
+=================
 IN_Frame
 
 Called every frame, even if not generating commands
-==================
+=================
 */
-void IN_Frame (void)
+void IN_Frame(void)
 {
-	if (!mouseinitialized)
-		return;
-
-	if (!in_mouse || !in_appactive)
-	{
-		IN_DeactivateMouse ();
+	if ( !mouseinitialized ) {
 		return;
 	}
 
-	if ( !cl.refresh_prepped
-		|| cls.key_dest == key_console
-		|| cls.key_dest == key_menu)
-	{
-		// temporarily deactivate if in fullscreen
-		if (Cvar_VariableValue ("vid_fullscreen") == 0)
-		{
-			IN_DeactivateMouse ();
+	if ( !in_mouse->value || !in_appactive ) {
+
+		IN_DeactivateMouse();
+		return;
+	}
+
+	if ( !cl.refresh_prepped || cls.key_dest == key_console
+		|| cls.key_dest == key_menu ) {
+
+		/* temporarily deactivate if in fullscreen */
+		if ( Cvar_VariableValue("vid_fullscreen") == 0 ) {
+			
+			IN_DeactivateMouse();
 			return;
 		}
 	}
 
-	IN_ActivateMouse ();
+	/* activate mouse */
+	IN_ActivateMouse();
+
+	/* post mouse events */
+	IN_MouseMove();
 }
 
 /*
@@ -450,8 +512,6 @@ IN_Move
 */
 void IN_Move (usercmd_t *cmd)
 {
-	IN_MouseMove (cmd);
-
 	if (ActiveApp)
 		IN_JoyMove (cmd);
 }
@@ -462,10 +522,8 @@ void IN_Move (usercmd_t *cmd)
 IN_ClearStates
 ===================
 */
-void IN_ClearStates (void)
+void IN_ClearStates(void)
 {
-	mx_accum = 0;
-	my_accum = 0;
 	mouse_oldbuttonstate = 0;
 }
 
@@ -653,11 +711,10 @@ IN_Commands
 */
 void IN_Commands (void)
 {
-	int		i, key_index;
-	DWORD	buttonstate, povstate;
+	int i, key_index;
+	DWORD buttonstate, povstate;
 
-	if (!joy_avail)
-	{
+	if ( !joy_avail ) {
 		return;
 	}
 
@@ -665,52 +722,66 @@ void IN_Commands (void)
 	// loop through the joystick buttons
 	// key a joystick event or auxillary event for higher number buttons for each state change
 	buttonstate = ji.dwButtons;
-	for (i=0 ; i < joy_numbuttons ; i++)
-	{
-		if ( (buttonstate & (1<<i)) && !(joy_oldbuttonstate & (1<<i)) )
-		{
-			key_index = (i < 4) ? K_JOY1 : K_AUX1;
-			Key_Event (key_index + i, true, 0);
+	
+	for (i = 0; i < joy_numbuttons; i++) {
+
+		if ( ( buttonstate & ( 1 << i ) )
+			&& !( joy_oldbuttonstate & ( 1 << i ) ) ) {
+			
+			key_index = ( i < 4 ) ? K_JOY1 : K_AUX1;
+			Event_Queue(Sys_Milliseconds(), EVENT_KEYBD, key_index + i, true);
 		}
 
-		if ( !(buttonstate & (1<<i)) && (joy_oldbuttonstate & (1<<i)) )
-		{
-			key_index = (i < 4) ? K_JOY1 : K_AUX1;
-			Key_Event (key_index + i, false, 0);
+		if ( !( buttonstate & ( 1 << i ) )
+			&& ( joy_oldbuttonstate & ( 1 << i ) ) ) {
+			
+			key_index = ( i < 4 ) ? K_JOY1 : K_AUX1;
+			Event_Queue(Sys_Milliseconds(), EVENT_KEYBD, key_index + i, false);
 		}
 	}
+
 	joy_oldbuttonstate = buttonstate;
 
-	if (joy_haspov)
-	{
+	if ( joy_haspov ) {
+
 		// convert POV information into 4 bits of state information
 		// this avoids any potential problems related to moving from one
 		// direction to another without going through the center position
 		povstate = 0;
-		if(ji.dwPOV != JOY_POVCENTERED)
-		{
-			if (ji.dwPOV == JOY_POVFORWARD)
+		
+		if ( ji.dwPOV != JOY_POVCENTERED ) {
+
+			if ( ji.dwPOV == JOY_POVFORWARD ) {
 				povstate |= 0x01;
-			if (ji.dwPOV == JOY_POVRIGHT)
-				povstate |= 0x02;
-			if (ji.dwPOV == JOY_POVBACKWARD)
-				povstate |= 0x04;
-			if (ji.dwPOV == JOY_POVLEFT)
-				povstate |= 0x08;
-		}
-		// determine which bits have changed and key an auxillary event for each change
-		for (i=0 ; i < 4 ; i++)
-		{
-			if ( (povstate & (1<<i)) && !(joy_oldpovstate & (1<<i)) )
-			{
-				Key_Event (K_AUX29 + i, true, 0);
 			}
 
-			if ( !(povstate & (1<<i)) && (joy_oldpovstate & (1<<i)) )
-			{
-				Key_Event (K_AUX29 + i, false, 0);
+			if ( ji.dwPOV == JOY_POVRIGHT ) {
+				povstate |= 0x02;
+			}
+
+			if ( ji.dwPOV == JOY_POVBACKWARD ) {
+				povstate |= 0x04;
+			}
+
+			if ( ji.dwPOV == JOY_POVLEFT ) {
+				povstate |= 0x08;
 			}
 		}
+
+		// determine which bits have changed and key an auxillary event for each change
+		for (i = 0; i < 4; i++) {
+
+			if ( (povstate & ( 1 << i ) )
+				&& !( joy_oldpovstate & ( 1 << i ) ) ) {
+				Event_Queue(Sys_Milliseconds(), EVENT_KEYBD, K_AUX29 + i, true);
+			}
+
+			if ( !( povstate & ( 1 << i ) )
+				&& ( joy_oldpovstate & ( 1 << i ) ) ) {
+				Event_Queue(Sys_Milliseconds(), EVENT_KEYBD, K_AUX29 + i, false);
+			}
+		}
+
 		joy_oldpovstate = povstate;
 	}
 }

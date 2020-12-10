@@ -37,6 +37,16 @@ extern DWORD gSndBufSize;
 extern HWND			cl_hwnd;
 extern qboolean		ActiveApp, Minimized;
 
+void Sys_ActivateMouse(void);
+void Sys_DeactivateMouse(void);
+void Sys_GetMouseInput(int * mx, int * my);
+void Sys_GetWndMsgTimeStamp(unsigned * time);
+qboolean Win_MouseActive(void);
+int Win_MouseX(int * mx);
+int Win_MouseY(int * my);
+unsigned Win_MsgTime(unsigned * msgTime);
+extern unsigned sys_msg_time;
+
 void IN_Activate (qboolean active);
 void IN_MouseEvent (int mstate);
 

@@ -58,8 +58,6 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 static qboolean s_alttab_disabled;
 
-extern	unsigned	sys_msg_time;
-
 /*
 ** WIN32 helper functions
 */
@@ -289,41 +287,47 @@ LONG WINAPI MainWndProc (
     LPARAM  lParam)
 {
 	LONG			lRet = 0;
+	DWORD time;
 
-	if ( uMsg == MSH_MOUSEWHEEL )
-	{
-		if ( ( ( int ) wParam ) > 0 )
-		{
-			Key_Event( K_MWHEELUP, true, sys_msg_time );
-			Key_Event( K_MWHEELUP, false, sys_msg_time );
+	Sys_GetWndMsgTimeStamp(&time);
+
+	if ( uMsg == MSH_MOUSEWHEEL ) {
+
+		if ( ( ( int ) wParam ) > 0 ) {
+			
+			Event_Queue(time, EVENT_KEYBD, K_MWHEELUP, true);
+			Event_Queue(time, EVENT_KEYBD, K_MWHEELUP, false);
+
+		} else {
+			
+			Event_Queue(time, EVENT_KEYBD, K_MWHEELDOWN, true);
+			Event_Queue(time, EVENT_KEYBD, K_MWHEELDOWN, false);
 		}
-		else
-		{
-			Key_Event( K_MWHEELDOWN, true, sys_msg_time );
-			Key_Event( K_MWHEELDOWN, false, sys_msg_time );
-		}
+
         return DefWindowProc (hWnd, uMsg, wParam, lParam);
 	}
 
 	switch (uMsg)
 	{
 	case WM_MOUSEWHEEL:
+	{
 		/*
 		** this chunk of code theoretically only works under NT4 and Win98
 		** since this message doesn't exist under Win95
 		*/
-		if ( ( short ) HIWORD( wParam ) > 0 )
-		{
-			Key_Event( K_MWHEELUP, true, sys_msg_time );
-			Key_Event( K_MWHEELUP, false, sys_msg_time );
-		}
-		else
-		{
-			Key_Event( K_MWHEELDOWN, true, sys_msg_time );
-			Key_Event( K_MWHEELDOWN, false, sys_msg_time );
-		}
-		break;
+		if ( ( short ) HIWORD( wParam ) > 0 ) {
 
+			Event_Queue(time, EVENT_KEYBD, K_MWHEELUP, true);
+			Event_Queue(time, EVENT_KEYBD, K_MWHEELUP, false);
+
+		} else {
+			
+			Event_Queue(time, EVENT_KEYBD, K_MWHEELDOWN, true);
+			Event_Queue(time, EVENT_KEYBD, K_MWHEELDOWN, false);
+		}
+
+		break;
+	}
 	case WM_HOTKEY:
 		return 0;
 
@@ -409,7 +413,7 @@ LONG WINAPI MainWndProc (
 			if (wParam & MK_MBUTTON)
 				temp |= 4;
 
-			IN_MouseEvent (temp);
+			IN_MouseEvent( temp );
 		}
 		break;
 
@@ -428,14 +432,16 @@ LONG WINAPI MainWndProc (
 		}
 		// fall through
 	case WM_KEYDOWN:
-		Key_Event( MapKey( lParam ), true, sys_msg_time);
+	{
+		Event_Queue(time, EVENT_KEYBD, MapKey( lParam ), true);
 		break;
-
+	}
 	case WM_SYSKEYUP:
 	case WM_KEYUP:
-		Key_Event( MapKey( lParam ), false, sys_msg_time);
+	{
+		Event_Queue(time, EVENT_KEYBD, MapKey( lParam ), false);
 		break;
-
+	}
 	case MM_MCINOTIFY:
 		{
 			LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

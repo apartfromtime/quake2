@@ -45,6 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 cvar_t *nostdout;
 
+unsigned	sys_msg_time;
 unsigned	sys_frame_time;
 
 uid_t saved_euid;
@@ -60,6 +61,34 @@ void Sys_ConsoleOutput (char *string)
 		return;
 
 	fputs(string, stdout);
+}
+
+/*
+================
+Sys_GetWndMsgTimeStamp
+================
+*/
+void Sys_GetWndMsgTimeStamp(unsigned * time)
+{
+	if (time != NULL) {
+		*time = Win_MsgTime(NULL);
+	}
+}
+
+/*
+================
+Win_MsgTime
+
+windows specific message queue time
+================
+*/
+unsigned Win_MsgTime(unsigned * msgTime)
+{
+	if (msgTime != NULL) {
+		sys_msg_time = *msgTime;
+	}
+
+	return sys_msg_time;
 }
 
 void Sys_Printf (char *fmt, ...)

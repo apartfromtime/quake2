@@ -383,6 +383,33 @@ void Sys_ConsoleOutput (char *string)
 		WriteFile(houtput, console_text, console_textlen, &dummy, NULL);
 }
 
+/*
+================
+Sys_GetWndMsgTimeStamp
+================
+*/
+void Sys_GetWndMsgTimeStamp(unsigned * time)
+{
+	if (time != NULL) {
+		*time = Win_MsgTime(NULL);
+	}
+}
+
+/*
+================
+Win_MsgTime
+
+windows specific message queue time
+================
+*/
+unsigned Win_MsgTime(unsigned * msgTime)
+{
+	if (msgTime != NULL) {
+		sys_msg_time = *msgTime;
+	}
+
+	return sys_msg_time;
+}
 
 /*
 ================
