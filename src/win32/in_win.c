@@ -248,8 +248,7 @@ void IN_StartupMouse(void)
 	mouseparmsvalid = SystemParametersInfo( SPI_GETMOUSE, 0,
 		originalmouseparms, 0 );
 
-	// TODO: extend support up to 5 buttons via WM_XBUTTON
-	mouse_buttons = 3;
+	mouse_buttons = 5;
 }
 
 /*
