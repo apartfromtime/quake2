@@ -1471,7 +1471,7 @@ event_t Event_Get(unsigned int type)
 Common Event
 =================
 */
-void Com_Event(void)
+void Common_Event(void)
 {
 	event_t event;
 
@@ -1790,8 +1790,8 @@ void Qcommon_Frame (int msec)
 		c_pointcontents = 0;
 	}
 
-	/* Com_Event */
-	Com_Event();
+	/* Common_Event */
+	Common_Event();
 
 	do
 	{
