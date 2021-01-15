@@ -792,7 +792,7 @@ typedef struct event_s
 extern const event_t null_event;
 
 void Event_Queue(unsigned time, unsigned int type, int x, int y);
-event_t Event_Get(int type);
+event_t Event_Get(unsigned int type);
 
 void Common_UnloadGameDLL(void);
 void Common_LoadGameDLL(void);
