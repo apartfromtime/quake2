@@ -1,22 +1,23 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
+* Copyright (C) 1997-2001 Id Software, Inc.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or (at
+* your option) any later version.
+*
+* This program is distributed in the hope that it will be useful, but
+* WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+* See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+* 02111-1307, USA.
 */
+#include <ctype.h>
 #include "client.h"
 
 /* key up events are sent even if in console mode */
@@ -259,24 +260,25 @@ void Key_Console (int key)
 	if ( ( toupper( key ) == 'V' && keydown[K_CTRL] ) ||
 		 ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keydown[K_SHIFT] ) )
 	{
-		char *cbd;
+		char * cbd;
 		
-		if ( ( cbd = Sys_GetClipboardData() ) != 0 )
-		{
+		if ( ( cbd = Sys_GetClipboardData() ) != 0 ) {
+
 			int i;
 
-			strtok( cbd, "\n\r\b" );
-
 			i = strlen( cbd );
-			if ( i + key_linepos >= MAXCMDLINE)
-				i= MAXCMDLINE - key_linepos;
+			
+			if ( i + key_linepos >= MAXCMDLINE ) {
+				i = MAXCMDLINE - key_linepos;
+			}
 
-			if ( i > 0 )
-			{
-				cbd[i]=0;
+			if ( i > 0 ) {
+
+				cbd[i] = 0;
 				strcat( key_lines[edit_line], cbd );
 				key_linepos += i;
 			}
+
 			free( cbd );
 		}
 
@@ -317,6 +319,7 @@ void Key_Console (int key)
 		return;
 	}
 	
+	// TODO:: add interactive line editing with K_LEFTARROW, K_RIGHTARROW
 	if ( ( key == K_BACKSPACE ) || ( key == K_LEFTARROW ) || ( key == K_KP_LEFTARROW ) || ( ( key == 'h' ) && ( keydown[K_CTRL] ) ) )
 	{
 		if (key_linepos > 1)

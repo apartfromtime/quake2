@@ -443,26 +443,30 @@ Sys_GetClipboardData
 
 ================
 */
-char *Sys_GetClipboardData( void )
+char * Sys_GetClipboardData(void)
 {
-	char *data = NULL;
-	char *cliptext;
+	char * data = NULL;
 
-	if ( OpenClipboard( NULL ) != 0 )
-	{
+	if ( OpenClipboard( NULL ) != 0 ) {
+
 		HANDLE hClipboardData;
 
-		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 )
-		{
-			if ( ( cliptext = GlobalLock( hClipboardData ) ) != 0 ) 
-			{
-				data = malloc( GlobalSize( hClipboardData ) + 1 );
+		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 ) {
+
+			char * cliptext = NULL;
+			
+			if ( ( cliptext = ( char * )GlobalLock( hClipboardData ) ) != 0 ) {
+
+				data = ( char * )malloc( GlobalSize( hClipboardData ) + 1 );
 				strcpy( data, cliptext );
 				GlobalUnlock( hClipboardData );
+				strtok( data, "\n\r\b" );
 			}
 		}
+
 		CloseClipboard();
 	}
+
 	return data;
 }
 
