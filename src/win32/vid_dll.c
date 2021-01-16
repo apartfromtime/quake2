@@ -287,7 +287,7 @@ LONG WINAPI MainWndProc (
     LPARAM  lParam)
 {
 	LONG			lRet = 0;
-	DWORD time;
+	unsigned int time;
 
 	Sys_GetWndMsgTimeStamp(&time);
 
@@ -606,7 +606,7 @@ qboolean VID_LoadRefresh( char *name )
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
 
-	if ( ( GetRefAPI = (void *) GetProcAddress( reflib_library, "GetRefAPI" ) ) == 0 )
+	if ( ( GetRefAPI = ( GetRefAPI_t ) GetProcAddress( reflib_library, "GetRefAPI" ) ) == 0 )
 		Com_Error( ERR_FATAL, "GetProcAddress failed on %s", name );
 
 	re = GetRefAPI( ri );

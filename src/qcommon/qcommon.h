@@ -103,7 +103,7 @@ void MSG_WriteByte (sizebuf_t *sb, int c);
 void MSG_WriteShort (sizebuf_t *sb, int c);
 void MSG_WriteLong (sizebuf_t *sb, int c);
 void MSG_WriteFloat (sizebuf_t *sb, float f);
-void MSG_WriteString (sizebuf_t *sb, char *s);
+void MSG_WriteString (sizebuf_t *sb, const char *s);
 void MSG_WriteCoord (sizebuf_t *sb, float f);
 void MSG_WritePos (sizebuf_t *sb, vec3_t pos);
 void MSG_WriteAngle (sizebuf_t *sb, float f);
@@ -630,7 +630,7 @@ CMODEL
 #include "../qcommon/qfiles.h"
 
 cmodel_t	*CM_LoadMap (char *name, qboolean clientload, unsigned *checksum);
-cmodel_t	*CM_InlineModel (char *name);	// *1, *2, etc
+cmodel_t	*CM_InlineModel (const char *name);	// *1, *2, etc
 
 int			CM_NumClusters (void);
 int			CM_NumInlineModels (void);
@@ -740,7 +740,7 @@ MISC
 #define	PRINT_ALL		0
 #define PRINT_DEVELOPER	1	// only print when "developer 1"
 
-void		Com_BeginRedirect (int target, char *buffer, int buffersize, void (*flush));
+void		Com_BeginRedirect (int target, char *buffer, int buffersize, void (*flush)(int, char *));
 void		Com_EndRedirect (void);
 void 		Com_Printf (char *fmt, ...);
 void 		Com_DPrintf (char *fmt, ...);

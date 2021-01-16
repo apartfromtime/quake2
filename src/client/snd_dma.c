@@ -39,7 +39,7 @@ void S_StopAllSounds(void);
 
 int			s_registration_sequence;
 
-channel_t   channels[MAX_CHANNELS];
+channel_t   s_channels[MAX_CHANNELS];
 
 qboolean	snd_initialized = false;
 int			sound_started=0;
@@ -388,20 +388,20 @@ channel_t *S_PickChannel(int entnum, int entchannel)
     for (ch_idx=0 ; ch_idx < MAX_CHANNELS ; ch_idx++)
     {
 		if (entchannel != 0		// channel 0 never overrides
-		&& channels[ch_idx].entnum == entnum
-		&& channels[ch_idx].entchannel == entchannel)
+		&& s_channels[ch_idx].entnum == entnum
+		&& s_channels[ch_idx].entchannel == entchannel)
 		{	// always override sound from same entity
 			first_to_die = ch_idx;
 			break;
 		}
 
 		// don't let monster sounds override player sounds
-		if (channels[ch_idx].entnum == cl.playernum+1 && entnum != cl.playernum+1 && channels[ch_idx].sfx)
+		if (s_channels[ch_idx].entnum == cl.playernum+1 && entnum != cl.playernum+1 && s_channels[ch_idx].sfx)
 			continue;
 
-		if (channels[ch_idx].end - paintedtime < life_left)
+		if (s_channels[ch_idx].end - paintedtime < life_left)
 		{
-			life_left = channels[ch_idx].end - paintedtime;
+			life_left = s_channels[ch_idx].end - paintedtime;
 			first_to_die = ch_idx;
 		}
    }
@@ -409,7 +409,7 @@ channel_t *S_PickChannel(int entnum, int entchannel)
 	if (first_to_die == -1)
 		return NULL;
 
-	ch = &channels[first_to_die];
+	ch = &s_channels[first_to_die];
 	memset (ch, 0, sizeof(*ch));
 
     return ch;
@@ -803,7 +803,7 @@ void S_StopAllSounds(void)
 	}
 
 	// clear all the channels
-	memset(channels, 0, sizeof(channels));
+	memset(s_channels, 0, sizeof(s_channels));
 
 	S_ClearBuffer ();
 }
@@ -1037,7 +1037,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	combine = NULL;
 
 	// update spatialization for dynamic sounds	
-	ch = channels;
+	ch = s_channels;
 	for (i=0 ; i<MAX_CHANNELS; i++, ch++)
 	{
 		if (!ch->sfx)
@@ -1064,7 +1064,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	if (s_show->value)
 	{
 		total = 0;
-		ch = channels;
+		ch = s_channels;
 		for (i=0 ; i<MAX_CHANNELS; i++, ch++)
 			if (ch->sfx && (ch->leftvol || ch->rightvol) )
 			{

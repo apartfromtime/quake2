@@ -3507,7 +3507,6 @@ static qboolean PlayerConfig_ScanDirectories( void )
 	for ( i = 0; i < npms; i++ )
 	{
 		int k, s;
-		char *a, *b, *c;
 		char **pcxnames;
 		char **skinnames;
 		int npcxfiles;
@@ -3557,11 +3556,11 @@ static qboolean PlayerConfig_ScanDirectories( void )
 		skinnames = malloc( sizeof( char * ) * ( nskins + 1 ) );
 		memset( skinnames, 0, sizeof( char * ) * ( nskins + 1 ) );
 
+		char * a, * b, * c;
+		
 		// copy the valid skins
 		for ( s = 0, k = 0; k < npcxfiles-1; k++ )
 		{
-			char *a, *b, *c;
-
 			if ( !strstr( pcxnames[k], "_i.pcx" ) )
 			{
 				if ( IconOfSkinExists( pcxnames[k], pcxnames, npcxfiles - 1 ) )
@@ -3607,6 +3606,8 @@ static qboolean PlayerConfig_ScanDirectories( void )
 	}
 	if ( dirnames )
 		FreeFileList( dirnames, ndirs );
+
+	return true;
 }
 
 static int pmicmpfnc( const void *_a, const void *_b )
@@ -3813,7 +3814,6 @@ void PlayerConfig_MenuDraw( void )
 	if ( s_pmi[s_player_model_box.curvalue].skindisplaynames )
 	{
 		static int yaw;
-		int maxframe = 29;
 		entity_t entity;
 
 		memset( &entity, 0, sizeof( entity ) );
@@ -3829,7 +3829,7 @@ void PlayerConfig_MenuDraw( void )
 		VectorCopy( entity.origin, entity.oldorigin );
 		entity.frame = 0;
 		entity.oldframe = 0;
-		entity.backlerp = 0.0;
+		entity.backlerp = 0.0f;
 		entity.angles[1] = yaw++;
 		if ( ++yaw > 360 )
 			yaw -= 360;

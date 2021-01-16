@@ -113,6 +113,7 @@ qboolean	mouseinitialized;
 int		originalmouseparms[3], newmouseparms[3] = {0, 0, 1};
 qboolean	mouseparmsvalid;
 
+RECT window_rect;
 int			window_center_x, window_center_y;
 
 /*
@@ -125,7 +126,6 @@ captures and hides the windows cursor
 void Sys_ActivateMouse(void)
 {
 	int width, height;
-	RECT window_rect;
 
 	/* sets mouse x, y threshold and acceleration parameters */
 	if ( mouseparmsvalid ) {
@@ -561,6 +561,8 @@ void IN_StartupJoystick (void)
 //		Com_Printf ("\njoystick not found -- driver not present\n\n");
 		return;
 	}
+
+	mmr = JOYERR_UNPLUGGED;
 
 	// cycle through the joystick ids for the first valid one
 	for (joy_id=0 ; joy_id<numdevs ; joy_id++)

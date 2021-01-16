@@ -636,7 +636,7 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 CM_InlineModel
 ==================
 */
-cmodel_t	*CM_InlineModel (char *name)
+cmodel_t	*CM_InlineModel (const char *name)
 {
 	int		num;
 
@@ -1351,8 +1351,6 @@ trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 						  vec3_t mins, vec3_t maxs,
 						  int headnode, int brushmask)
 {
-	int		i;
-
 	checkcount++;		// for multi-check avoidance
 
 	c_traces++;			// for statistics, may be zeroed
@@ -1377,20 +1375,20 @@ trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 	if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2])
 	{
 		int		leafs[1024];
-		int		i, numleafs;
+		int		numboxleafs;
 		vec3_t	c1, c2;
 		int		topnode;
 
 		VectorAdd (start, mins, c1);
 		VectorAdd (start, maxs, c2);
-		for (i=0 ; i<3 ; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			c1[i] -= 1;
 			c2[i] += 1;
 		}
 
-		numleafs = CM_BoxLeafnums_headnode (c1, c2, leafs, 1024, headnode, &topnode);
-		for (i=0 ; i<numleafs ; i++)
+		numboxleafs = CM_BoxLeafnums_headnode (c1, c2, leafs, 1024, headnode, &topnode);
+		for (int i = 0; i < numboxleafs; i++)
 		{
 			CM_TestInLeaf (leafs[i]);
 			if (trace_trace.allsolid)
@@ -1428,7 +1426,7 @@ trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 	}
 	else
 	{
-		for (i=0 ; i<3 ; i++)
+		for (int i = 0; i < 3; i++)
 			trace_trace.endpos[i] = start[i] + trace_trace.fraction * (end[i] - start[i]);
 	}
 	return trace_trace;
