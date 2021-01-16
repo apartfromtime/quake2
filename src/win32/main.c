@@ -283,8 +283,8 @@ Sys_ConsoleInput
 char *Sys_ConsoleInput (void)
 {
 	INPUT_RECORD	recs[1024];
-	int		dummy;
-	int		ch, numread, numevents;
+	int ch;
+	DWORD dummy, numread, numevents;
 
 	if (!dedicated || !dedicated->value)
 		return NULL;
@@ -362,8 +362,8 @@ Print text to the dedicated console
 */
 void Sys_ConsoleOutput (char *string)
 {
-	int		dummy;
-	char	text[256];
+	DWORD dummy;
+	char text[256];
 
 	if (!dedicated || !dedicated->value)
 		return;
@@ -454,7 +454,7 @@ char * Sys_GetClipboardData(void)
 		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 ) {
 
 			char * cliptext = NULL;
-			
+
 			if ( ( cliptext = ( char * )GlobalLock( hClipboardData ) ) != 0 ) {
 
 				data = ( char * )malloc( GlobalSize( hClipboardData ) + 1 );
