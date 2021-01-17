@@ -800,25 +800,28 @@ Allow embedded \n in the string
 */
 void SizeHUDString (char *string, int *w, int *h)
 {
-	int		lines, width, current;
+	int		lines, width, cur;
 
 	lines = 1;
 	width = 0;
+	cur = 0;
 
-	current = 0;
 	while (*string)
 	{
 		if (*string == '\n')
 		{
 			lines++;
-			current = 0;
+			cur = 0;
 		}
 		else
 		{
-			current++;
-			if (current > width)
-				width = current;
+			cur++;
+			
+			if (cur > width) {
+				width = cur;
+			}
 		}
+
 		string++;
 	}
 

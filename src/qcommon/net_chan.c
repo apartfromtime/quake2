@@ -149,13 +149,13 @@ Netchan_Setup
 called to open a channel to a remote system
 ==============
 */
-void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
+void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qPort)
 {
 	memset (chan, 0, sizeof(*chan));
 	
 	chan->sock = sock;
 	chan->remote_address = adr;
-	chan->qport = qport;
+	chan->qport = qPort;
 	chan->last_received = curtime;
 	chan->incoming_sequence = 0;
 	chan->outgoing_sequence = 1;
@@ -299,7 +299,7 @@ qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg)
 {
 	unsigned	sequence, sequence_ack;
 	unsigned	reliable_ack, reliable_message;
-	int			qport;
+	int			qp;
 
 // get sequence numbers		
 	MSG_BeginReading (msg);
@@ -308,7 +308,7 @@ qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg)
 
 	// read the qport if we are a server
 	if (chan->sock == NS_SERVER)
-		qport = MSG_ReadShort (msg);
+		qp = MSG_ReadShort (msg);
 
 	reliable_message = sequence >> 31;
 	reliable_ack = sequence_ack >> 31;
@@ -363,7 +363,7 @@ qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg)
 // if the current outgoing reliable message has been acknowledged
 // clear the buffer to make way for the next
 //
-	if (reliable_ack == chan->reliable_sequence)
+	if (reliable_ack == ( unsigned int )chan->reliable_sequence)
 		chan->reliable_length = 0;	// it has been received
 	
 //

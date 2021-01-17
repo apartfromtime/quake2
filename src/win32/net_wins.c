@@ -100,13 +100,13 @@ void SockadrToNetadr (struct sockaddr *s, netadr_t *a)
 }
 
 
-qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
+qboolean NET_CompareAdr(netadr_t a, netadr_t b)
 {
 	if (a.type != b.type)
 		return false;
 
 	if (a.type == NA_LOOPBACK)
-		return TRUE;
+		return true;
 
 	if (a.type == NA_IP)
 	{
@@ -121,6 +121,8 @@ qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
 			return true;
 		return false;
 	}
+
+	return false;
 }
 
 /*
@@ -130,13 +132,13 @@ NET_CompareBaseAdr
 Compares without the port
 ===================
 */
-qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
+qboolean NET_CompareBaseAdr(netadr_t a, netadr_t b)
 {
 	if (a.type != b.type)
 		return false;
 
 	if (a.type == NA_LOOPBACK)
-		return TRUE;
+		return true;
 
 	if (a.type == NA_IP)
 	{
@@ -151,6 +153,8 @@ qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
 			return true;
 		return false;
 	}
+
+	return false;
 }
 
 char	*NET_AdrToString (netadr_t a)
@@ -232,8 +236,12 @@ qboolean	NET_StringToSockaddr (char *s, struct sockaddr *sadr)
 		}
 		else
 		{
-			if (! (h = gethostbyname(copy)) )
+			h = gethostbyname( copy );
+
+			if ( !h ) {
 				return 0;
+			}
+
 			*(int *)&((struct sockaddr_in *)sadr)->sin_addr = *(int *)h->h_addr_list[0];
 		}
 	}
@@ -287,7 +295,7 @@ LOOPBACK BUFFERS FOR LOCAL PLAYER
 =============================================================================
 */
 
-qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message)
+qboolean NET_GetLoopPacket (netsrc_t sock, netadr_t *netFrom, sizebuf_t * netMessage)
 {
 	int		i;
 	loopback_t	*loop;
@@ -303,10 +311,10 @@ qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_me
 	i = loop->get & (MAX_LOOPBACK-1);
 	loop->get++;
 
-	memcpy (net_message->data, loop->msgs[i].data, loop->msgs[i].datalen);
-	net_message->cursize = loop->msgs[i].datalen;
-	memset (net_from, 0, sizeof(*net_from));
-	net_from->type = NA_LOOPBACK;
+	memcpy (netMessage->data, loop->msgs[i].data, loop->msgs[i].datalen);
+	netMessage->cursize = loop->msgs[i].datalen;
+	memset (netFrom, 0, sizeof(*netFrom));
+	netFrom->type = NA_LOOPBACK;
 	return true;
 
 }
@@ -328,7 +336,7 @@ void NET_SendLoopPacket (netsrc_t sock, int length, void *data, netadr_t to)
 
 //=============================================================================
 
-qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message)
+qboolean	NET_GetPacket (netsrc_t sock, netadr_t *netFrom, sizebuf_t *netMessage)
 {
 	int 	ret;
 	struct sockaddr from;
@@ -337,7 +345,7 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_messag
 	int		protocol;
 	int		err;
 
-	if (NET_GetLoopPacket (sock, net_from, net_message))
+	if (NET_GetLoopPacket (sock, netFrom, netMessage))
 		return true;
 
 	for (protocol = 0 ; protocol < 2 ; protocol++)
@@ -351,10 +359,10 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_messag
 			continue;
 
 		fromlen = sizeof(from);
-		ret = recvfrom (net_socket, net_message->data, net_message->maxsize
+		ret = recvfrom (net_socket, netMessage->data, netMessage->maxsize
 			, 0, (struct sockaddr *)&from, &fromlen);
 
-		SockadrToNetadr (&from, net_from);
+		SockadrToNetadr (&from, netFrom);
 
 		if (ret == -1)
 		{
@@ -364,26 +372,26 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_messag
 				continue;
 			if (err == WSAEMSGSIZE) {
 				Com_Printf ("Warning:  Oversize packet from %s\n",
-						NET_AdrToString(*net_from));
+						NET_AdrToString(*netFrom));
 				continue;
 			}
 
 			if (dedicated->value)	// let dedicated servers continue after errors
 				Com_Printf ("NET_GetPacket: %s from %s\n", NET_ErrorString(),
-						NET_AdrToString(*net_from));
+						NET_AdrToString(*netFrom));
 			else
 				Com_Error (ERR_DROP, "NET_GetPacket: %s from %s", 
-						NET_ErrorString(), NET_AdrToString(*net_from));
+						NET_ErrorString(), NET_AdrToString(*netFrom));
 			continue;
 		}
 
-		if (ret == net_message->maxsize)
+		if (ret == netMessage->maxsize)
 		{
-			Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
+			Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*netFrom));
 			continue;
 		}
 
-		net_message->cursize = ret;
+		netMessage->cursize = ret;
 		return true;
 	}
 
@@ -403,6 +411,8 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 		NET_SendLoopPacket (sock, length, data, to);
 		return;
 	}
+	
+	net_socket = 0;
 
 	if (to.type == NA_BROADCAST)
 	{
@@ -538,11 +548,8 @@ void NET_OpenIP (void)
 {
 	cvar_t	*ip;
 	int		port;
-	int		dedicated;
 
 	ip = Cvar_Get ("ip", "localhost", CVAR_NOSET);
-
-	dedicated = Cvar_VariableValue ("dedicated");
 
 	if (!ip_sockets[NS_SERVER])
 	{
@@ -556,13 +563,13 @@ void NET_OpenIP (void)
 			}
 		}
 		ip_sockets[NS_SERVER] = NET_IPSocket (ip->string, port);
-		if (!ip_sockets[NS_SERVER] && dedicated)
+		if (!ip_sockets[NS_SERVER] && dedicated->value)
 			Com_Error (ERR_FATAL, "Couldn't allocate dedicated server IP port");
 	}
 
 
 	// dedicated servers don't need client ports
-	if (dedicated)
+	if (dedicated->value)
 		return;
 
 	if (!ip_sockets[NS_CLIENT])
@@ -642,9 +649,6 @@ NET_OpenIPX
 void NET_OpenIPX (void)
 {
 	int		port;
-	int		dedicated;
-
-	dedicated = Cvar_VariableValue ("dedicated");
 
 	if (!ipx_sockets[NS_SERVER])
 	{
@@ -661,7 +665,7 @@ void NET_OpenIPX (void)
 	}
 
 	// dedicated servers don't need client ports
-	if (dedicated)
+	if (dedicated->value)
 		return;
 
 	if (!ipx_sockets[NS_CLIENT])

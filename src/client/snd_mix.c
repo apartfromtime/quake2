@@ -155,7 +155,6 @@ void S_TransferPaintBuffer(int endtime)
 	if (s_testsound->value)
 	{
 		int		i;
-		int		count;
 
 		// write a fixed sine wave
 		count = (endtime - paintedtime);
@@ -178,30 +177,34 @@ void S_TransferPaintBuffer(int endtime)
 
 		if (dma.samplebits == 16)
 		{
+			short maxval = 0x7fff;
+			short minval = 0x8000;
 			short *out = (short *) pbuf;
 			while (count--)
 			{
 				val = *p >> 8;
 				p+= step;
-				if (val > 0x7fff)
-					val = 0x7fff;
-				else if (val < (short)0x8000)
-					val = (short)0x8000;
+				if (val > maxval)
+					val = maxval;
+				else if (val < minval)
+					val = minval;
 				out[out_idx] = val;
 				out_idx = (out_idx + 1) & out_mask;
 			}
 		}
 		else if (dma.samplebits == 8)
 		{
+			short maxval = 0x7fff;
+			short minval = 0x8000;
 			unsigned char *out = (unsigned char *) pbuf;
 			while (count--)
 			{
 				val = *p >> 8;
 				p+= step;
-				if (val > 0x7fff)
-					val = 0x7fff;
-				else if (val < (short)0x8000)
-					val = (short)0x8000;
+				if (val > maxval)
+					val = maxval;
+				else if (val < minval)
+					val = minval;
 				out[out_idx] = (val>>8) + 128;
 				out_idx = (out_idx + 1) & out_mask;
 			}

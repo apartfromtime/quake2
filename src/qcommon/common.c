@@ -349,7 +349,7 @@ void MSG_WriteFloat (sizebuf_t *sb, float f)
 	SZ_Write (sb, &dat.l, 4);
 }
 
-void MSG_WriteString (sizebuf_t *sb, const char *s)
+void MSG_WriteString (sizebuf_t * sb, const char * s)
 {
 	if (!s)
 		SZ_Write (sb, "", 1);
@@ -878,6 +878,7 @@ void MSG_ReadData (sizebuf_t *msg_read, void *data, int len)
 
 //===========================================================================
 
+/* TODO:: should the "data" parameter differ in each SZ_ function */
 void SZ_Init (sizebuf_t *buf, byte *data, int length)
 {
 	memset (buf, 0, sizeof(*buf));
