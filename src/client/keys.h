@@ -18,6 +18,8 @@
 * 02111-1307, USA.
 */
 
+#ifndef _KEYBOARD_H_
+#define _KEYBOARD_H_
 
 #define MAX_KEYS 256
 /*
@@ -187,3 +189,4 @@ void Key_SetBinding (int keynum, char *binding);
 void Key_ClearStates (void);
 int Key_GetKey (void);
 
+#endif /* #ifndef _KEYBOARD_H_ */

@@ -17,6 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
+#ifndef _SOUND_LOCAL_H_
+#define _SOUND_LOCAL_H_
+
 // snd_loc.h -- private sound functions
 
 // !!! if this is changed, the asm code must change !!!
@@ -162,3 +166,5 @@ channel_t *S_PickChannel(int entnum, int entchannel);
 
 // spatializes a channel
 void S_Spatialize(channel_t *ch);
+
+#endif /* #ifndef _SOUND_LOCAL_H_ */
