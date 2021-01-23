@@ -1422,12 +1422,15 @@ Event Queue
 */
 void Event_Queue(unsigned time, unsigned int type, int x, int y)
 {
+	queue_t * queue;
+	event_t * event;
+
 	if (type >= EVENT_NUM) {
 		return;
 	}
 
-	queue_t * queue = &queues[type - 1];
-	event_t * event = &queue->events[queue->head & ( MAX_EVENTS - 1 )];
+	queue = &queues[type - 1];
+	event = &queue->events[queue->head & ( MAX_EVENTS - 1 )];
 	
 	if ( queue->head - queue->tail >= MAX_EVENTS ) {
 		
@@ -1454,11 +1457,13 @@ Event Get
 */
 event_t Event_Get(unsigned int type)
 {
+	queue_t * queue;
+
 	if (type >= EVENT_NUM) {
 		return null_event;
 	}
 
-	queue_t * queue = &queues[type - 1];
+	queue = &queues[type - 1];
 
 	if ( queue->head > queue->tail ) {
 

@@ -260,16 +260,17 @@ post mouse button events
 */
 void IN_MouseEvent(int mstate)
 {
+	unsigned time;
+	int i;
+
 	if ( !mouseinitialized ) {
 		return;
 	}
 
-	unsigned time;
-
 	Sys_GetWndMsgTimeStamp(&time);
 
 	/* perform button actions */
-	for (int i = 0; i < mouse_buttons; i++) {
+	for (i = 0; i < mouse_buttons; i++) {
 		
 		if ( ( mstate & ( 1 << i ) )
 			&& !( mouse_oldbuttonstate & ( 1 << i ) ) ) {

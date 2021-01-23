@@ -1351,6 +1351,7 @@ trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 						  vec3_t mins, vec3_t maxs,
 						  int headnode, int brushmask)
 {
+	int i;
 	checkcount++;		// for multi-check avoidance
 
 	c_traces++;			// for statistics, may be zeroed
@@ -1381,14 +1382,14 @@ trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 
 		VectorAdd (start, mins, c1);
 		VectorAdd (start, maxs, c2);
-		for (int i = 0; i < 3; i++)
+		for (i = 0; i < 3; i++)
 		{
 			c1[i] -= 1;
 			c2[i] += 1;
 		}
 
 		numboxleafs = CM_BoxLeafnums_headnode (c1, c2, leafs, 1024, headnode, &topnode);
-		for (int i = 0; i < numboxleafs; i++)
+		for (i = 0; i < numboxleafs; i++)
 		{
 			CM_TestInLeaf (leafs[i]);
 			if (trace_trace.allsolid)
@@ -1426,7 +1427,7 @@ trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 	}
 	else
 	{
-		for (int i = 0; i < 3; i++)
+		for (i = 0; i < 3; i++)
 			trace_trace.endpos[i] = start[i] + trace_trace.fraction * (end[i] - start[i]);
 	}
 	return trace_trace;

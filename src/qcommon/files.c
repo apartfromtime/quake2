@@ -149,7 +149,9 @@ returns a free file handle.
 */
 static int FS_HandleForFile(void)
 {
-	for ( int i = 1 ; i < MAX_FILE_HANDLES ; i++ ) {
+	int i;
+
+	for ( i = 1 ; i < MAX_FILE_HANDLES ; i++ ) {
 		if ( fs_files[i].handle == NULL ) {
 			return i;
 		}
@@ -299,12 +301,15 @@ int file_from_pak = 0;
 int FS_FOpenFile(char * filename, file_t ** file)
 {
 	int handle = FS_HandleForFile();
+	file_t * f;
+	searchpath_t * search;
+	int i;
 
-	file_t *f = &fs_files[handle];
+	f = &fs_files[handle];
 	*file = f;
 
 	/* search through the path, one element at a time */
-	for (searchpath_t * search = fs_searchpaths; search != NULL; search =
+	for (search = fs_searchpaths; search != NULL; search =
 		search->next) {
 
 		/* is the element a pack file */
@@ -313,7 +318,7 @@ int FS_FOpenFile(char * filename, file_t ** file)
 			/* look through all the pack file elements */
 			pack_t * pack = search->pack;
 
-			for (int i = 0; i < pack->numfiles; ++i) {
+			for (i = 0; i < pack->numfiles; ++i) {
 
 				if (!Q_strcasecmp(pack->files[i].name, filename)) {
 					

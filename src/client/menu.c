@@ -3477,6 +3477,7 @@ static qboolean PlayerConfig_ScanDirectories( void )
 	char **dirnames;
 	char *path = NULL;
 	int i;
+	char * a, * b, * c;
 
 	extern char **FS_ListFiles( char *, int *, unsigned, unsigned );
 
@@ -3555,8 +3556,6 @@ static qboolean PlayerConfig_ScanDirectories( void )
 
 		skinnames = malloc( sizeof( char * ) * ( nskins + 1 ) );
 		memset( skinnames, 0, sizeof( char * ) * ( nskins + 1 ) );
-
-		char * a, * b, * c;
 		
 		// copy the valid skins
 		for ( s = 0, k = 0; k < npcxfiles-1; k++ )
