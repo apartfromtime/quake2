@@ -359,7 +359,7 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *netFrom, sizebuf_t *netMessage)
 			continue;
 
 		fromlen = sizeof(from);
-		ret = recvfrom (net_socket, netMessage->data, netMessage->maxsize
+		ret = recvfrom (net_socket, (char *)netMessage->data, netMessage->maxsize
 			, 0, (struct sockaddr *)&from, &fromlen);
 
 		SockadrToNetadr (&from, netFrom);
@@ -490,7 +490,7 @@ int NET_IPSocket (char *net_interface, int port)
 {
 	int					newsocket;
 	struct sockaddr_in	address;
-	qboolean			_true = true;
+	qboolean mode = true;
 	int					i = 1;
 	int					err;
 
@@ -503,7 +503,7 @@ int NET_IPSocket (char *net_interface, int port)
 	}
 
 	// make it non-blocking
-	if (ioctlsocket (newsocket, FIONBIO, &_true) == -1)
+	if (ioctlsocket (newsocket, FIONBIO, (u_long *)&mode) == -1)
 	{
 		Com_Printf ("WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", NET_ErrorString());
 		return 0;
@@ -597,7 +597,7 @@ int NET_IPXSocket (int port)
 {
 	int					newsocket;
 	struct sockaddr_ipx	address;
-	int					_true = 1;
+	qboolean mode = true;
 	int					err;
 
 	if ((newsocket = socket (PF_IPX, SOCK_DGRAM, NSPROTO_IPX)) == -1)
@@ -609,14 +609,14 @@ int NET_IPXSocket (int port)
 	}
 
 	// make it non-blocking
-	if (ioctlsocket (newsocket, FIONBIO, &_true) == -1)
+	if (ioctlsocket (newsocket, FIONBIO, (u_long *)&mode) == -1)
 	{
 		Com_Printf ("WARNING: IPX_Socket: ioctl FIONBIO: %s\n", NET_ErrorString());
 		return 0;
 	}
 
 	// make it broadcast capable
-	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char *)&_true, sizeof(_true)) == -1)
+	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char *)&mode, sizeof(qboolean)) == -1)
 	{
 		Com_Printf ("WARNING: IPX_Socket: setsockopt SO_BROADCAST: %s\n", NET_ErrorString());
 		return 0;
