@@ -99,7 +99,7 @@ void SV_GameClientPrintf(edict_t * ent, int level, const char * fmt, ...)
 {
 	char		msg[MAX_PRINT_CHARS];
 	va_list		argptr;
-	int			n;
+	int n = 0;
 
 	if ( ent ) {
 
