@@ -850,8 +850,8 @@ void CM_BoxLeafnums_r (int nodenum)
 	cnode_t		*node;
 	int		s;
 
-	while (1)
-	{
+	while ( 1 ) {
+
 		if (nodenum < 0)
 		{
 			if (leaf_count >= leaf_maxcount)

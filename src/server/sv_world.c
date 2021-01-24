@@ -323,8 +323,8 @@ void SV_LinkEdict (edict_t *ent)
 
 // find the first node that the ent's box crosses
 	node = sv_areanodes;
-	while (1)
-	{
+	while ( 1 ) {
+		
 		if (node->axis == -1)
 			break;
 		if (ent->absmin[node->axis] > node->dist)

@@ -1110,8 +1110,9 @@ skipwhite:
 	if (c == '\"')
 	{
 		data++;
-		while (1)
-		{
+		
+		while ( 1 ) {
+
 			c = *data++;
 			if (c=='\"' || !c)
 			{
@@ -1262,8 +1263,9 @@ char *Info_ValueForKey (char *s, char *key)
 	valueindex ^= 1;
 	if (*s == '\\')
 		s++;
-	while (1)
-	{
+
+	while ( 1 ) {
+
 		o = pkey;
 		while (*s != '\\')
 		{
@@ -1306,8 +1308,8 @@ void Info_RemoveKey (char *s, char *key)
 		return;
 	}
 
-	while (1)
-	{
+	while ( 1 ) {
+
 		start = s;
 		if (*s == '\\')
 			s++;

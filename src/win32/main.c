@@ -644,8 +644,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	oldtime = Sys_Milliseconds ();
 
     /* main window message loop */
-	while (1)
-	{
+	while ( 1 ) {
+		
 		// if at a full screen console, don't update unless needed
 		if (Minimized || (dedicated && dedicated->value) )
 		{

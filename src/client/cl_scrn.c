@@ -242,7 +242,7 @@ void SCR_CenterPrint (char *str)
 		if (!*s)
 			break;
 		s++;		// skip the \n
-	} while (1);
+	} while ( 1 );
 	Com_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
 	Con_ClearNotify ();
 }
@@ -291,7 +291,7 @@ void SCR_DrawCenterString (void)
 		if (!*start)
 			break;
 		start++;		// skip the \n
-	} while (1);
+	} while ( 1 );
 }
 
 void SCR_CheckDrawCenterString (void)

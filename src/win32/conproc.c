@@ -167,8 +167,8 @@ unsigned _stdcall RequestProc (void *arg)
 	heventWait[0] = heventParentSend;
 	heventWait[1] = heventDone;
 
-	while (1)
-	{
+	while ( 1 ) {
+		
 		dwRet = WaitForMultipleObjects (2, heventWait, FALSE, INFINITE);
 
 	// heventDone fired, so we're exiting.

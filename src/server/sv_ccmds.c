@@ -207,8 +207,8 @@ void CopyFile (char *src, char *dst)
 		return;
 	}
 
-	while (1)
-	{
+	while ( 1 ) {
+		
 		l = fread (buffer, 1, sizeof(buffer), f1);
 		if (!l)
 			break;

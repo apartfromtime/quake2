@@ -635,8 +635,8 @@ void Cmd_TokenizeString (char *text, qboolean macroExpand)
 	if (!text)
 		return;
 
-	while (1)
-	{
+	while ( 1 ) {
+
 // skip whitespace up to a /n
 		while (*text && *text <= ' ' && *text != '\n')
 		{
@@ -726,8 +726,9 @@ void	Cmd_RemoveCommand (char *cmd_name)
 	cmd_function_t	*cmd, **back;
 
 	back = &cmd_functions;
-	while (1)
-	{
+	
+	while ( 1 ) {
+
 		cmd = *back;
 		if (!cmd)
 		{

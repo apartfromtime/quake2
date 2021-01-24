@@ -313,7 +313,7 @@ void CL_ParseServerData (void)
 	cls.serverProtocol = i;
 
 	// BIG HACK to let demos from release work with the 3.0x patch!!!
-	if (Com_ServerState() && PROTOCOL_VERSION == 34)
+	if (Com_ServerState() && ( PROTOCOL_VERSION == 34 ) )
 	{
 	}
 	else if (i != PROTOCOL_VERSION)
@@ -676,8 +676,8 @@ void CL_ParseServerMessage (void)
 //
 // parse the message
 //
-	while (1)
-	{
+	while ( 1 ) {
+
 		if (net_message.readcount > net_message.cursize)
 		{
 			Com_Error (ERR_DROP,"CL_ParseServerMessage: Bad server message");

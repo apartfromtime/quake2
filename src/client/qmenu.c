@@ -306,8 +306,8 @@ void Menu_AdjustCursor( menuframework_s *m, int dir )
 	*/
 	if ( dir == 1 )
 	{
-		while ( 1 )
-		{
+		while ( 1 ) {
+			
 			citem = Menu_ItemAtCursor( m );
 			if ( citem )
 				if ( citem->type != MTYPE_SEPARATOR )
@@ -319,8 +319,8 @@ void Menu_AdjustCursor( menuframework_s *m, int dir )
 	}
 	else
 	{
-		while ( 1 )
-		{
+		while ( 1 ) {
+
 			citem = Menu_ItemAtCursor( m );
 			if ( citem )
 				if ( citem->type != MTYPE_SEPARATOR )

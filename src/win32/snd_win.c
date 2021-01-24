@@ -779,8 +779,8 @@ void SNDDMA_Submit(void)
 	//
 	// find which sound blocks have completed
 	//
-	while (1)
-	{
+	while ( 1 ) {
+
 		if ( snd_completed == snd_sent )
 		{
 			Com_DPrintf ("Sound overrun\n");

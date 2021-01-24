@@ -664,8 +664,11 @@ Key_Init
 void Key_Init (void)
 {
 	int		i;
+	int knum;
 
-	if (K_NUM > MAX_KEYS) {
+	knum = K_NUM;
+
+	if ( knum > MAX_KEYS ) {
 
 		Com_Error( ERR_FATAL, "Key number exceeds maximum." );
 		return;

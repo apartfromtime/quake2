@@ -551,8 +551,8 @@ void SV_ExecuteClientMessage (client_t *cl)
 	move_issued = false;
 	stringCmdCount = 0;
 
-	while (1)
-	{
+	while ( 1 ) {
+		
 		if (net_message.readcount > net_message.cursize)
 		{
 			Com_Printf ("SV_ReadClientMessage: badread\n");
