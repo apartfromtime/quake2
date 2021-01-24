@@ -1360,6 +1360,8 @@ void CL_AddPlayerBeams (void)
 	frame_t		*oldframe;
 	player_state_t	*ps, *ops;
 
+	framenum = 0;
+	
 //PMM
 	if (hand)
 	{
