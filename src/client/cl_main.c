@@ -543,10 +543,10 @@ void CL_Rcon_f (void)
 		return;
 	}
 
-	message[0] = (char)255;
-	message[1] = (char)255;
-	message[2] = (char)255;
-	message[3] = (char)255;
+	message[0] = -1;
+	message[1] = -1;
+	message[2] = -1;
+	message[3] = -1;
 	message[4] = 0;
 
 	NET_Config (true);		// allow remote
@@ -699,7 +699,7 @@ void CL_Packet_f (void)
 
 	in = Cmd_Argv(2);
 	out = send+4;
-	send[0] = send[1] = send[2] = send[3] = (char)0xff;
+	send[0] = send[1] = send[2] = send[3] = -1;
 
 	l = strlen (in);
 	for (i=0 ; i<l ; i++)
