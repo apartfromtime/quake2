@@ -3469,6 +3469,8 @@ static qboolean IconOfSkinExists( char *skin, char **pcxfiles, int npcxfiles )
 	return false;
 }
 
+extern char **FS_ListFiles( char *, int *, unsigned, unsigned );
+
 static qboolean PlayerConfig_ScanDirectories( void )
 {
 	char findname[1024];
@@ -3478,8 +3480,6 @@ static qboolean PlayerConfig_ScanDirectories( void )
 	char *path = NULL;
 	int i;
 	char * a, * b, * c;
-
-	extern char **FS_ListFiles( char *, int *, unsigned, unsigned );
 
 	s_numplayermodels = 0;
 
