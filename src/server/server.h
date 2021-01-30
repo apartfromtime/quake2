@@ -211,7 +211,7 @@ extern	edict_t		*sv_player;
 void SV_FinalMessage (char *message, qboolean reconnect);
 void SV_DropClient (client_t *drop);
 
-int SV_ModelIndex (const char *name);
+int SV_ModelIndex(char * name);
 int SV_SoundIndex (char *name);
 int SV_ImageIndex (char *name);
 
@@ -289,8 +289,8 @@ void SV_DebugPrintf(const char * fmt, ...);
 void SV_GameClientPrintf(edict_t * ent, int level, const char * fmt, ...);
 void SV_GameClientCenterPrintf(edict_t * ent, const char * fmt, ...);
 void SV_Error (const char * fmt, ...);
-void SV_SetModel(edict_t * ent, const char * name);
-void SV_ConfigString(int index, const char * val);
+void SV_SetModel(edict_t * ent, char * name);
+void SV_ConfigString(int index, char * val);
 void SV_WriteChar(int c);
 void SV_WriteChar(int c);
 void SV_WriteByte(int c);

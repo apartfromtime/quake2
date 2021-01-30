@@ -178,7 +178,7 @@ SV_SetModel
 Also sets mins and maxs for inline bmodels
 =================
 */
-void SV_SetModel(edict_t * ent, const char * name)
+void SV_SetModel(edict_t * ent, char * name)
 {
 	int 		i;
 	cmodel_t * 	mod;
@@ -208,7 +208,7 @@ void SV_SetModel(edict_t * ent, const char * name)
 SV_ConfigString
 ===============
 */
-void SV_ConfigString(int index, const char * val)
+void SV_ConfigString(int index, char * val)
 {
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
 		Com_Error( ERR_DROP, "configstring: bad index %i\n", index );
