@@ -349,12 +349,13 @@ void MSG_WriteFloat (sizebuf_t *sb, float f)
 	SZ_Write (sb, &dat.l, 4);
 }
 
-void MSG_WriteString (sizebuf_t * sb, const char * s)
+void MSG_WriteString(sizebuf_t * sb, char * s)
 {
-	if (!s)
-		SZ_Write (sb, "", 1);
-	else
-		SZ_Write (sb, s, strlen(s)+1);
+	if ( !s ) {
+		SZ_Write( sb, "", 1 );
+	} else {
+		SZ_Write( sb, s, strlen( s ) + 1 );
+	}
 }
 
 void MSG_WriteCoord (sizebuf_t *sb, float f)
@@ -1013,7 +1014,7 @@ Adds the given string at the end of the current argument list
 void COM_AddParm (char *parm)
 {
 	if (com_argc == MAX_NUM_ARGVS)
-		Com_Error (ERR_FATAL, "COM_AddParm: MAX_NUM)ARGS");
+		Com_Error (ERR_FATAL, "COM_AddParm: MAX_NUM_ARGS");
 	com_argv[com_argc++] = parm;
 }
 
