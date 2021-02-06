@@ -50,9 +50,7 @@ unsigned	sys_frame_time;
 
 static HANDLE		qwclsemaphore;
 
-#define	MAX_NUM_ARGVS	128
-int			argc;
-char		*argv[MAX_NUM_ARGVS];
+cmdargs_t sys_cmdline;
 
 
 /*
@@ -267,7 +265,7 @@ void Sys_Init (void)
 		houtput = GetStdHandle (STD_OUTPUT_HANDLE);
 	
 		// let QHOST hook in
-		InitConProc (argc, argv);
+		InitConProc (sys_cmdline.argc, sys_cmdline.argv);
 	}
 }
 
@@ -558,18 +556,17 @@ ParseCommandLine
 */
 void ParseCommandLine (LPSTR lpCmdLine)
 {
-	argc = 1;
-	argv[0] = "exe";
+	sys_cmdline.argc = 1;
+	sys_cmdline.argv[0] = "exe";
 
-	while (*lpCmdLine && (argc < MAX_NUM_ARGVS))
+	while (*lpCmdLine && (sys_cmdline.argc < MAX_NUM_ARGVS))
 	{
 		while (*lpCmdLine && ((*lpCmdLine <= 32) || (*lpCmdLine > 126)))
 			lpCmdLine++;
 
 		if (*lpCmdLine)
 		{
-			argv[argc] = lpCmdLine;
-			argc++;
+			sys_cmdline.argv[sys_cmdline.argc++] = lpCmdLine;
 
 			while (*lpCmdLine && ((*lpCmdLine > 32) && (*lpCmdLine <= 126)))
 				lpCmdLine++;
@@ -608,23 +605,23 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	// if we find the CD, add a +set cddir xxx command line
 	cddir = Sys_ScanForCD ();
-	if (cddir && argc < MAX_NUM_ARGVS - 3)
+	if (cddir && sys_cmdline.argc < MAX_NUM_ARGVS - 3)
 	{
 		int		i;
 
 		// don't override a cddir on the command line
-		for (i=0 ; i<argc ; i++)
-			if (!strcmp(argv[i], "cddir"))
+		for (i=0 ; i<sys_cmdline.argc ; i++)
+			if (!strcmp(sys_cmdline.argv[i], "cddir"))
 				break;
-		if (i == argc)
+		if (i == sys_cmdline.argc)
 		{
-			argv[argc++] = "+set";
-			argv[argc++] = "cddir";
-			argv[argc++] = cddir;
+			sys_cmdline.argv[sys_cmdline.argc++] = "+set";
+			sys_cmdline.argv[sys_cmdline.argc++] = "cddir";
+			sys_cmdline.argv[sys_cmdline.argc++] = cddir;
 		}
 	}
 
-	Qcommon_Init (argc, argv);
+	Qcommon_Init (sys_cmdline.argc, sys_cmdline.argv);
 	oldtime = Sys_Milliseconds ();
 
     /* main window message loop */

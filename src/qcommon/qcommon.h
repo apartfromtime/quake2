@@ -147,6 +147,14 @@ extern	float	LittleFloat (float l);
 //============================================================================
 
 
+#define	MAX_NUM_ARGVS			128
+
+typedef struct cmdargs_s
+{
+	char * argv[MAX_NUM_ARGVS];
+	int argc;
+} cmdargs_t;
+
 int	COM_Argc (void);
 char *COM_Argv (int arg);	// range and null checked
 void COM_ClearArgv (int arg);

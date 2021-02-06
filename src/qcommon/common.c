@@ -25,11 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	MAXPRINTMSG	4096
 
-#define MAX_NUM_ARGVS	50
-
-
-int		com_argc;
-char	*com_argv[MAX_NUM_ARGVS+1];
+cmdargs_t com_args;
 
 int		realtime;
 
@@ -954,9 +950,9 @@ int COM_CheckParm (char *parm)
 {
 	int		i;
 	
-	for (i=1 ; i<com_argc ; i++)
+	for (i=1 ; i<com_args.argc ; i++)
 	{
-		if (!strcmp (parm,com_argv[i]))
+		if (!strcmp (parm, com_args.argv[i]))
 			return i;
 	}
 		
@@ -965,21 +961,21 @@ int COM_CheckParm (char *parm)
 
 int COM_Argc (void)
 {
-	return com_argc;
+	return com_args.argc;
 }
 
 char *COM_Argv (int arg)
 {
-	if (arg < 0 || arg >= com_argc || !com_argv[arg])
+	if (arg < 0 || arg >= com_args.argc || !com_args.argv[arg])
 		return "";
-	return com_argv[arg];
+	return com_args.argv[arg];
 }
 
 void COM_ClearArgv (int arg)
 {
-	if (arg < 0 || arg >= com_argc || !com_argv[arg])
+	if (arg < 0 || arg >= com_args.argc || !com_args.argv[arg])
 		return;
-	com_argv[arg] = "";
+	com_args.argv[arg] = "";
 }
 
 
@@ -994,13 +990,15 @@ void COM_InitArgv (int argc, char **argv)
 
 	if (argc > MAX_NUM_ARGVS)
 		Com_Error (ERR_FATAL, "argc > MAX_NUM_ARGVS");
-	com_argc = argc;
+	com_args.argc = argc;
 	for (i=0 ; i<argc ; i++)
 	{
-		if (!argv[i] || strlen(argv[i]) >= MAX_TOKEN_CHARS )
-			com_argv[i] = "";
-		else
-			com_argv[i] = argv[i];
+		if (!argv[i] || strlen(argv[i]) >= MAX_TOKEN_CHARS ) {
+			com_args.argv[i] = "";
+		}
+		else {
+			com_args.argv[i] = argv[i];
+		}
 	}
 }
 
@@ -1013,9 +1011,9 @@ Adds the given string at the end of the current argument list
 */
 void COM_AddParm (char *parm)
 {
-	if (com_argc == MAX_NUM_ARGVS)
+	if (com_args.argc == MAX_NUM_ARGVS)
 		Com_Error (ERR_FATAL, "COM_AddParm: MAX_NUM_ARGS");
-	com_argv[com_argc++] = parm;
+	com_args.argv[com_args.argc++] = parm;
 }
 
 
