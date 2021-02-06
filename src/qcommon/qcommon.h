@@ -820,8 +820,9 @@ void	Sys_Init (void);
 void	Sys_AppActivate (void);
 
 const char * Sys_Cwd(void);
+GetGameAPI_t Sys_GetGameAPI(int gameDLL);
 int Sys_DLL_Load(const char * dllName);
-void * Sys_DLL_GetProcAddress(int dllHandle, const char * procName);
+/*void * Sys_DLL_GetProcAddress(int dllHandle, const char * procName);*/
 void Sys_DLL_Unload(int dllHandle);
 void Sys_DLL_GetFileName(const char * baseName, char * dllName,
 	int maxLength);

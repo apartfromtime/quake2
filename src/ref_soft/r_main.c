@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // r_main.c
 
 #include "r_local.h"
+#include "..\win32\rw_win.h"
 
 viddef_t	vid;
 refimport_t	ri;
@@ -134,6 +135,8 @@ cvar_t	*r_speeds;
 cvar_t	*r_lightlevel;	//FIXME HACK
 
 cvar_t	*vid_fullscreen;
+cvar_t * vid_xpos;
+cvar_t * vid_ypos;
 cvar_t	*vid_gamma;
 
 //PGM
@@ -297,7 +300,7 @@ void R_UnRegister (void)
 R_Init
 ===============
 */
-qboolean R_Init( void *hInstance, void *wndProc )
+qboolean R_Init( void *hInstance, void ** hwnd )
 {
 	R_InitImages ();
 	Mod_Init ();
@@ -327,10 +330,12 @@ qboolean R_Init( void *hInstance, void *wndProc )
 
 	R_Register ();
 	Draw_GetPalette ();
-	SWimp_Init( hInstance, wndProc );
+	SWimp_Init( hInstance, hwnd );
 
 	// create the window
 	R_BeginFrame( 0 );
+
+	*hwnd = sww_state.hWnd;
 
 	ri.Con_Printf (PRINT_ALL, "ref_soft version: "REF_VERSION"\n");
 

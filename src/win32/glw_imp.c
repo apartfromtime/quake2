@@ -36,13 +36,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "glw_win.h"
 #include "winquake.h"
 
+void GLimp_AppActivate( qboolean active );
 static qboolean GLimp_SwitchFullscreen( int width, int height );
 qboolean GLimp_InitGL (void);
 
 glwstate_t glw_state;
 
-extern cvar_t *vid_fullscreen;
-extern cvar_t *vid_ref;
+extern cvar_t * vid_fullscreen;
+extern cvar_t * vid_xpos;
+extern cvar_t * vid_ypos;
+extern cvar_t * vid_ref;
 
 static qboolean VerifyDriver( void )
 {
@@ -56,6 +59,61 @@ static qboolean VerifyDriver( void )
 	return true;
 }
 
+LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+		case WM_CREATE:
+		{
+			glw_state.hWnd = hwnd;
+    	} break;
+		case WM_DESTROY:
+		{
+			glw_state.hWnd = NULL;
+    	} break;
+		case WM_ACTIVATE:
+		{
+			int	active, minimized;
+
+			active = LOWORD( wParam );
+			minimized = ( BOOL )HIWORD( wParam );
+
+			ri.AppActivate( active != WA_INACTIVE, minimized);
+			GLimp_AppActivate( !( active == WA_INACTIVE ) );
+		} break;
+		case WM_MOVE:
+		{
+			int	xPos, yPos;
+			int	style;
+			RECT r;
+
+			if (!vid_fullscreen->value) {
+
+				xPos = ( int )LOWORD( lParam ); /* horizontal position */ 
+				yPos = ( int )HIWORD( lParam ); /* vertical position */
+
+				r.left   = 0;
+				r.top    = 0;
+				r.right  = 1;
+				r.bottom = 1;
+
+				style = GetWindowLong( hwnd, GWL_STYLE );
+				AdjustWindowRect( &r, style, FALSE );
+
+				ri.Cvar_SetValue( "vid_xpos", xPos + r.left);
+				ri.Cvar_SetValue( "vid_ypos", yPos + r.top);
+				vid_xpos->modified = false;
+				vid_ypos->modified = false;
+			}
+		} break;
+	default: 			/* pass all unhandled messages to DefWindowProc */
+        return DefWindowProc( hwnd, msg, wParam, lParam );
+    }
+
+    /* return 0 if handled message, 1 if not */
+    return DefWindowProc( hwnd, msg, wParam, lParam );
+}
+
 /*
 ** VID_CreateWindow
 */
@@ -65,7 +123,6 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 {
 	WNDCLASS		wc;
 	RECT			r;
-	cvar_t			*vid_xpos, *vid_ypos;
 	int				stylebits;
 	int				x, y, w, h;
 	int				exstyle;
@@ -344,7 +401,7 @@ void GLimp_Shutdown( void )
 ** of OpenGL.  Under Win32 this means dealing with the pixelformats and
 ** doing the wgl interface stuff.
 */
-qboolean GLimp_Init( void *hinstance, void *wndproc )
+qboolean GLimp_Init( void *hinstance, void ** hwnd )
 {
 #define OSR2_BUILD_NUMBER 1111
 
@@ -382,7 +439,7 @@ qboolean GLimp_Init( void *hinstance, void *wndproc )
 	}
 
 	glw_state.hInstance = ( HINSTANCE ) hinstance;
-	glw_state.wndproc = wndproc;
+	glw_state.wndproc = WndProc;
 
 	return true;
 }

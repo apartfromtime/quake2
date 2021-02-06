@@ -25,7 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "..\client\client.h"
 #include "winquake.h"
-//#include "zmouse.h"
+
+extern unsigned	sys_frame_time;
 
 // Structure containing functions exported from refresh DLL
 refexport_t	re;
@@ -35,8 +36,6 @@ cvar_t *win_noalttab;
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL (WM_MOUSELAST+1)  // message that will be supported by the OS 
 #endif
-
-static UINT MSH_MOUSEWHEEL;
 
 // Console variables that we need to access from this module
 cvar_t		*vid_gamma;
@@ -53,8 +52,6 @@ qboolean	reflib_active = 0;
 HWND        cl_hwnd;            // Main window handle for life of program
 
 #define VID_NUM_MODES ( sizeof( vid_modes ) / sizeof( vid_modes[0] ) )
-
-LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 static qboolean s_alttab_disabled;
 
@@ -237,7 +234,7 @@ int MapKey (int key)
 	}
 }
 
-void AppActivate(BOOL fActive, BOOL minimize)
+void AppActivate(qboolean fActive, qboolean minimize)
 {
 	Minimized = minimize;
 
@@ -275,194 +272,108 @@ void AppActivate(BOOL fActive, BOOL minimize)
 
 /*
 ====================
-MainWndProc
+Sys_SendKeyEvents
 
-main window procedure
+Send key event calls
 ====================
 */
-LONG WINAPI MainWndProc (
-    HWND    hWnd,
-    UINT    uMsg,
-    WPARAM  wParam,
-    LPARAM  lParam)
+void Sys_SendKeyEvents(void)
 {
-	LONG			lRet = 0;
-	unsigned int time;
+	MSG msg;
 
-	Sys_GetWndMsgTimeStamp(&time);
+    while ( PeekMessageA( &msg, NULL, 0, 0, PM_NOREMOVE ) ) {
 
-	if ( uMsg == MSH_MOUSEWHEEL ) {
+    	unsigned time;
 
-		if ( ( ( int ) wParam ) > 0 ) {
-			
-			Event_Queue(time, EVENT_KEYBD, K_MWHEELUP, true);
-			Event_Queue(time, EVENT_KEYBD, K_MWHEELUP, false);
-
-		} else {
-			
-			Event_Queue(time, EVENT_KEYBD, K_MWHEELDOWN, true);
-			Event_Queue(time, EVENT_KEYBD, K_MWHEELDOWN, false);
+    	if ( !GetMessage( &msg, NULL, 0, 0 ) ) {
+			Com_Quit ();
 		}
 
-        return DefWindowProc (hWnd, uMsg, wParam, lParam);
-	}
+		time = Win_MsgTime( ( unsigned * )&msg.time );
 
-	switch (uMsg)
-	{
-	case WM_MOUSEWHEEL:
-	{
-		/*
-		** this chunk of code theoretically only works under NT4 and Win98
-		** since this message doesn't exist under Win95
-		*/
-		if ( ( short ) HIWORD( wParam ) > 0 ) {
-
-			Event_Queue(time, EVENT_KEYBD, K_MWHEELUP, true);
-			Event_Queue(time, EVENT_KEYBD, K_MWHEELUP, false);
-
-		} else {
-			
-			Event_Queue(time, EVENT_KEYBD, K_MWHEELDOWN, true);
-			Event_Queue(time, EVENT_KEYBD, K_MWHEELDOWN, false);
-		}
-
-		break;
-	}
-	case WM_HOTKEY:
-		return 0;
-
-	case WM_CREATE:
-		cl_hwnd = hWnd;
-
-		MSH_MOUSEWHEEL = RegisterWindowMessage("MSWHEEL_ROLLMSG"); 
-        return DefWindowProc (hWnd, uMsg, wParam, lParam);
-
-	case WM_PAINT:
-		SCR_DirtyScreen ();	// force entire screen to update next frame
-        return DefWindowProc (hWnd, uMsg, wParam, lParam);
-
-	case WM_DESTROY:
-		// let sound and input know about this?
-		cl_hwnd = NULL;
-        return DefWindowProc (hWnd, uMsg, wParam, lParam);
-
-	case WM_ACTIVATE:
-		{
-			int	fActive, fMinimized;
-
-			// KJB: Watch this for problems in fullscreen modes with Alt-tabbing.
-			fActive = LOWORD(wParam);
-			fMinimized = (BOOL) HIWORD(wParam);
-
-			AppActivate( fActive != WA_INACTIVE, fMinimized);
-
-			if ( reflib_active )
-				re.AppActivate( !( fActive == WA_INACTIVE ) );
-		}
-        return DefWindowProc (hWnd, uMsg, wParam, lParam);
-
-	case WM_MOVE:
-		{
-			int		xPos, yPos;
-			RECT r;
-			int		style;
-
-			if (!vid_fullscreen->value)
+        switch ( msg.message ) {
+        	case WM_MOUSEWHEEL:
 			{
-				xPos = (short) LOWORD(lParam);    // horizontal position 
-				yPos = (short) HIWORD(lParam);    // vertical position 
+				/* this chunk of code theoretically only works under NT4 and
+				Win98 since this message doesn't exist under Win95 */
+				if ( ( short ) HIWORD( msg.wParam ) > 0 ) {
 
-				r.left   = 0;
-				r.top    = 0;
-				r.right  = 1;
-				r.bottom = 1;
+					Event_Queue(time, EVENT_KEYBD, K_MWHEELUP, true);
+					Event_Queue(time, EVENT_KEYBD, K_MWHEELUP, false);
 
-				style = GetWindowLong( hWnd, GWL_STYLE );
-				AdjustWindowRect( &r, style, FALSE );
-
-				Cvar_SetValue( "vid_xpos", xPos + r.left);
-				Cvar_SetValue( "vid_ypos", yPos + r.top);
-				vid_xpos->modified = false;
-				vid_ypos->modified = false;
-				if (ActiveApp)
-					IN_Activate (true);
-			}
-		}
-        return DefWindowProc (hWnd, uMsg, wParam, lParam);
-
-// this is complicated because Win32 seems to pack multiple mouse events into
-// one update sometimes, so we always check all states and look for events
-	case WM_LBUTTONDOWN:
-	case WM_LBUTTONUP:
-	case WM_RBUTTONDOWN:
-	case WM_RBUTTONUP:
-	case WM_MBUTTONDOWN:
-	case WM_MBUTTONUP:
-	case WM_XBUTTONDOWN:
-	case WM_XBUTTONUP:
-	case WM_MOUSEMOVE:
-		{
-			int	temp;
-
-			temp = 0;
-
-			if (wParam & MK_LBUTTON)
-				temp |= 1;
-
-			if (wParam & MK_RBUTTON)
-				temp |= 2;
-
-			if (wParam & MK_MBUTTON)
-				temp |= 4;
-
-			if (wParam & MK_XBUTTON1)
-				temp |= 8;
-
-			if (wParam & MK_XBUTTON2)
-				temp |= 16;
-
-			IN_MouseEvent( temp );
-		}
-		break;
-
-	case WM_SYSCOMMAND:
-		if ( wParam == SC_SCREENSAVE )
-			return 0;
-        return DefWindowProc (hWnd, uMsg, wParam, lParam);
-	case WM_SYSKEYDOWN:
-		if ( wParam == 13 )
-		{
-			if ( vid_fullscreen )
+				} else {
+			
+					Event_Queue(time, EVENT_KEYBD, K_MWHEELDOWN, true);
+					Event_Queue(time, EVENT_KEYBD, K_MWHEELDOWN, false);
+				}
+			} break;
+        	/* this is complicated because Win32 seems to pack multiple mouse
+        	events into one update sometimes, so we always check all states
+        	and look for events */
+			case WM_LBUTTONDOWN:
+			case WM_LBUTTONUP:
+			case WM_RBUTTONDOWN:
+			case WM_RBUTTONUP:
+			case WM_MBUTTONDOWN:
+			case WM_MBUTTONUP:
+			case WM_XBUTTONDOWN:
+			case WM_XBUTTONUP:
+			case WM_MOUSEMOVE:
 			{
-				Cvar_SetValue( "vid_fullscreen", !vid_fullscreen->value );
-			}
-			return 0;
-		}
-		// fall through
-	case WM_KEYDOWN:
-	{
-		Event_Queue(time, EVENT_KEYBD, MapKey( lParam ), true);
-		break;
-	}
-	case WM_SYSKEYUP:
-	case WM_KEYUP:
-	{
-		Event_Queue(time, EVENT_KEYBD, MapKey( lParam ), false);
-		break;
-	}
-	case MM_MCINOTIFY:
-		{
-			LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-			lRet = CDAudio_MessageHandler (hWnd, uMsg, wParam, lParam);
-		}
-		break;
+				int	temp;
 
-	default:	// pass all unhandled messages to DefWindowProc
-        return DefWindowProc (hWnd, uMsg, wParam, lParam);
+				temp = 0;
+
+				if (msg.wParam & MK_LBUTTON)
+					temp |= 1;
+
+				if (msg.wParam & MK_RBUTTON)
+					temp |= 2;
+
+				if (msg.wParam & MK_MBUTTON)
+					temp |= 4;
+
+				if (msg.wParam & MK_XBUTTON1)
+					temp |= 8;
+
+				if (msg.wParam & MK_XBUTTON2)
+					temp |= 16;
+
+				IN_MouseEvent( temp );
+			} break;
+			case WM_SYSKEYDOWN:
+			{
+				if ( msg.wParam == 13 )
+				{
+					if ( vid_fullscreen )
+					{
+						Cvar_SetValue( "vid_fullscreen", !vid_fullscreen->value );
+					}
+					
+					break;
+				}
+			}
+			/* fall through */
+			case WM_KEYDOWN:
+			{
+				Event_Queue(time, EVENT_KEYBD, MapKey( msg.lParam ), true);
+			} break;
+			case WM_SYSKEYUP:
+			case WM_KEYUP:
+			{
+				Event_Queue(time, EVENT_KEYBD, MapKey( msg.lParam ), false);
+			} break;
+            default:
+            {
+            	/* decode and pass messages on to WinProc */
+                TranslateMessage( &msg );
+                DispatchMessageA( &msg );
+            } break;
+        }
     }
 
-    /* return 0 if handled message, 1 if not */
-    return DefWindowProc( hWnd, uMsg, wParam, lParam );
+    /* grab frame time */ 
+	sys_frame_time = timeGetTime();
 }
 
 /*
@@ -578,6 +489,7 @@ qboolean VID_LoadRefresh( char *name )
 	{
 		re.Shutdown();
 		VID_FreeReflib ();
+		cl_hwnd = NULL;
 	}
 
 	Com_Printf( "------- Loading %s -------\n", name );
@@ -605,6 +517,7 @@ qboolean VID_LoadRefresh( char *name )
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
+	ri.AppActivate = AppActivate;
 
 	if ( ( GetRefAPI = ( GetRefAPI_t ) GetProcAddress( reflib_library, "GetRefAPI" ) ) == 0 )
 		Com_Error( ERR_FATAL, "GetProcAddress failed on %s", name );
@@ -617,7 +530,7 @@ qboolean VID_LoadRefresh( char *name )
 		Com_Error (ERR_FATAL, "%s has incompatible api_version", name);
 	}
 
-	if ( re.Init( global_hInstance, MainWndProc ) == -1 )
+	if ( re.Init( global_hInstance, &cl_hwnd ) == -1 )
 	{
 		re.Shutdown();
 		VID_FreeReflib ();

@@ -230,6 +230,16 @@ DLL LOADING
 */
 
 /*
+=====================
+Sys_GetGameAPI
+=====================
+*/
+GetGameAPI_t Sys_GetGameAPI(int gameDLL)
+{
+	return ( GetGameAPI_t )dlsym( gameDLL, "GetGameAPI" );
+}
+
+/*
 =================
 Sys_DLL_Load
 =================
@@ -245,10 +255,10 @@ int Sys_DLL_Load(const char * dllName)
 Sys_DLL_GetProcAddress
 =================
 */
-void * Sys_DLL_GetProcAddress(int dllHandle, const char * procName)
+/*void * Sys_DLL_GetProcAddress(int dllHandle, const char * procName)
 {
     return dlsym( dllHandle, procName );
-}
+}*/
 
 /*
 =================

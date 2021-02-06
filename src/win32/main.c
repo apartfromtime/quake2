@@ -413,32 +413,6 @@ unsigned Win_MsgTime(unsigned * msgTime)
 
 /*
 ================
-Sys_SendKeyEvents
-
-Send Key_Event calls
-================
-*/
-void Sys_SendKeyEvents (void)
-{
-    MSG        msg;
-
-	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE))
-	{
-		if (!GetMessage (&msg, NULL, 0, 0))
-			Sys_Quit ();
-		sys_msg_time = msg.time;
-      	TranslateMessage (&msg);
-      	DispatchMessage (&msg);
-	}
-
-	// grab frame time 
-	sys_frame_time = timeGetTime();	// FIXME: should this be at start?
-}
-
-
-
-/*
-================
 Sys_GetClipboardData
 
 ================
@@ -499,6 +473,17 @@ DLL LOADING
 
 /*
 =====================
+Sys_GetGameAPI
+=====================
+*/
+GetGameAPI_t Sys_GetGameAPI(int gameDLL)
+{
+	return ( GetGameAPI_t )GetProcAddress( ( HINSTANCE )gameDLL,
+		"GetGameAPI" );
+}
+
+/*
+=====================
 Sys_DLL_Load
 =====================
 */
@@ -513,10 +498,10 @@ int Sys_DLL_Load(const char * dllName)
 Sys_DLL_GetProcAddress
 =====================
 */
-void * Sys_DLL_GetProcAddress(int dllHandle, const char * procName)
+/*void * Sys_DLL_GetProcAddress(int dllHandle, const char * procName)
 {
 	return GetProcAddress( ( HINSTANCE )dllHandle, procName );
-}
+}*/
 
 /*
 =====================
@@ -610,7 +595,6 @@ HINSTANCE	global_hInstance;
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    MSG				msg;
 	int				time, oldtime, newtime;
 	char			*cddir;
 
@@ -647,19 +631,11 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	while ( 1 ) {
 		
 		// if at a full screen console, don't update unless needed
-		if (Minimized || (dedicated && dedicated->value) )
-		{
+		if ( Minimized || ( dedicated && dedicated->value ) ) {
 			Sleep (1);
 		}
 
-		while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE))
-		{
-			if (!GetMessage (&msg, NULL, 0, 0))
-				Com_Quit ();
-			sys_msg_time = msg.time;
-			TranslateMessage (&msg);
-   			DispatchMessage (&msg);
-		}
+		Sys_SendKeyEvents();
 
 		do
 		{

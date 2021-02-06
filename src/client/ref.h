@@ -136,7 +136,7 @@ typedef struct
 	int		api_version;
 
 	// called when the library is loaded
-	qboolean	(*Init) ( void *hinstance, void *wndproc );
+	qboolean	(*Init) ( void *hinstance, void ** hwnd );
 
 	// called before the library is unloaded
 	void	(*Shutdown) (void);
@@ -219,6 +219,7 @@ typedef struct
 	qboolean	(*Vid_GetModeInfo)( int *width, int *height, int mode );
 	void		(*Vid_MenuInit)( void );
 	void		(*Vid_NewWindow)( int width, int height );
+	void (* AppActivate)(qboolean fActive, qboolean minimize);
 } refimport_t;
 
 

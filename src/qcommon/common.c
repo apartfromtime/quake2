@@ -1568,7 +1568,7 @@ void Common_LoadGameDLL(void)
 		return;
 	}
 
-	GetGameAPI = ( GetGameAPI_t * )Sys_DLL_GetProcAddress( gameDLL, "GetGameAPI" );
+	GetGameAPI = Sys_GetGameAPI( gameDLL );
 
 	if ( !GetGameAPI ) {
 

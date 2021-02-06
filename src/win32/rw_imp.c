@@ -34,8 +34,66 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "winquake.h"
 
 // Console variables that we need to access from this module
+extern cvar_t * vid_fullscreen;
+extern cvar_t * vid_xpos;
+extern cvar_t * vid_ypos;
 
 swwstate_t sww_state;
+
+LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+		case WM_CREATE:
+		{
+			sww_state.hWnd = hwnd;
+    	} break;
+		case WM_DESTROY:
+		{
+			sww_state.hWnd = NULL;
+    	} break;
+		case WM_ACTIVATE:
+		{
+			int	active, minimized;
+
+			active = LOWORD( wParam );
+			minimized = ( BOOL )HIWORD( wParam );
+
+			ri.AppActivate( active != WA_INACTIVE, minimized);
+			SWimp_AppActivate( !( active == WA_INACTIVE ) );
+		} break;
+		case WM_MOVE:
+		{
+			int	xPos, yPos;
+			int	style;
+			RECT r;
+
+			if (!vid_fullscreen->value)
+			{
+				xPos = ( int )LOWORD( lParam ); /* horizontal position */ 
+				yPos = ( int )HIWORD( lParam ); /* vertical position */
+
+				r.left   = 0;
+				r.top    = 0;
+				r.right  = 1;
+				r.bottom = 1;
+
+				style = GetWindowLong( hwnd, GWL_STYLE );
+				AdjustWindowRect( &r, style, FALSE );
+
+				ri.Cvar_SetValue( "vid_xpos", xPos + r.left);
+				ri.Cvar_SetValue( "vid_ypos", yPos + r.top);
+				vid_xpos->modified = false;
+				vid_ypos->modified = false;
+			}
+		} break;
+	default: 			/* pass all unhandled messages to DefWindowProc */
+        return DefWindowProc( hwnd, msg, wParam, lParam );
+    }
+
+    /* return 0 if handled message, 1 if not */
+    return DefWindowProc( hwnd, msg, wParam, lParam );
+}
 
 /*
 ** VID_CreateWindow
@@ -46,7 +104,6 @@ void VID_CreateWindow( int width, int height, int stylebits )
 {
 	WNDCLASS		wc;
 	RECT			r;
-	cvar_t			*vid_xpos, *vid_ypos, *vid_fullscreen;
 	int				x, y, w, h;
 	int				exstyle;
 
@@ -115,10 +172,10 @@ void VID_CreateWindow( int width, int height, int stylebits )
 ** This routine is responsible for initializing the implementation
 ** specific stuff in a software rendering subsystem.
 */
-int SWimp_Init( void *hInstance, void *wndProc )
+int SWimp_Init( void *hInstance, void ** hwnd )
 {
 	sww_state.hInstance = ( HINSTANCE ) hInstance;
-	sww_state.wndproc = wndProc;
+	sww_state.wndproc = WndProc;
 
 	return true;
 }

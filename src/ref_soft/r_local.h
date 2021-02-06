@@ -841,7 +841,7 @@ IMPLEMENTATION FUNCTIONS
 
 void		SWimp_BeginFrame( float camera_separation );
 void		SWimp_EndFrame (void);
-int			SWimp_Init( void *hInstance, void *wndProc );
+int			SWimp_Init( void *hInstance, void * hwnd );
 void		SWimp_SetPalette( const unsigned char *palette);
 void		SWimp_Shutdown( void );
 rserr_t		SWimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen );

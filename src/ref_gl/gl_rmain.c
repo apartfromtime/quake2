@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // r_main.c
 #include "gl_local.h"
+#include "..\win32\glw_win.h"
 
 void R_Clear (void);
 
@@ -131,7 +132,9 @@ cvar_t	*gl_lockpvs;
 
 cvar_t	*gl_3dlabs_broken;
 
-cvar_t	*vid_fullscreen;
+cvar_t * vid_fullscreen;
+cvar_t * vid_xpos;
+cvar_t * vid_ypos;
 cvar_t	*vid_gamma;
 cvar_t	*vid_ref;
 
@@ -1102,7 +1105,7 @@ qboolean R_SetMode (void)
 R_Init
 ===============
 */
-int R_Init( void *hinstance, void *hWnd )
+int R_Init( void *hinstance, void ** hwnd )
 {	
 	char renderer_buffer[1000];
 	char vendor_buffer[1000];
@@ -1130,7 +1133,7 @@ int R_Init( void *hinstance, void *hWnd )
 	}
 
 	// initialize OS-specific parts of OpenGL
-	if ( !GLimp_Init( hinstance, hWnd ) )
+	if ( !GLimp_Init( hinstance, NULL ) )
 	{
 		QGL_Shutdown();
 		return -1;
@@ -1146,6 +1149,8 @@ int R_Init( void *hinstance, void *hWnd )
         ri.Con_Printf (PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n" );
 		return -1;
 	}
+
+	*hwnd = glw_state.hWnd;
 
 	ri.Vid_MenuInit();
 
