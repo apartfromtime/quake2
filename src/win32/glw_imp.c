@@ -129,7 +129,7 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 
 	/* Register the frame class */
     wc.style         = 0;
-    wc.lpfnWndProc   = (WNDPROC)glw_state.wndproc;
+    wc.lpfnWndProc   = glw_state.wndproc;
     wc.cbClsExtra    = 0;
     wc.cbWndExtra    = 0;
     wc.hInstance     = glw_state.hInstance;
