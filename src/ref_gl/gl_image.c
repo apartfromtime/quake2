@@ -95,7 +95,7 @@ void GL_SelectTexture( GLenum texture )
 	if ( !qglSelectTextureSGIS && !qglActiveTextureARB )
 		return;
 
-	if ( texture == GL_TEXTURE0 )
+	if ( texture == (GLenum)GL_TEXTURE0 )
 	{
 		tmu = 0;
 	}
@@ -126,7 +126,7 @@ void GL_TexEnv( GLenum mode )
 {
 	static int lastmodes[2] = { -1, -1 };
 
-	if ( mode != lastmodes[gl_state.currenttmu] )
+	if ( mode != (GLenum)lastmodes[gl_state.currenttmu] )
 	{
 		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, mode );
 		lastmodes[gl_state.currenttmu] = mode;
@@ -148,7 +148,7 @@ void GL_Bind (int texnum)
 void GL_MBind( GLenum target, int texnum )
 {
 	GL_SelectTexture( target );
-	if ( target == GL_TEXTURE0 )
+	if ( target == (GLenum)GL_TEXTURE0 )
 	{
 		if ( gl_state.currenttextures[0] == texnum )
 			return;
