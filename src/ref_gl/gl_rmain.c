@@ -1157,14 +1157,25 @@ int R_Init( void *hinstance, void ** hwnd )
 	/*
 	** get our various GL strings
 	*/
-	gl_config.vendor_string = qglGetString (GL_VENDOR);
-	ri.Con_Printf (PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string );
-	gl_config.renderer_string = qglGetString (GL_RENDERER);
-	ri.Con_Printf (PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string );
-	gl_config.version_string = qglGetString (GL_VERSION);
-	ri.Con_Printf (PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string );
-	gl_config.extensions_string = qglGetString (GL_EXTENSIONS);
-	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
+	gl_config.vendor_string =
+	( const char * )qglGetString( GL_VENDOR );
+	ri.Con_Printf( PRINT_ALL, "GL_VENDOR: %s\n",
+		gl_config.vendor_string );
+
+	gl_config.renderer_string =
+	( const char * )qglGetString( GL_RENDERER );
+	ri.Con_Printf( PRINT_ALL, "GL_RENDERER: %s\n",
+		gl_config.renderer_string );
+
+	gl_config.version_string =
+	( const char * )qglGetString( GL_VERSION );
+	ri.Con_Printf( PRINT_ALL, "GL_VERSION: %s\n",
+		gl_config.version_string );
+
+	gl_config.extensions_string =
+	( const char * )qglGetString( GL_EXTENSIONS );
+	ri.Con_Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n",
+		gl_config.extensions_string );
 
 	strcpy( renderer_buffer, gl_config.renderer_string );
 	strlwr( renderer_buffer );

@@ -157,12 +157,16 @@ void ( APIENTRY * qglFogi )(GLenum pname, GLint param);
 void ( APIENTRY * qglFogiv )(GLenum pname, const GLint *params);
 void ( APIENTRY * qglFrontFace )(GLenum mode);
 void ( APIENTRY * qglFrustum )(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar);
-GLuint ( APIENTRY * qglGenLists )(GLsizei range);
+typedef GLuint (APIENTRY * PGLGENLISTS)(GLsizei range);
+PGLGENLISTS qglGenLists;
+/*GLuint ( APIENTRY * qglGenLists )(GLsizei range);*/
 void ( APIENTRY * qglGenTextures )(GLsizei n, GLuint *textures);
 void ( APIENTRY * qglGetBooleanv )(GLenum pname, GLboolean *params);
 void ( APIENTRY * qglGetClipPlane )(GLenum plane, GLdouble *equation);
 void ( APIENTRY * qglGetDoublev )(GLenum pname, GLdouble *params);
-GLenum ( APIENTRY * qglGetError )(void);
+typedef GLenum (APIENTRY * PGLGETERROR)(void);
+PGLGETERROR qglGetError;
+/*GLenum ( APIENTRY * qglGetError )(void);*/
 void ( APIENTRY * qglGetFloatv )(GLenum pname, GLfloat *params);
 void ( APIENTRY * qglGetIntegerv )(GLenum pname, GLint *params);
 void ( APIENTRY * qglGetLightfv )(GLenum light, GLenum pname, GLfloat *params);
@@ -3151,12 +3155,12 @@ qboolean QGL_Init( const char *dllname )
 	qglFogiv                     = 	dllFogiv                     = GPA( "glFogiv" );
 	qglFrontFace                 = 	dllFrontFace                 = GPA( "glFrontFace" );
 	qglFrustum                   = 	dllFrustum                   = GPA( "glFrustum" );
-	qglGenLists                  = 	dllGenLists                  = GPA( "glGenLists" );
+	qglGenLists                  = 	dllGenLists                  = ( PGLGENLISTS )GPA( "glGenLists" );
 	qglGenTextures               = 	dllGenTextures               = GPA( "glGenTextures" );
 	qglGetBooleanv               = 	dllGetBooleanv               = GPA( "glGetBooleanv" );
 	qglGetClipPlane              = 	dllGetClipPlane              = GPA( "glGetClipPlane" );
 	qglGetDoublev                = 	dllGetDoublev                = GPA( "glGetDoublev" );
-	qglGetError                  = 	dllGetError                  = GPA( "glGetError" );
+	qglGetError                  = 	dllGetError                  = ( PGLGETERROR )GPA( "glGetError" );
 	qglGetFloatv                 = 	dllGetFloatv                 = GPA( "glGetFloatv" );
 	qglGetIntegerv               = 	dllGetIntegerv               = GPA( "glGetIntegerv" );
 	qglGetLightfv                = 	dllGetLightfv                = GPA( "glGetLightfv" );
