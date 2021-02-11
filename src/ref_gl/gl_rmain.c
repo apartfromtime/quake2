@@ -1269,8 +1269,10 @@ int R_Init( void *hinstance, void ** hwnd )
 		 strstr( gl_config.extensions_string, "GL_SGI_compiled_vertex_array" ) )
 	{
 		ri.Con_Printf( PRINT_ALL, "...enabling GL_EXT_compiled_vertex_array\n" );
-		qglLockArraysEXT = ( void * ) qwglGetProcAddress( "glLockArraysEXT" );
-		qglUnlockArraysEXT = ( void * ) qwglGetProcAddress( "glUnlockArraysEXT" );
+		qglLockArraysEXT = ( PFNGLLOCKARRAYSEXT )qwglGetProcAddress(
+			"glLockArraysEXT" );
+		qglUnlockArraysEXT = ( PFNGLUNLOCKARRAYSEXT ) qwglGetProcAddress(
+			"glUnlockArraysEXT" );
 	}
 	else
 	{
@@ -1351,9 +1353,15 @@ int R_Init( void *hinstance, void ** hwnd )
 		if ( gl_ext_multitexture->value )
 		{
 			ri.Con_Printf( PRINT_ALL, "...using GL_ARB_multitexture\n" );
-			qglMTexCoord2fSGIS = ( void * ) qwglGetProcAddress( "glMultiTexCoord2fARB" );
-			qglActiveTextureARB = ( void * ) qwglGetProcAddress( "glActiveTextureARB" );
-			qglClientActiveTextureARB = ( void * ) qwglGetProcAddress( "glClientActiveTextureARB" );
+			qglMTexCoord2fSGIS =
+				( PFNGLMULTITEXCOORD2FARB )qwglGetProcAddress(
+					"glMultiTexCoord2fARB" );
+			qglActiveTextureARB =
+				( PFNGLACTIVETEXTUREARB )qwglGetProcAddress(
+					"glActiveTextureARB" );
+			qglClientActiveTextureARB =
+				( PFNGLCLIENTACTIVETEXTUREARB )qwglGetProcAddress(
+					"glClientActiveTextureARB" );
 			GL_TEXTURE0 = GL_TEXTURE0_ARB;
 			GL_TEXTURE1 = GL_TEXTURE1_ARB;
 		}
@@ -1376,8 +1384,12 @@ int R_Init( void *hinstance, void ** hwnd )
 		else if ( gl_ext_multitexture->value )
 		{
 			ri.Con_Printf( PRINT_ALL, "...using GL_SGIS_multitexture\n" );
-			qglMTexCoord2fSGIS = ( void * ) qwglGetProcAddress( "glMTexCoord2fSGIS" );
-			qglSelectTextureSGIS = ( void * ) qwglGetProcAddress( "glSelectTextureSGIS" );
+			qglMTexCoord2fSGIS =
+				( PFNGLMULTITEXCOORD2FARB )qwglGetProcAddress(
+					"glMTexCoord2fSGIS" );
+			qglSelectTextureSGIS =
+				( PFNGLSELECTTEXTURESGIS )qwglGetProcAddress(
+					"glSelectTextureSGIS" );
 			GL_TEXTURE0 = GL_TEXTURE0_SGIS;
 			GL_TEXTURE1 = GL_TEXTURE1_SGIS;
 		}

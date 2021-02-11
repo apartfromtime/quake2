@@ -383,8 +383,16 @@ extern	void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 extern	void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
 extern	void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 
-extern	void ( APIENTRY * qglLockArraysEXT) (int , int);
+typedef void (APIENTRY * PFNGLLOCKARRAYSEXT)(GLint first, GLsizei count);
+typedef void (APIENTRY * PFNGLUNLOCKARRAYSEXT)(void);
+
+extern	void ( APIENTRY * qglLockArraysEXT) (GLint first, GLsizei count);
 extern	void ( APIENTRY * qglUnlockArraysEXT) (void);
+
+typedef void ( APIENTRY * PFNGLMULTITEXCOORD2FARB )(GLenum target, GLfloat s, GLfloat t);
+typedef void ( APIENTRY * PFNGLACTIVETEXTUREARB )(GLenum texture);
+typedef void ( APIENTRY * PFNGLCLIENTACTIVETEXTUREARB )(GLenum texture);
+typedef void ( APIENTRY * PFNGLSELECTTEXTURESGIS )(GLenum target);
 
 extern	void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 extern	void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
