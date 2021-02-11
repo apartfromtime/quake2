@@ -17,7 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-  
+
+#ifndef _SOFTWARE_LOCAL_H_
+#define _SOFTWARE_LOCAL_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -847,3 +850,4 @@ void		SWimp_Shutdown( void );
 rserr_t		SWimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen );
 void		SWimp_AppActivate( qboolean active );
 
+#endif /* #ifndef _SOFTWARE_LOCAL_H_ */
