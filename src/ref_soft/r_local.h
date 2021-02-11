@@ -430,6 +430,14 @@ typedef struct edge_s
 	medge_t                 *owner;
 } edge_t;
 
+typedef struct {
+	void			*pdest;
+	short			*pz;
+	int				count;
+	byte			*ptex;
+	int				sfrac, tfrac, light, zi;
+} spanpackage_t;
+
 
 /*
 ====================================================
@@ -643,7 +651,6 @@ void R_Surf8Patch (void);
 void R_Surf16Patch (void);
 void R_DrawSubmodelPolygons (model_t *pmodel, int clipflags, mnode_t *topnode);
 void R_DrawSolidClippedSubmodelPolygons (model_t *pmodel, mnode_t *topnode);
-
 void R_AddPolygonEdges (emitpoint_t *pverts, int numverts, int miplevel);
 surf_t *R_GetSurf (void);
 void R_AliasDrawModel (void);

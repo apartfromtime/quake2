@@ -36,13 +36,7 @@ int		rand1k_index = 0;
 									// 1 extra for spanpackage that marks end
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
-typedef struct {
-	void			*pdest;
-	short			*pz;
-	int				count;
-	byte			*ptex;
-	int				sfrac, tfrac, light, zi;
-} spanpackage_t;
+
 
 typedef struct {
 	int		isflattop;
