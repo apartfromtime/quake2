@@ -356,11 +356,11 @@ void	GL_ImageList_f (void)
 */
 
 #define	MAX_SCRAPS		1
-#define	BLOCK_WIDTH		256
-#define	BLOCK_HEIGHT	256
+#define	SCRAP_BLOCK_WIDTH		256
+#define	SCRAP_BLOCK_HEIGHT	256
 
-int			scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
-byte		scrap_texels[MAX_SCRAPS][BLOCK_WIDTH*BLOCK_HEIGHT];
+int			scrap_allocated[MAX_SCRAPS][SCRAP_BLOCK_WIDTH];
+byte		scrap_texels[MAX_SCRAPS][SCRAP_BLOCK_WIDTH*SCRAP_BLOCK_HEIGHT];
 qboolean	scrap_dirty;
 
 // returns a texture number and the position inside it
@@ -372,9 +372,9 @@ int Scrap_AllocBlock (int w, int h, int *x, int *y)
 
 	for (texnum=0 ; texnum<MAX_SCRAPS ; texnum++)
 	{
-		best = BLOCK_HEIGHT;
+		best = SCRAP_BLOCK_HEIGHT;
 
-		for (i=0 ; i<BLOCK_WIDTH-w ; i++)
+		for (i=0 ; i<SCRAP_BLOCK_WIDTH-w ; i++)
 		{
 			best2 = 0;
 
@@ -392,7 +392,7 @@ int Scrap_AllocBlock (int w, int h, int *x, int *y)
 			}
 		}
 
-		if (best + h > BLOCK_HEIGHT)
+		if (best + h > SCRAP_BLOCK_HEIGHT)
 			continue;
 
 		for (i=0 ; i<w ; i++)
@@ -411,7 +411,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(TEXNUM_SCRAPS);
-	GL_Upload8 (scrap_texels[0], BLOCK_WIDTH, BLOCK_HEIGHT, false, false );
+	GL_Upload8 (scrap_texels[0], SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false );
 	scrap_dirty = false;
 }
 
@@ -1283,14 +1283,14 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 		k = 0;
 		for (i=0 ; i<image->height ; i++)
 			for (j=0 ; j<image->width ; j++, k++)
-				scrap_texels[texnum][(y+i)*BLOCK_WIDTH + x + j] = pic[k];
+				scrap_texels[texnum][(y+i)*SCRAP_BLOCK_WIDTH + x + j] = pic[k];
 		image->texnum = TEXNUM_SCRAPS + texnum;
 		image->scrap = true;
 		image->has_alpha = true;
-		image->sl = (x+0.01)/(float)BLOCK_WIDTH;
-		image->sh = (x+image->width-0.01)/(float)BLOCK_WIDTH;
-		image->tl = (y+0.01)/(float)BLOCK_WIDTH;
-		image->th = (y+image->height-0.01)/(float)BLOCK_WIDTH;
+		image->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
+		image->sh = (x+image->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
+		image->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
+		image->th = (y+image->height-0.01)/(float)SCRAP_BLOCK_WIDTH;
 	}
 	else
 	{

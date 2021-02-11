@@ -31,8 +31,8 @@ msurface_t	*r_alpha_surfaces;
 
 #define LIGHTMAP_BYTES 4
 
-#define	BLOCK_WIDTH		128
-#define	BLOCK_HEIGHT	128
+#define	LIGHTMAP_BLOCK_WIDTH		128
+#define	LIGHTMAP_BLOCK_HEIGHT	128
 
 #define	MAX_LIGHTMAPS	128
 
@@ -48,11 +48,11 @@ typedef struct
 
 	msurface_t	*lightmap_surfaces[MAX_LIGHTMAPS];
 
-	int			allocated[BLOCK_WIDTH];
+	int			allocated[LIGHTMAP_BLOCK_WIDTH];
 
 	// the lightmap texture data needs to be kept in
 	// main memory so texsubimage can update properly
-	byte		lightmap_buffer[4*BLOCK_WIDTH*BLOCK_HEIGHT];
+	byte		lightmap_buffer[4*LIGHTMAP_BLOCK_WIDTH*LIGHTMAP_BLOCK_HEIGHT];
 } gllightmapstate_t;
 
 static gllightmapstate_t gl_lms;
@@ -410,9 +410,9 @@ void R_BlendLightmaps (void)
 			if ( LM_AllocBlock( smax, tmax, &surf->dlight_s, &surf->dlight_t ) )
 			{
 				base = gl_lms.lightmap_buffer;
-				base += ( surf->dlight_t * BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
+				base += ( surf->dlight_t * LIGHTMAP_BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
 
-				R_BuildLightMap (surf, base, BLOCK_WIDTH*LIGHTMAP_BYTES);
+				R_BuildLightMap (surf, base, LIGHTMAP_BLOCK_WIDTH*LIGHTMAP_BYTES);
 			}
 			else
 			{
@@ -442,9 +442,9 @@ void R_BlendLightmaps (void)
 				}
 
 				base = gl_lms.lightmap_buffer;
-				base += ( surf->dlight_t * BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
+				base += ( surf->dlight_t * LIGHTMAP_BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
 
-				R_BuildLightMap (surf, base, BLOCK_WIDTH*LIGHTMAP_BYTES);
+				R_BuildLightMap (surf, base, LIGHTMAP_BLOCK_WIDTH*LIGHTMAP_BYTES);
 			}
 		}
 
@@ -1377,7 +1377,7 @@ static void LM_UploadBlock( qboolean dynamic )
 	{
 		int i;
 
-		for ( i = 0; i < BLOCK_WIDTH; i++ )
+		for ( i = 0; i < LIGHTMAP_BLOCK_WIDTH; i++ )
 		{
 			if ( gl_lms.allocated[i] > height )
 				height = gl_lms.allocated[i];
@@ -1386,7 +1386,7 @@ static void LM_UploadBlock( qboolean dynamic )
 		qglTexSubImage2D( GL_TEXTURE_2D, 
 						  0,
 						  0, 0,
-						  BLOCK_WIDTH, height,
+						  LIGHTMAP_BLOCK_WIDTH, height,
 						  GL_LIGHTMAP_FORMAT,
 						  GL_UNSIGNED_BYTE,
 						  gl_lms.lightmap_buffer );
@@ -1396,7 +1396,7 @@ static void LM_UploadBlock( qboolean dynamic )
 		qglTexImage2D( GL_TEXTURE_2D, 
 					   0, 
 					   gl_lms.internal_format,
-					   BLOCK_WIDTH, BLOCK_HEIGHT, 
+					   LIGHTMAP_BLOCK_WIDTH, LIGHTMAP_BLOCK_HEIGHT, 
 					   0, 
 					   GL_LIGHTMAP_FORMAT, 
 					   GL_UNSIGNED_BYTE, 
@@ -1412,9 +1412,9 @@ static qboolean LM_AllocBlock (int w, int h, int *x, int *y)
 	int		i, j;
 	int		best, best2;
 
-	best = BLOCK_HEIGHT;
+	best = LIGHTMAP_BLOCK_HEIGHT;
 
-	for (i=0 ; i<BLOCK_WIDTH-w ; i++)
+	for (i=0 ; i<LIGHTMAP_BLOCK_WIDTH-w ; i++)
 	{
 		best2 = 0;
 
@@ -1432,7 +1432,7 @@ static qboolean LM_AllocBlock (int w, int h, int *x, int *y)
 		}
 	}
 
-	if (best + h > BLOCK_HEIGHT)
+	if (best + h > LIGHTMAP_BLOCK_HEIGHT)
 		return false;
 
 	for (i=0 ; i<w ; i++)
@@ -1503,13 +1503,13 @@ void GL_BuildPolygonFromSurface(msurface_t *fa)
 		s -= fa->texturemins[0];
 		s += fa->light_s*16;
 		s += 8;
-		s /= BLOCK_WIDTH*16; //fa->texinfo->texture->width;
+		s /= LIGHTMAP_BLOCK_WIDTH*16; //fa->texinfo->texture->width;
 
 		t = DotProduct (vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
 		t -= fa->texturemins[1];
 		t += fa->light_t*16;
 		t += 8;
-		t /= BLOCK_HEIGHT*16; //fa->texinfo->texture->height;
+		t /= LIGHTMAP_BLOCK_HEIGHT*16; //fa->texinfo->texture->height;
 
 		poly->verts[i][5] = s;
 		poly->verts[i][6] = t;
@@ -1548,10 +1548,10 @@ void GL_CreateSurfaceLightmap (msurface_t *surf)
 	surf->lightmaptexturenum = gl_lms.current_lightmap_texture;
 
 	base = gl_lms.lightmap_buffer;
-	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * LIGHTMAP_BYTES;
+	base += (surf->light_t * LIGHTMAP_BLOCK_WIDTH + surf->light_s) * LIGHTMAP_BYTES;
 
 	R_SetCacheState( surf );
-	R_BuildLightMap (surf, base, BLOCK_WIDTH*LIGHTMAP_BYTES);
+	R_BuildLightMap (surf, base, LIGHTMAP_BLOCK_WIDTH*LIGHTMAP_BYTES);
 }
 
 
@@ -1642,7 +1642,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	qglTexImage2D( GL_TEXTURE_2D, 
 				   0, 
 				   gl_lms.internal_format,
-				   BLOCK_WIDTH, BLOCK_HEIGHT, 
+				   LIGHTMAP_BLOCK_WIDTH, LIGHTMAP_BLOCK_HEIGHT, 
 				   0, 
 				   GL_LIGHTMAP_FORMAT, 
 				   GL_UNSIGNED_BYTE, 
