@@ -72,7 +72,7 @@ edge_t	edge_tail;
 edge_t	edge_aftertail;
 edge_t	edge_sentinel;
 
-float	fv;
+float	fv; /* FIXME: WTF? */
 
 static int	miplevel;
 

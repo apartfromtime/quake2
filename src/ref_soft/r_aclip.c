@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "r_local.h"
 
-static finalvert_t		fv[2][8];
+static finalvert_t		finalvert[2][8]; /* FIXME: WTF */
 
 void R_AliasProjectAndClipTestFinalVert (finalvert_t *fv);
 void R_Alias_clip_top (finalvert_t *pfv0, finalvert_t *pfv1,
@@ -234,21 +234,21 @@ void R_AliasClipTriangle (finalvert_t *index0, finalvert_t *index1, finalvert_t 
 	unsigned		clipflags;
 
 // copy vertexes and fix seam texture coordinates
-	fv[0][0] = *index0;
-	fv[0][1] = *index1;
-	fv[0][2] = *index2;
+	finalvert[0][0] = *index0;
+	finalvert[0][1] = *index1;
+	finalvert[0][2] = *index2;
 
 // clip
-	clipflags = fv[0][0].flags | fv[0][1].flags | fv[0][2].flags;
+	clipflags = finalvert[0][0].flags | finalvert[0][1].flags | finalvert[0][2].flags;
 
 	if (clipflags & ALIAS_Z_CLIP)
 	{
-		k = R_AliasClip (fv[0], fv[1], ALIAS_Z_CLIP, 3, R_Alias_clip_z);
+		k = R_AliasClip (finalvert[0], finalvert[1], ALIAS_Z_CLIP, 3, R_Alias_clip_z);
 		if (k == 0)
 			return;
 
 		pingpong = 1;
-		clipflags = fv[1][0].flags | fv[1][1].flags | fv[1][2].flags;
+		clipflags = finalvert[1][0].flags | finalvert[1][1].flags | finalvert[1][2].flags;
 	}
 	else
 	{
@@ -258,7 +258,7 @@ void R_AliasClipTriangle (finalvert_t *index0, finalvert_t *index1, finalvert_t 
 
 	if (clipflags & ALIAS_LEFT_CLIP)
 	{
-		k = R_AliasClip (fv[pingpong], fv[pingpong ^ 1],
+		k = R_AliasClip (finalvert[pingpong], finalvert[pingpong ^ 1],
 							ALIAS_LEFT_CLIP, k, R_Alias_clip_left);
 		if (k == 0)
 			return;
@@ -268,7 +268,7 @@ void R_AliasClipTriangle (finalvert_t *index0, finalvert_t *index1, finalvert_t 
 
 	if (clipflags & ALIAS_RIGHT_CLIP)
 	{
-		k = R_AliasClip (fv[pingpong], fv[pingpong ^ 1],
+		k = R_AliasClip (finalvert[pingpong], finalvert[pingpong ^ 1],
 							ALIAS_RIGHT_CLIP, k, R_Alias_clip_right);
 		if (k == 0)
 			return;
@@ -278,7 +278,7 @@ void R_AliasClipTriangle (finalvert_t *index0, finalvert_t *index1, finalvert_t 
 
 	if (clipflags & ALIAS_BOTTOM_CLIP)
 	{
-		k = R_AliasClip (fv[pingpong], fv[pingpong ^ 1],
+		k = R_AliasClip (finalvert[pingpong], finalvert[pingpong ^ 1],
 							ALIAS_BOTTOM_CLIP, k, R_Alias_clip_bottom);
 		if (k == 0)
 			return;
@@ -288,7 +288,7 @@ void R_AliasClipTriangle (finalvert_t *index0, finalvert_t *index1, finalvert_t 
 
 	if (clipflags & ALIAS_TOP_CLIP)
 	{
-		k = R_AliasClip (fv[pingpong], fv[pingpong ^ 1],
+		k = R_AliasClip (finalvert[pingpong], finalvert[pingpong ^ 1],
 							ALIAS_TOP_CLIP, k, R_Alias_clip_top);
 		if (k == 0)
 			return;
@@ -298,25 +298,25 @@ void R_AliasClipTriangle (finalvert_t *index0, finalvert_t *index1, finalvert_t 
 
 	for (i=0 ; i<k ; i++)
 	{
-		if (fv[pingpong][i].u < r_refdef.aliasvrect.x)
-			fv[pingpong][i].u = r_refdef.aliasvrect.x;
-		else if (fv[pingpong][i].u > r_refdef.aliasvrectright)
-			fv[pingpong][i].u = r_refdef.aliasvrectright;
+		if (finalvert[pingpong][i].u < r_refdef.aliasvrect.x)
+			finalvert[pingpong][i].u = r_refdef.aliasvrect.x;
+		else if (finalvert[pingpong][i].u > r_refdef.aliasvrectright)
+			finalvert[pingpong][i].u = r_refdef.aliasvrectright;
 
-		if (fv[pingpong][i].v < r_refdef.aliasvrect.y)
-			fv[pingpong][i].v = r_refdef.aliasvrect.y;
-		else if (fv[pingpong][i].v > r_refdef.aliasvrectbottom)
-			fv[pingpong][i].v = r_refdef.aliasvrectbottom;
+		if (finalvert[pingpong][i].v < r_refdef.aliasvrect.y)
+			finalvert[pingpong][i].v = r_refdef.aliasvrect.y;
+		else if (finalvert[pingpong][i].v > r_refdef.aliasvrectbottom)
+			finalvert[pingpong][i].v = r_refdef.aliasvrectbottom;
 
-		fv[pingpong][i].flags = 0;
+		finalvert[pingpong][i].flags = 0;
 	}
 
 // draw triangles
 	for (i=1 ; i<k-1 ; i++)
 	{
-		aliastriangleparms.a = &fv[pingpong][0];
-		aliastriangleparms.b = &fv[pingpong][i];
-		aliastriangleparms.c = &fv[pingpong][i+1];
+		aliastriangleparms.a = &finalvert[pingpong][0];
+		aliastriangleparms.b = &finalvert[pingpong][i];
+		aliastriangleparms.c = &finalvert[pingpong][i+1];
 		R_DrawTriangle();
 	}
 }
