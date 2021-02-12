@@ -60,7 +60,7 @@ static int s_syspalindices[] =
 
 #define NUM_SYS_COLORS ( sizeof( s_syspalindices ) / sizeof( int ) )
 
-static int s_oldsyscolors[NUM_SYS_COLORS];
+static COLORREF s_oldsyscolors[NUM_SYS_COLORS];
 
 typedef struct dibinfo
 {
