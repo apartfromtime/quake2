@@ -29,7 +29,7 @@ extern void R_PolyChooseSpanletRoutine( float alpha, qboolean isturbulent );
 
 extern vec5_t r_clip_verts[2][MAXWORKINGVERTS+2];
 
-extern void	R_ClipAndDrawPoly( float alpha, qboolean isturbulent, qboolean textured );
+extern void	R_ClipAndDrawPoly( float alpha, int isturbulent, qboolean textured );
 
 /*
 ** R_DrawSprite
