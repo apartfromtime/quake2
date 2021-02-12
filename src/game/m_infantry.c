@@ -70,7 +70,7 @@ mframe_t infantry_frames_stand [] =
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL
 };
-mmove_t infantry_move_stand = {FRAME_stand50, FRAME_stand71, infantry_frames_stand, NULL};
+mmove_t infantry_move_stand = {INFANTRY_FRAME_stand50, INFANTRY_FRAME_stand71, infantry_frames_stand, NULL};
 
 void infantry_stand (edict_t *self)
 {
@@ -130,7 +130,7 @@ mframe_t infantry_frames_fidget [] =
 	ai_stand, -3, NULL,
 	ai_stand, -2, NULL
 };
-mmove_t infantry_move_fidget = {FRAME_stand01, FRAME_stand49, infantry_frames_fidget, infantry_stand};
+mmove_t infantry_move_fidget = {INFANTRY_FRAME_stand01, INFANTRY_FRAME_stand49, infantry_frames_fidget, infantry_stand};
 
 void infantry_fidget (edict_t *self)
 {
@@ -153,7 +153,7 @@ mframe_t infantry_frames_walk [] =
 	ai_walk, 4,  NULL,
 	ai_walk, 5,  NULL
 };
-mmove_t infantry_move_walk = {FRAME_walk03, FRAME_walk14, infantry_frames_walk, NULL};
+mmove_t infantry_move_walk = {INFANTRY_FRAME_walk03, INFANTRY_FRAME_walk14, infantry_frames_walk, NULL};
 
 void infantry_walk (edict_t *self)
 {
@@ -171,7 +171,7 @@ mframe_t infantry_frames_run [] =
 	ai_run, 2,  NULL,
 	ai_run, 6,  NULL
 };
-mmove_t infantry_move_run = {FRAME_run01, FRAME_run08, infantry_frames_run, NULL};
+mmove_t infantry_move_run = {INFANTRY_FRAME_run01, INFANTRY_FRAME_run08, infantry_frames_run, NULL};
 
 void infantry_run (edict_t *self)
 {
@@ -195,7 +195,7 @@ mframe_t infantry_frames_pain1 [] =
 	ai_move, 6,  NULL,
 	ai_move, 2,  NULL
 };
-mmove_t infantry_move_pain1 = {FRAME_pain101, FRAME_pain110, infantry_frames_pain1, infantry_run};
+mmove_t infantry_move_pain1 = {INFANTRY_FRAME_pain101, INFANTRY_FRAME_pain110, infantry_frames_pain1, infantry_run};
 
 mframe_t infantry_frames_pain2 [] =
 {
@@ -210,7 +210,7 @@ mframe_t infantry_frames_pain2 [] =
 	ai_move, 5,  NULL,
 	ai_move, 2,  NULL
 };
-mmove_t infantry_move_pain2 = {FRAME_pain201, FRAME_pain210, infantry_frames_pain2, infantry_run};
+mmove_t infantry_move_pain2 = {INFANTRY_FRAME_pain201, INFANTRY_FRAME_pain210, infantry_frames_pain2, infantry_run};
 
 void infantry_pain (edict_t *self, edict_t *other, float kick, int damage)
 {
@@ -264,7 +264,7 @@ void InfantryMachineGun (edict_t *self)
 	vec3_t	vec;
 	int		flash_number;
 
-	if (self->s.frame == FRAME_attak111)
+	if (self->s.frame == INFANTRY_FRAME_attak111)
 	{
 		flash_number = MZ2_INFANTRY_MACHINEGUN_1;
 		AngleVectors (self->s.angles, forward, right, NULL);
@@ -284,7 +284,7 @@ void InfantryMachineGun (edict_t *self)
 	}
 	else
 	{
-		flash_number = MZ2_INFANTRY_MACHINEGUN_2 + (self->s.frame - FRAME_death211);
+		flash_number = MZ2_INFANTRY_MACHINEGUN_2 + (self->s.frame - INFANTRY_FRAME_death211);
 
 		AngleVectors (self->s.angles, forward, right, NULL);
 		G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
@@ -335,7 +335,7 @@ mframe_t infantry_frames_death1 [] =
 	ai_move, -3, NULL,
 	ai_move, -3, NULL
 };
-mmove_t infantry_move_death1 = {FRAME_death101, FRAME_death120, infantry_frames_death1, infantry_dead};
+mmove_t infantry_move_death1 = {INFANTRY_FRAME_death101, INFANTRY_FRAME_death120, infantry_frames_death1, infantry_dead};
 
 // Off with his head
 mframe_t infantry_frames_death2 [] =
@@ -366,7 +366,7 @@ mframe_t infantry_frames_death2 [] =
 	ai_move, 4,   NULL,
 	ai_move, 0,   NULL
 };
-mmove_t infantry_move_death2 = {FRAME_death201, FRAME_death225, infantry_frames_death2, infantry_dead};
+mmove_t infantry_move_death2 = {INFANTRY_FRAME_death201, INFANTRY_FRAME_death225, infantry_frames_death2, infantry_dead};
 
 mframe_t infantry_frames_death3 [] =
 {
@@ -380,7 +380,7 @@ mframe_t infantry_frames_death3 [] =
 	ai_move, 0,   NULL,
 	ai_move, 0,   NULL
 };
-mmove_t infantry_move_death3 = {FRAME_death301, FRAME_death309, infantry_frames_death3, infantry_dead};
+mmove_t infantry_move_death3 = {INFANTRY_FRAME_death301, INFANTRY_FRAME_death309, infantry_frames_death3, infantry_dead};
 
 
 void infantry_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -461,7 +461,7 @@ mframe_t infantry_frames_duck [] =
 	ai_move, 4,  infantry_duck_up,
 	ai_move, 0,  NULL
 };
-mmove_t infantry_move_duck = {FRAME_duck01, FRAME_duck05, infantry_frames_duck, infantry_run};
+mmove_t infantry_move_duck = {INFANTRY_FRAME_duck01, INFANTRY_FRAME_duck05, infantry_frames_duck, infantry_run};
 
 void infantry_dodge (edict_t *self, edict_t *attacker, float eta)
 {
@@ -512,7 +512,7 @@ mframe_t infantry_frames_attack1 [] =
 	ai_charge, -2, NULL,
 	ai_charge, -3, NULL
 };
-mmove_t infantry_move_attack1 = {FRAME_attak101, FRAME_attak115, infantry_frames_attack1, infantry_run};
+mmove_t infantry_move_attack1 = {INFANTRY_FRAME_attak101, INFANTRY_FRAME_attak115, infantry_frames_attack1, infantry_run};
 
 
 void infantry_swing (edict_t *self)
@@ -540,7 +540,7 @@ mframe_t infantry_frames_attack2 [] =
 	ai_charge, 6, NULL,
 	ai_charge, 3, NULL,
 };
-mmove_t infantry_move_attack2 = {FRAME_attak201, FRAME_attak208, infantry_frames_attack2, infantry_run};
+mmove_t infantry_move_attack2 = {INFANTRY_FRAME_attak201, INFANTRY_FRAME_attak208, infantry_frames_attack2, infantry_run};
 
 void infantry_attack(edict_t *self)
 {
@@ -601,7 +601,7 @@ void SP_monster_infantry (edict_t *self)
 	gi.linkentity (self);
 
 	self->monsterinfo.currentmove = &infantry_move_stand;
-	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.scale = INFANTRY_MODEL_SCALE;
 
 	walkmonster_start (self);
 }

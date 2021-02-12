@@ -82,7 +82,7 @@ mframe_t actor_frames_stand [] =
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL
 };
-mmove_t actor_move_stand = {FRAME_stand101, FRAME_stand140, actor_frames_stand, NULL};
+mmove_t actor_move_stand = {ACTOR_FRAME_stand101, ACTOR_FRAME_stand140, actor_frames_stand, NULL};
 
 void actor_stand (edict_t *self)
 {
@@ -108,7 +108,7 @@ mframe_t actor_frames_walk [] =
 	ai_walk, 0,  NULL,
 	ai_walk, 0,  NULL
 };
-mmove_t actor_move_walk = {FRAME_walk01, FRAME_walk08, actor_frames_walk, NULL};
+mmove_t actor_move_walk = {ACTOR_FRAME_walk01, ACTOR_FRAME_walk08, actor_frames_walk, NULL};
 
 void actor_walk (edict_t *self)
 {
@@ -131,7 +131,7 @@ mframe_t actor_frames_run [] =
 	ai_run, -2, NULL,
 	ai_run, -1, NULL
 };
-mmove_t actor_move_run = {FRAME_run02, FRAME_run07, actor_frames_run, NULL};
+mmove_t actor_move_run = {ACTOR_FRAME_run02, ACTOR_FRAME_run07, actor_frames_run, NULL};
 
 void actor_run (edict_t *self)
 {
@@ -160,7 +160,7 @@ mframe_t actor_frames_pain1 [] =
 	ai_move, 4,  NULL,
 	ai_move, 1,  NULL
 };
-mmove_t actor_move_pain1 = {FRAME_pain101, FRAME_pain103, actor_frames_pain1, actor_run};
+mmove_t actor_move_pain1 = {ACTOR_FRAME_pain101, ACTOR_FRAME_pain103, actor_frames_pain1, actor_run};
 
 mframe_t actor_frames_pain2 [] =
 {
@@ -168,7 +168,7 @@ mframe_t actor_frames_pain2 [] =
 	ai_move, 4,  NULL,
 	ai_move, 0,  NULL
 };
-mmove_t actor_move_pain2 = {FRAME_pain201, FRAME_pain203, actor_frames_pain2, actor_run};
+mmove_t actor_move_pain2 = {ACTOR_FRAME_pain201, ACTOR_FRAME_pain203, actor_frames_pain2, actor_run};
 
 mframe_t actor_frames_pain3 [] =
 {
@@ -176,7 +176,7 @@ mframe_t actor_frames_pain3 [] =
 	ai_move, 1,  NULL,
 	ai_move, 0,  NULL
 };
-mmove_t actor_move_pain3 = {FRAME_pain301, FRAME_pain303, actor_frames_pain3, actor_run};
+mmove_t actor_move_pain3 = {ACTOR_FRAME_pain301, ACTOR_FRAME_pain303, actor_frames_pain3, actor_run};
 
 mframe_t actor_frames_flipoff [] =
 {
@@ -195,7 +195,7 @@ mframe_t actor_frames_flipoff [] =
 	ai_turn, 0,  NULL,
 	ai_turn, 0,  NULL
 };
-mmove_t actor_move_flipoff = {FRAME_flip01, FRAME_flip14, actor_frames_flipoff, actor_run};
+mmove_t actor_move_flipoff = {ACTOR_FRAME_flip01, ACTOR_FRAME_flip14, actor_frames_flipoff, actor_run};
 
 mframe_t actor_frames_taunt [] =
 {
@@ -217,7 +217,7 @@ mframe_t actor_frames_taunt [] =
 	ai_turn, 0,  NULL,
 	ai_turn, 0,  NULL
 };
-mmove_t actor_move_taunt = {FRAME_taunt01, FRAME_taunt17, actor_frames_taunt, actor_run};
+mmove_t actor_move_taunt = {ACTOR_FRAME_taunt01, ACTOR_FRAME_taunt17, actor_frames_taunt, actor_run};
 
 char *messages[] =
 {
@@ -316,7 +316,7 @@ mframe_t actor_frames_death1 [] =
 	ai_move, -2,  NULL,
 	ai_move, 1,   NULL
 };
-mmove_t actor_move_death1 = {FRAME_death101, FRAME_death107, actor_frames_death1, actor_dead};
+mmove_t actor_move_death1 = {ACTOR_FRAME_death101, ACTOR_FRAME_death107, actor_frames_death1, actor_dead};
 
 mframe_t actor_frames_death2 [] =
 {
@@ -334,7 +334,7 @@ mframe_t actor_frames_death2 [] =
 	ai_move, -13, NULL,
 	ai_move, 0,   NULL
 };
-mmove_t actor_move_death2 = {FRAME_death201, FRAME_death213, actor_frames_death2, actor_dead};
+mmove_t actor_move_death2 = {ACTOR_FRAME_death201, ACTOR_FRAME_death213, actor_frames_death2, actor_dead};
 
 void actor_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
@@ -386,7 +386,7 @@ mframe_t actor_frames_attack [] =
 	ai_charge, 3,   NULL,
 	ai_charge, 2,   NULL
 };
-mmove_t actor_move_attack = {FRAME_attak01, FRAME_attak04, actor_frames_attack, actor_run};
+mmove_t actor_move_attack = {ACTOR_FRAME_attak01, ACTOR_FRAME_attak04, actor_frames_attack, actor_run};
 
 void actor_attack(edict_t *self)
 {
@@ -469,7 +469,7 @@ void SP_misc_actor (edict_t *self)
 	gi.linkentity (self);
 
 	self->monsterinfo.currentmove = &actor_move_stand;
-	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.scale = ACTOR_MODEL_SCALE;
 
 	walkmonster_start (self);
 

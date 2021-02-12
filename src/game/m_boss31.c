@@ -134,7 +134,7 @@ mframe_t jorg_frames_stand []=
 	ai_stand, -12, NULL,		// 50
 	ai_stand, -14, jorg_step_right	// 51
 };
-mmove_t	jorg_move_stand = {FRAME_stand01, FRAME_stand51, jorg_frames_stand, NULL};
+mmove_t	jorg_move_stand = {BOSS31_FRAME_stand01, BOSS31_FRAME_stand51, jorg_frames_stand, NULL};
 
 void jorg_idle (edict_t *self)
 {
@@ -180,7 +180,7 @@ mframe_t jorg_frames_run [] =
 	ai_run, 9,	NULL,
 	ai_run, 9,	NULL
 };
-mmove_t	jorg_move_run = {FRAME_walk06, FRAME_walk19, jorg_frames_run, NULL};
+mmove_t	jorg_move_run = {BOSS31_FRAME_walk06, BOSS31_FRAME_walk19, jorg_frames_run, NULL};
 
 //
 // walk
@@ -194,7 +194,7 @@ mframe_t jorg_frames_start_walk [] =
 	ai_walk,	9,	NULL,
 	ai_walk,	15,	NULL
 };
-mmove_t jorg_move_start_walk = {FRAME_walk01, FRAME_walk05, jorg_frames_start_walk, NULL};
+mmove_t jorg_move_start_walk = {BOSS31_FRAME_walk01, BOSS31_FRAME_walk05, jorg_frames_start_walk, NULL};
 
 mframe_t jorg_frames_walk [] =
 {
@@ -213,7 +213,7 @@ mframe_t jorg_frames_walk [] =
 	ai_walk, 9,	NULL,
 	ai_walk, 9,	NULL
 };
-mmove_t	jorg_move_walk = {FRAME_walk06, FRAME_walk19, jorg_frames_walk, NULL};
+mmove_t	jorg_move_walk = {BOSS31_FRAME_walk06, BOSS31_FRAME_walk19, jorg_frames_walk, NULL};
 
 mframe_t jorg_frames_end_walk [] =
 {
@@ -224,7 +224,7 @@ mframe_t jorg_frames_end_walk [] =
 	ai_walk,	8,	NULL,
 	ai_walk,	-8,	NULL
 };
-mmove_t jorg_move_end_walk = {FRAME_walk20, FRAME_walk25, jorg_frames_end_walk, NULL};
+mmove_t jorg_move_end_walk = {BOSS31_FRAME_walk20, BOSS31_FRAME_walk25, jorg_frames_end_walk, NULL};
 
 void jorg_walk (edict_t *self)
 {
@@ -267,7 +267,7 @@ mframe_t jorg_frames_pain3 [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	jorg_step_right
 };
-mmove_t jorg_move_pain3 = {FRAME_pain301, FRAME_pain325, jorg_frames_pain3, jorg_run};
+mmove_t jorg_move_pain3 = {BOSS31_FRAME_pain301, BOSS31_FRAME_pain325, jorg_frames_pain3, jorg_run};
 
 mframe_t jorg_frames_pain2 [] =
 {
@@ -275,7 +275,7 @@ mframe_t jorg_frames_pain2 [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t jorg_move_pain2 = {FRAME_pain201, FRAME_pain203, jorg_frames_pain2, jorg_run};
+mmove_t jorg_move_pain2 = {BOSS31_FRAME_pain201, BOSS31_FRAME_pain203, jorg_frames_pain2, jorg_run};
 
 mframe_t jorg_frames_pain1 [] =
 {
@@ -283,7 +283,7 @@ mframe_t jorg_frames_pain1 [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t jorg_move_pain1 = {FRAME_pain101, FRAME_pain103, jorg_frames_pain1, jorg_run};
+mmove_t jorg_move_pain1 = {BOSS31_FRAME_pain101, BOSS31_FRAME_pain103, jorg_frames_pain1, jorg_run};
 
 mframe_t jorg_frames_death1 [] =
 {
@@ -338,7 +338,7 @@ mframe_t jorg_frames_death1 [] =
 	ai_move,	0,	MakronToss,
 	ai_move,	0,	BossExplode		// 50
 };
-mmove_t jorg_move_death = {FRAME_death01, FRAME_death50, jorg_frames_death1, jorg_dead};
+mmove_t jorg_move_death = {BOSS31_FRAME_death01, BOSS31_FRAME_death50, jorg_frames_death1, jorg_dead};
 
 mframe_t jorg_frames_attack2 []=
 {
@@ -356,7 +356,7 @@ mframe_t jorg_frames_attack2 []=
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t jorg_move_attack2 = {FRAME_attak201, FRAME_attak213, jorg_frames_attack2, jorg_run};
+mmove_t jorg_move_attack2 = {BOSS31_FRAME_attak201, BOSS31_FRAME_attak213, jorg_frames_attack2, jorg_run};
 
 mframe_t jorg_frames_start_attack1 [] =
 {
@@ -369,7 +369,7 @@ mframe_t jorg_frames_start_attack1 [] =
 	ai_charge,	0,	NULL,
 	ai_charge,	0,	NULL
 };
-mmove_t jorg_move_start_attack1 = {FRAME_attak101, FRAME_attak108, jorg_frames_start_attack1, jorg_attack1};
+mmove_t jorg_move_start_attack1 = {BOSS31_FRAME_attak101, BOSS31_FRAME_attak108, jorg_frames_start_attack1, jorg_attack1};
 
 mframe_t jorg_frames_attack1[]=
 {
@@ -380,7 +380,7 @@ mframe_t jorg_frames_attack1[]=
 	ai_charge,	0,	jorg_firebullet,
 	ai_charge,	0,	jorg_firebullet
 };
-mmove_t jorg_move_attack1 = {FRAME_attak109, FRAME_attak114, jorg_frames_attack1, jorg_reattack1};
+mmove_t jorg_move_attack1 = {BOSS31_FRAME_attak109, BOSS31_FRAME_attak114, jorg_frames_attack1, jorg_reattack1};
 
 mframe_t jorg_frames_end_attack1[]=
 {
@@ -389,7 +389,7 @@ mframe_t jorg_frames_end_attack1[]=
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t jorg_move_end_attack1 = {FRAME_attak115, FRAME_attak118, jorg_frames_end_attack1, jorg_run};
+mmove_t jorg_move_end_attack1 = {BOSS31_FRAME_attak115, BOSS31_FRAME_attak118, jorg_frames_end_attack1, jorg_run};
 
 void jorg_reattack1(edict_t *self)
 {
@@ -434,16 +434,16 @@ void jorg_pain (edict_t *self, edict_t *other, float kick, int damage)
 	going into pain
 	*/
 	
-	if ( (self->s.frame >= FRAME_attak101) && (self->s.frame <= FRAME_attak108) )
+	if ( (self->s.frame >= BOSS31_FRAME_attak101) && (self->s.frame <= BOSS31_FRAME_attak108) )
 		if (random() <= 0.005)
 			return;
 
-	if ( (self->s.frame >= FRAME_attak109) && (self->s.frame <= FRAME_attak114) )
+	if ( (self->s.frame >= BOSS31_FRAME_attak109) && (self->s.frame <= BOSS31_FRAME_attak114) )
 		if (random() <= 0.00005)
 			return;
 
 
-	if ( (self->s.frame >= FRAME_attak201) && (self->s.frame <= FRAME_attak208) )
+	if ( (self->s.frame >= BOSS31_FRAME_attak201) && (self->s.frame <= BOSS31_FRAME_attak208) )
 		if (random() <= 0.005)
 			return;
 
@@ -743,7 +743,7 @@ void SP_monster_jorg (edict_t *self)
 	gi.linkentity (self);
 	
 	self->monsterinfo.currentmove = &jorg_move_stand;
-	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.scale = BOSS31_MODEL_SCALE;
 
 	walkmonster_start(self);
 }

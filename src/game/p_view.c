@@ -101,8 +101,8 @@ void P_DamageFeedback (edict_t *player)
 		client->anim_priority = ANIM_PAIN;
 		if (client->ps.pmove.pm_flags & PMF_DUCKED)
 		{
-			player->s.frame = FRAME_crpain1-1;
-			client->anim_end = FRAME_crpain4;
+			player->s.frame = PLAYER_FRAME_crpain1-1;
+			client->anim_end = PLAYER_FRAME_crpain4;
 		}
 		else
 		{
@@ -110,16 +110,16 @@ void P_DamageFeedback (edict_t *player)
 			switch (i)
 			{
 			case 0:
-				player->s.frame = FRAME_pain101-1;
-				client->anim_end = FRAME_pain104;
+				player->s.frame = PLAYER_FRAME_pain101-1;
+				client->anim_end = PLAYER_FRAME_pain104;
 				break;
 			case 1:
-				player->s.frame = FRAME_pain201-1;
-				client->anim_end = FRAME_pain204;
+				player->s.frame = PLAYER_FRAME_pain201-1;
+				client->anim_end = PLAYER_FRAME_pain204;
 				break;
 			case 2:
-				player->s.frame = FRAME_pain301-1;
-				client->anim_end = FRAME_pain304;
+				player->s.frame = PLAYER_FRAME_pain301-1;
+				client->anim_end = PLAYER_FRAME_pain304;
 				break;
 			}
 		}
@@ -900,8 +900,8 @@ void G_SetClientFrame (edict_t *ent)
 		if (!ent->groundentity)
 			return;		// stay there
 		ent->client->anim_priority = ANIM_WAVE;
-		ent->s.frame = FRAME_jump3;
-		ent->client->anim_end = FRAME_jump6;
+		ent->s.frame = PLAYER_FRAME_jump3;
+		ent->client->anim_end = PLAYER_FRAME_jump6;
 		return;
 	}
 
@@ -914,34 +914,34 @@ newanim:
 	if (!ent->groundentity)
 	{
 		client->anim_priority = ANIM_JUMP;
-		if (ent->s.frame != FRAME_jump2)
-			ent->s.frame = FRAME_jump1;
-		client->anim_end = FRAME_jump2;
+		if (ent->s.frame != PLAYER_FRAME_jump2)
+			ent->s.frame = PLAYER_FRAME_jump1;
+		client->anim_end = PLAYER_FRAME_jump2;
 	}
 	else if (run)
 	{	// running
 		if (duck)
 		{
-			ent->s.frame = FRAME_crwalk1;
-			client->anim_end = FRAME_crwalk6;
+			ent->s.frame = PLAYER_FRAME_crwalk1;
+			client->anim_end = PLAYER_FRAME_crwalk6;
 		}
 		else
 		{
-			ent->s.frame = FRAME_run1;
-			client->anim_end = FRAME_run6;
+			ent->s.frame = PLAYER_FRAME_run1;
+			client->anim_end = PLAYER_FRAME_run6;
 		}
 	}
 	else
 	{	// standing
 		if (duck)
 		{
-			ent->s.frame = FRAME_crstnd01;
-			client->anim_end = FRAME_crstnd19;
+			ent->s.frame = PLAYER_FRAME_crstnd01;
+			client->anim_end = PLAYER_FRAME_crstnd19;
 		}
 		else
 		{
-			ent->s.frame = FRAME_stand01;
-			client->anim_end = FRAME_stand40;
+			ent->s.frame = PLAYER_FRAME_stand01;
+			client->anim_end = PLAYER_FRAME_stand40;
 		}
 	}
 }

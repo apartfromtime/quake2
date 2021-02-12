@@ -133,7 +133,7 @@ mframe_t makron_frames_stand []=
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL		// 60
 };
-mmove_t	makron_move_stand = {FRAME_stand201, FRAME_stand260, makron_frames_stand, NULL};
+mmove_t	makron_move_stand = {BOSS32_FRAME_stand201, BOSS32_FRAME_stand260, makron_frames_stand, NULL};
 	
 void makron_stand (edict_t *self)
 {
@@ -153,7 +153,7 @@ mframe_t makron_frames_run [] =
 	ai_run, 6,	NULL,
 	ai_run, 12,	NULL
 };
-mmove_t	makron_move_run = {FRAME_walk204, FRAME_walk213, makron_frames_run, NULL};
+mmove_t	makron_move_run = {BOSS32_FRAME_walk204, BOSS32_FRAME_walk213, makron_frames_run, NULL};
 
 void makron_hit (edict_t *self)
 {
@@ -199,7 +199,7 @@ mframe_t makron_frames_walk [] =
 	ai_walk, 6,	NULL,
 	ai_walk, 12,	NULL
 };
-mmove_t	makron_move_walk = {FRAME_walk204, FRAME_walk213, makron_frames_run, NULL};
+mmove_t	makron_move_walk = {BOSS32_FRAME_walk204, BOSS32_FRAME_walk213, makron_frames_run, NULL};
 
 void makron_walk (edict_t *self)
 {
@@ -244,7 +244,7 @@ mframe_t makron_frames_pain6 [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t makron_move_pain6 = {FRAME_pain601, FRAME_pain627, makron_frames_pain6, makron_run};
+mmove_t makron_move_pain6 = {BOSS32_FRAME_pain601, BOSS32_FRAME_pain627, makron_frames_pain6, makron_run};
 
 mframe_t makron_frames_pain5 [] =
 {
@@ -253,7 +253,7 @@ mframe_t makron_frames_pain5 [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t makron_move_pain5 = {FRAME_pain501, FRAME_pain504, makron_frames_pain5, makron_run};
+mmove_t makron_move_pain5 = {BOSS32_FRAME_pain501, BOSS32_FRAME_pain504, makron_frames_pain5, makron_run};
 
 mframe_t makron_frames_pain4 [] =
 {
@@ -262,7 +262,7 @@ mframe_t makron_frames_pain4 [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t makron_move_pain4 = {FRAME_pain401, FRAME_pain404, makron_frames_pain4, makron_run};
+mmove_t makron_move_pain4 = {BOSS32_FRAME_pain401, BOSS32_FRAME_pain404, makron_frames_pain4, makron_run};
 
 mframe_t makron_frames_death2 [] =
 {
@@ -362,7 +362,7 @@ mframe_t makron_frames_death2 [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL			// 95
 };
-mmove_t makron_move_death2 = {FRAME_death201, FRAME_death295, makron_frames_death2, makron_dead};
+mmove_t makron_move_death2 = {BOSS32_FRAME_death201, BOSS32_FRAME_death295, makron_frames_death2, makron_dead};
 
 mframe_t makron_frames_death3 [] =
 {
@@ -387,7 +387,7 @@ mframe_t makron_frames_death3 [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t makron_move_death3 = {FRAME_death301, FRAME_death320, makron_frames_death3, NULL};
+mmove_t makron_move_death3 = {BOSS32_FRAME_death301, BOSS32_FRAME_death320, makron_frames_death3, NULL};
 
 mframe_t makron_frames_sight [] =
 {
@@ -405,7 +405,7 @@ mframe_t makron_frames_sight [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t makron_move_sight= {FRAME_active01, FRAME_active13, makron_frames_sight, makron_run};
+mmove_t makron_move_sight= {BOSS32_FRAME_active01, BOSS32_FRAME_active13, makron_frames_sight, makron_run};
 
 void makronBFG (edict_t *self)
 {
@@ -437,7 +437,7 @@ mframe_t makron_frames_attack3 []=
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t makron_move_attack3 = {FRAME_attak301, FRAME_attak308, makron_frames_attack3, makron_run};
+mmove_t makron_move_attack3 = {BOSS32_FRAME_attak301, BOSS32_FRAME_attak308, makron_frames_attack3, makron_run};
 
 mframe_t makron_frames_attack4[]=
 {
@@ -468,7 +468,7 @@ mframe_t makron_frames_attack4[]=
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t makron_move_attack4 = {FRAME_attak401, FRAME_attak426, makron_frames_attack4, makron_run};
+mmove_t makron_move_attack4 = {BOSS32_FRAME_attak401, BOSS32_FRAME_attak426, makron_frames_attack4, makron_run};
 
 mframe_t makron_frames_attack5[]=
 {
@@ -489,7 +489,7 @@ mframe_t makron_frames_attack5[]=
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t makron_move_attack5 = {FRAME_attak501, FRAME_attak516, makron_frames_attack5, makron_run};
+mmove_t makron_move_attack5 = {BOSS32_FRAME_attak501, BOSS32_FRAME_attak516, makron_frames_attack5, makron_run};
 
 void MakronSaveloc (edict_t *self)
 {
@@ -523,7 +523,7 @@ void MakronHyperblaster (edict_t *self)
 	vec3_t	forward, right;
 	int		flash_number;
 
-	flash_number = MZ2_MAKRON_BLASTER_1 + (self->s.frame - FRAME_attak405);
+	flash_number = MZ2_MAKRON_BLASTER_1 + (self->s.frame - BOSS32_FRAME_attak405);
 
 	AngleVectors (self->s.angles, forward, right, NULL);
 	G_ProjectSource (self->s.origin, monster_flash_offset[flash_number], forward, right, start);
@@ -540,10 +540,10 @@ void MakronHyperblaster (edict_t *self)
 	{
 		dir[0] = 0;
 	}
-	if (self->s.frame <= FRAME_attak413)
-		dir[1] = self->s.angles[1] - 10 * (self->s.frame - FRAME_attak413);
+	if (self->s.frame <= BOSS32_FRAME_attak413)
+		dir[1] = self->s.angles[1] - 10 * (self->s.frame - BOSS32_FRAME_attak413);
 	else
-		dir[1] = self->s.angles[1] + 10 * (self->s.frame - FRAME_attak421);
+		dir[1] = self->s.angles[1] + 10 * (self->s.frame - BOSS32_FRAME_attak421);
 	dir[2] = 0;
 
 	AngleVectors (dir, forward, NULL, NULL);
@@ -862,7 +862,7 @@ void SP_monster_makron (edict_t *self)
 	
 //	self->monsterinfo.currentmove = &makron_move_stand;
 	self->monsterinfo.currentmove = &makron_move_sight;
-	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.scale = BOSS32_MODEL_SCALE;
 
 	walkmonster_start(self);
 }

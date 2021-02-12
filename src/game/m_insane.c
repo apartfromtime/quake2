@@ -74,7 +74,7 @@ mframe_t insane_frames_stand_normal [] =
 	ai_stand, 0, NULL,
 	ai_stand, 0, insane_checkdown
 };
-mmove_t insane_move_stand_normal = {FRAME_stand60, FRAME_stand65, insane_frames_stand_normal, insane_stand};
+mmove_t insane_move_stand_normal = {INSANE_FRAME_stand60, INSANE_FRAME_stand65, insane_frames_stand_normal, insane_stand};
 
 mframe_t insane_frames_stand_insane [] =
 {
@@ -109,7 +109,7 @@ mframe_t insane_frames_stand_insane [] =
 	ai_stand,	0,	NULL,
 	ai_stand,	0,	insane_checkdown
 };
-mmove_t insane_move_stand_insane = {FRAME_stand65, FRAME_stand94, insane_frames_stand_insane, insane_stand};
+mmove_t insane_move_stand_insane = {INSANE_FRAME_stand65, INSANE_FRAME_stand94, insane_frames_stand_insane, insane_stand};
 
 mframe_t insane_frames_uptodown [] =
 {
@@ -157,7 +157,7 @@ mframe_t insane_frames_uptodown [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t insane_move_uptodown = {FRAME_stand1, FRAME_stand40, insane_frames_uptodown, insane_onground};
+mmove_t insane_move_uptodown = {INSANE_FRAME_stand1, INSANE_FRAME_stand40, insane_frames_uptodown, insane_onground};
 
 
 mframe_t insane_frames_downtoup [] =
@@ -182,7 +182,7 @@ mframe_t insane_frames_downtoup [] =
 	ai_move,	0,	NULL,				// 58
 	ai_move,	0,	NULL				// 59
 };
-mmove_t insane_move_downtoup = {FRAME_stand41, FRAME_stand59, insane_frames_downtoup, insane_stand};
+mmove_t insane_move_downtoup = {INSANE_FRAME_stand41, INSANE_FRAME_stand59, insane_frames_downtoup, insane_stand};
 
 mframe_t insane_frames_jumpdown [] =
 {
@@ -192,7 +192,7 @@ mframe_t insane_frames_jumpdown [] =
 	ai_move,	7.1,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t insane_move_jumpdown = {FRAME_stand96, FRAME_stand100, insane_frames_jumpdown, insane_onground};
+mmove_t insane_move_jumpdown = {INSANE_FRAME_stand96, INSANE_FRAME_stand100, insane_frames_jumpdown, insane_onground};
 
 
 mframe_t insane_frames_down [] =
@@ -259,7 +259,7 @@ mframe_t insane_frames_down [] =
 	ai_move,	0.7,		NULL,
 	ai_move,	0,		insane_checkup		// 160
 };
-mmove_t insane_move_down = {FRAME_stand100, FRAME_stand160, insane_frames_down, insane_onground};
+mmove_t insane_move_down = {INSANE_FRAME_stand100, INSANE_FRAME_stand160, insane_frames_down, insane_onground};
 
 mframe_t insane_frames_walk_normal [] =
 {
@@ -277,8 +277,8 @@ mframe_t insane_frames_walk_normal [] =
 	ai_walk,	0.9,	NULL,
 	ai_walk,	0,		NULL
 };
-mmove_t insane_move_walk_normal = {FRAME_walk27, FRAME_walk39, insane_frames_walk_normal, insane_walk};
-mmove_t insane_move_run_normal = {FRAME_walk27, FRAME_walk39, insane_frames_walk_normal, insane_run};
+mmove_t insane_move_walk_normal = {INSANE_FRAME_walk27, INSANE_FRAME_walk39, insane_frames_walk_normal, insane_walk};
+mmove_t insane_move_run_normal = {INSANE_FRAME_walk27, INSANE_FRAME_walk39, insane_frames_walk_normal, insane_run};
 
 mframe_t insane_frames_walk_insane [] =
 {
@@ -309,8 +309,8 @@ mframe_t insane_frames_walk_insane [] =
 	ai_walk,	1.8,	NULL,		// 25
 	ai_walk,	0,		NULL		// 26
 };
-mmove_t insane_move_walk_insane = {FRAME_walk1, FRAME_walk26, insane_frames_walk_insane, insane_walk};
-mmove_t insane_move_run_insane = {FRAME_walk1, FRAME_walk26, insane_frames_walk_insane, insane_run};
+mmove_t insane_move_walk_insane = {INSANE_FRAME_walk1, INSANE_FRAME_walk26, insane_frames_walk_insane, insane_walk};
+mmove_t insane_move_run_insane = {INSANE_FRAME_walk1, INSANE_FRAME_walk26, insane_frames_walk_insane, insane_run};
 
 mframe_t insane_frames_stand_pain [] =
 {
@@ -326,7 +326,7 @@ mframe_t insane_frames_stand_pain [] =
 	ai_move,	0,		NULL,
 	ai_move,	0,		NULL
 };
-mmove_t insane_move_stand_pain = {FRAME_st_pain2, FRAME_st_pain12, insane_frames_stand_pain, insane_run};
+mmove_t insane_move_stand_pain = {INSANE_FRAME_st_pain2, INSANE_FRAME_st_pain12, insane_frames_stand_pain, insane_run};
 
 mframe_t insane_frames_stand_death [] =
 {
@@ -348,7 +348,7 @@ mframe_t insane_frames_stand_death [] =
 	ai_move,	0,		NULL,
 	ai_move,	0,		NULL
 };
-mmove_t insane_move_stand_death = {FRAME_st_death2, FRAME_st_death18, insane_frames_stand_death, insane_dead};
+mmove_t insane_move_stand_death = {INSANE_FRAME_st_death2, INSANE_FRAME_st_death18, insane_frames_stand_death, insane_dead};
 
 mframe_t insane_frames_crawl [] =
 {
@@ -362,8 +362,8 @@ mframe_t insane_frames_crawl [] =
 	ai_walk,	3.4,	NULL,
 	ai_walk,	2.4,	NULL
 };
-mmove_t insane_move_crawl = {FRAME_crawl1, FRAME_crawl9, insane_frames_crawl, NULL};
-mmove_t insane_move_runcrawl = {FRAME_crawl1, FRAME_crawl9, insane_frames_crawl, NULL};
+mmove_t insane_move_crawl = {INSANE_FRAME_crawl1, INSANE_FRAME_crawl9, insane_frames_crawl, NULL};
+mmove_t insane_move_runcrawl = {INSANE_FRAME_crawl1, INSANE_FRAME_crawl9, insane_frames_crawl, NULL};
 
 mframe_t insane_frames_crawl_pain [] =
 {
@@ -377,7 +377,7 @@ mframe_t insane_frames_crawl_pain [] =
 	ai_move,	0,		NULL,
 	ai_move,	0,		NULL
 };
-mmove_t insane_move_crawl_pain = {FRAME_cr_pain2, FRAME_cr_pain10, insane_frames_crawl_pain, insane_run};
+mmove_t insane_move_crawl_pain = {INSANE_FRAME_cr_pain2, INSANE_FRAME_cr_pain10, insane_frames_crawl_pain, insane_run};
 
 mframe_t insane_frames_crawl_death [] =
 {
@@ -389,7 +389,7 @@ mframe_t insane_frames_crawl_death [] =
 	ai_move,	0,		NULL,
 	ai_move,	0,		NULL
 };
-mmove_t insane_move_crawl_death = {FRAME_cr_death10, FRAME_cr_death16, insane_frames_crawl_death, insane_dead};
+mmove_t insane_move_crawl_death = {INSANE_FRAME_cr_death10, INSANE_FRAME_cr_death16, insane_frames_crawl_death, insane_dead};
 
 mframe_t insane_frames_cross [] =
 {
@@ -409,7 +409,7 @@ mframe_t insane_frames_cross [] =
 	ai_move,	0,		NULL,
 	ai_move,	0,		NULL
 };
-mmove_t insane_move_cross = {FRAME_cross1, FRAME_cross15, insane_frames_cross, insane_cross};
+mmove_t insane_move_cross = {INSANE_FRAME_cross1, INSANE_FRAME_cross15, insane_frames_cross, insane_cross};
 
 mframe_t insane_frames_struggle_cross [] =
 {
@@ -429,7 +429,7 @@ mframe_t insane_frames_struggle_cross [] =
 	ai_move,	0,		NULL,
 	ai_move,	0,		NULL
 };
-mmove_t insane_move_struggle_cross = {FRAME_cross16, FRAME_cross30, insane_frames_struggle_cross, insane_cross};
+mmove_t insane_move_struggle_cross = {INSANE_FRAME_cross16, INSANE_FRAME_cross30, insane_frames_struggle_cross, insane_cross};
 
 void insane_cross (edict_t *self)
 {
@@ -442,7 +442,7 @@ void insane_cross (edict_t *self)
 void insane_walk (edict_t *self)
 {
 	if ( self->spawnflags & 16 )			// Hold Ground?
-		if (self->s.frame == FRAME_cr_pain10)
+		if (self->s.frame == INSANE_FRAME_cr_pain10)
 		{
 			self->monsterinfo.currentmove = &insane_move_down;
 			return;
@@ -459,7 +459,7 @@ void insane_walk (edict_t *self)
 void insane_run (edict_t *self)
 {
 	if ( self->spawnflags & 16 )			// Hold Ground?
-		if (self->s.frame == FRAME_cr_pain10)
+		if (self->s.frame == INSANE_FRAME_cr_pain10)
 		{
 			self->monsterinfo.currentmove = &insane_move_down;
 			return;
@@ -507,7 +507,7 @@ void insane_pain (edict_t *self, edict_t *other, float kick, int damage)
 		return;
 	}
 	
-	if  ( ((self->s.frame >= FRAME_crawl1) && (self->s.frame <= FRAME_crawl9)) || ((self->s.frame >= FRAME_stand99) && (self->s.frame <= FRAME_stand160)) )
+	if  ( ((self->s.frame >= INSANE_FRAME_crawl1) && (self->s.frame <= INSANE_FRAME_crawl9)) || ((self->s.frame >= INSANE_FRAME_stand99) && (self->s.frame <= INSANE_FRAME_stand160)) )
 	{
 		self->monsterinfo.currentmove = &insane_move_crawl_pain;
 	}
@@ -523,7 +523,7 @@ void insane_onground (edict_t *self)
 
 void insane_checkdown (edict_t *self)
 {
-//	if ( (self->s.frame == FRAME_stand94) || (self->s.frame == FRAME_stand65) )
+//	if ( (self->s.frame == INSANE_FRAME_stand94) || (self->s.frame == INSANE_FRAME_stand65) )
 	if (self->spawnflags & 32)				// Always stand
 		return;
 	if (random() < 0.3)
@@ -608,7 +608,7 @@ void insane_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 	}
 	else
 	{
-		if ( ((self->s.frame >= FRAME_crawl1) && (self->s.frame <= FRAME_crawl9)) || ((self->s.frame >= FRAME_stand99) && (self->s.frame <= FRAME_stand160)) )		
+		if ( ((self->s.frame >= INSANE_FRAME_crawl1) && (self->s.frame <= INSANE_FRAME_crawl9)) || ((self->s.frame >= INSANE_FRAME_stand99) && (self->s.frame <= INSANE_FRAME_stand160)) )		
 			self->monsterinfo.currentmove = &insane_move_crawl_death;
 		else
 			self->monsterinfo.currentmove = &insane_move_stand_death;
@@ -676,7 +676,7 @@ void SP_misc_insane (edict_t *self)
 
 	self->monsterinfo.currentmove = &insane_move_stand_normal;
 	
-	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.scale = INSANE_MODEL_SCALE;
 
 	if (self->spawnflags & 8)					// Crucified ?
 	{

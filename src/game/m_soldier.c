@@ -49,7 +49,7 @@ void soldier_idle (edict_t *self)
 
 void soldier_cock (edict_t *self)
 {
-	if (self->s.frame == FRAME_stand322)
+	if (self->s.frame == SOLDIER_FRAME_stand322)
 		gi.sound (self, CHAN_WEAPON, sound_cock, 1, ATTN_IDLE, 0);
 	else
 		gi.sound (self, CHAN_WEAPON, sound_cock, 1, ATTN_NORM, 0);
@@ -95,7 +95,7 @@ mframe_t soldier_frames_stand1 [] =
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL
 };
-mmove_t soldier_move_stand1 = {FRAME_stand101, FRAME_stand130, soldier_frames_stand1, soldier_stand};
+mmove_t soldier_move_stand1 = {SOLDIER_FRAME_stand101, SOLDIER_FRAME_stand130, soldier_frames_stand1, soldier_stand};
 
 mframe_t soldier_frames_stand3 [] =
 {
@@ -142,7 +142,7 @@ mframe_t soldier_frames_stand3 [] =
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL
 };
-mmove_t soldier_move_stand3 = {FRAME_stand301, FRAME_stand339, soldier_frames_stand3, soldier_stand};
+mmove_t soldier_move_stand3 = {SOLDIER_FRAME_stand301, SOLDIER_FRAME_stand339, soldier_frames_stand3, soldier_stand};
 
 #if 0
 mframe_t soldier_frames_stand4 [] =
@@ -205,7 +205,7 @@ mframe_t soldier_frames_stand4 [] =
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL
 };
-mmove_t soldier_move_stand4 = {FRAME_stand401, FRAME_stand452, soldier_frames_stand4, NULL};
+mmove_t soldier_move_stand4 = {SOLDIER_FRAME_stand401, SOLDIER_FRAME_stand452, soldier_frames_stand4, NULL};
 #endif
 
 void soldier_stand (edict_t *self)
@@ -224,7 +224,7 @@ void soldier_stand (edict_t *self)
 void soldier_walk1_random (edict_t *self)
 {
 	if (random() > 0.1)
-		self->monsterinfo.nextframe = FRAME_walk101;
+		self->monsterinfo.nextframe = SOLDIER_FRAME_walk101;
 }
 
 mframe_t soldier_frames_walk1 [] =
@@ -263,7 +263,7 @@ mframe_t soldier_frames_walk1 [] =
 	ai_walk, 0,  NULL,
 	ai_walk, 0,  NULL
 };
-mmove_t soldier_move_walk1 = {FRAME_walk101, FRAME_walk133, soldier_frames_walk1, NULL};
+mmove_t soldier_move_walk1 = {SOLDIER_FRAME_walk101, SOLDIER_FRAME_walk133, soldier_frames_walk1, NULL};
 
 mframe_t soldier_frames_walk2 [] =
 {
@@ -278,7 +278,7 @@ mframe_t soldier_frames_walk2 [] =
 	ai_walk, 6,  NULL,
 	ai_walk, 7,  NULL
 };
-mmove_t soldier_move_walk2 = {FRAME_walk209, FRAME_walk218, soldier_frames_walk2, NULL};
+mmove_t soldier_move_walk2 = {SOLDIER_FRAME_walk209, SOLDIER_FRAME_walk218, soldier_frames_walk2, NULL};
 
 void soldier_walk (edict_t *self)
 {
@@ -300,7 +300,7 @@ mframe_t soldier_frames_start_run [] =
 	ai_run, 7,  NULL,
 	ai_run, 5,  NULL
 };
-mmove_t soldier_move_start_run = {FRAME_run01, FRAME_run02, soldier_frames_start_run, soldier_run};
+mmove_t soldier_move_start_run = {SOLDIER_FRAME_run01, SOLDIER_FRAME_run02, soldier_frames_start_run, soldier_run};
 
 mframe_t soldier_frames_run [] =
 {
@@ -311,7 +311,7 @@ mframe_t soldier_frames_run [] =
 	ai_run, 10, NULL,
 	ai_run, 15, NULL
 };
-mmove_t soldier_move_run = {FRAME_run03, FRAME_run08, soldier_frames_run, NULL};
+mmove_t soldier_move_run = {SOLDIER_FRAME_run03, SOLDIER_FRAME_run08, soldier_frames_run, NULL};
 
 void soldier_run (edict_t *self)
 {
@@ -346,7 +346,7 @@ mframe_t soldier_frames_pain1 [] =
 	ai_move, 1,  NULL,
 	ai_move, 0,  NULL
 };
-mmove_t soldier_move_pain1 = {FRAME_pain101, FRAME_pain105, soldier_frames_pain1, soldier_run};
+mmove_t soldier_move_pain1 = {SOLDIER_FRAME_pain101, SOLDIER_FRAME_pain105, soldier_frames_pain1, soldier_run};
 
 mframe_t soldier_frames_pain2 [] =
 {
@@ -358,7 +358,7 @@ mframe_t soldier_frames_pain2 [] =
 	ai_move, 3,   NULL,
 	ai_move, 2,   NULL
 };
-mmove_t soldier_move_pain2 = {FRAME_pain201, FRAME_pain207, soldier_frames_pain2, soldier_run};
+mmove_t soldier_move_pain2 = {SOLDIER_FRAME_pain201, SOLDIER_FRAME_pain207, soldier_frames_pain2, soldier_run};
 
 mframe_t soldier_frames_pain3 [] =
 {
@@ -381,7 +381,7 @@ mframe_t soldier_frames_pain3 [] =
 	ai_move, 3,  NULL,
 	ai_move, 2,  NULL
 };
-mmove_t soldier_move_pain3 = {FRAME_pain301, FRAME_pain318, soldier_frames_pain3, soldier_run};
+mmove_t soldier_move_pain3 = {SOLDIER_FRAME_pain301, SOLDIER_FRAME_pain318, soldier_frames_pain3, soldier_run};
 
 mframe_t soldier_frames_pain4 [] =
 {
@@ -403,7 +403,7 @@ mframe_t soldier_frames_pain4 [] =
 	ai_move, 2,   NULL,
 	ai_move, 0,   NULL
 };
-mmove_t soldier_move_pain4 = {FRAME_pain401, FRAME_pain417, soldier_frames_pain4, soldier_run};
+mmove_t soldier_move_pain4 = {SOLDIER_FRAME_pain401, SOLDIER_FRAME_pain417, soldier_frames_pain4, soldier_run};
 
 
 void soldier_pain (edict_t *self, edict_t *other, float kick, int damage)
@@ -539,9 +539,9 @@ void soldier_attack1_refire1 (edict_t *self)
 		return;
 
 	if ( ((skill->value == 3) && (random() < 0.5)) || (range(self, self->enemy) == RANGE_MELEE) )
-		self->monsterinfo.nextframe = FRAME_attak102;
+		self->monsterinfo.nextframe = SOLDIER_FRAME_attak102;
 	else
-		self->monsterinfo.nextframe = FRAME_attak110;
+		self->monsterinfo.nextframe = SOLDIER_FRAME_attak110;
 }
 
 void soldier_attack1_refire2 (edict_t *self)
@@ -553,7 +553,7 @@ void soldier_attack1_refire2 (edict_t *self)
 		return;
 
 	if ( ((skill->value == 3) && (random() < 0.5)) || (range(self, self->enemy) == RANGE_MELEE) )
-		self->monsterinfo.nextframe = FRAME_attak102;
+		self->monsterinfo.nextframe = SOLDIER_FRAME_attak102;
 }
 
 mframe_t soldier_frames_attack1 [] =
@@ -571,7 +571,7 @@ mframe_t soldier_frames_attack1 [] =
 	ai_charge, 0,  NULL,
 	ai_charge, 0,  NULL
 };
-mmove_t soldier_move_attack1 = {FRAME_attak101, FRAME_attak112, soldier_frames_attack1, soldier_run};
+mmove_t soldier_move_attack1 = {SOLDIER_FRAME_attak101, SOLDIER_FRAME_attak112, soldier_frames_attack1, soldier_run};
 
 // ATTACK2 (blaster/shotgun)
 
@@ -589,9 +589,9 @@ void soldier_attack2_refire1 (edict_t *self)
 		return;
 
 	if ( ((skill->value == 3) && (random() < 0.5)) || (range(self, self->enemy) == RANGE_MELEE) )
-		self->monsterinfo.nextframe = FRAME_attak204;
+		self->monsterinfo.nextframe = SOLDIER_FRAME_attak204;
 	else
-		self->monsterinfo.nextframe = FRAME_attak216;
+		self->monsterinfo.nextframe = SOLDIER_FRAME_attak216;
 }
 
 void soldier_attack2_refire2 (edict_t *self)
@@ -603,7 +603,7 @@ void soldier_attack2_refire2 (edict_t *self)
 		return;
 
 	if ( ((skill->value == 3) && (random() < 0.5)) || (range(self, self->enemy) == RANGE_MELEE) )
-		self->monsterinfo.nextframe = FRAME_attak204;
+		self->monsterinfo.nextframe = SOLDIER_FRAME_attak204;
 }
 
 mframe_t soldier_frames_attack2 [] =
@@ -627,7 +627,7 @@ mframe_t soldier_frames_attack2 [] =
 	ai_charge, 0, NULL,
 	ai_charge, 0, NULL
 };
-mmove_t soldier_move_attack2 = {FRAME_attak201, FRAME_attak218, soldier_frames_attack2, soldier_run};
+mmove_t soldier_move_attack2 = {SOLDIER_FRAME_attak201, SOLDIER_FRAME_attak218, soldier_frames_attack2, soldier_run};
 
 // ATTACK3 (duck and shoot)
 
@@ -659,7 +659,7 @@ void soldier_fire3 (edict_t *self)
 void soldier_attack3_refire (edict_t *self)
 {
 	if ((level.time + 0.4) < self->monsterinfo.pausetime)
-		self->monsterinfo.nextframe = FRAME_attak303;
+		self->monsterinfo.nextframe = SOLDIER_FRAME_attak303;
 }
 
 mframe_t soldier_frames_attack3 [] =
@@ -674,7 +674,7 @@ mframe_t soldier_frames_attack3 [] =
 	ai_charge, 0, NULL,
 	ai_charge, 0, NULL
 };
-mmove_t soldier_move_attack3 = {FRAME_attak301, FRAME_attak309, soldier_frames_attack3, soldier_run};
+mmove_t soldier_move_attack3 = {SOLDIER_FRAME_attak301, SOLDIER_FRAME_attak309, soldier_frames_attack3, soldier_run};
 
 // ATTACK4 (machinegun)
 
@@ -686,7 +686,7 @@ void soldier_fire4 (edict_t *self)
 //		return;
 //
 //	if ( ((skill->value == 3) && (random() < 0.5)) || (range(self, self->enemy) == RANGE_MELEE) )
-//		self->monsterinfo.nextframe = FRAME_attak402;
+//		self->monsterinfo.nextframe = SOLDIER_FRAME_attak402;
 }
 
 mframe_t soldier_frames_attack4 [] =
@@ -698,7 +698,7 @@ mframe_t soldier_frames_attack4 [] =
 	ai_charge, 0, NULL,
 	ai_charge, 0, NULL
 };
-mmove_t soldier_move_attack4 = {FRAME_attak401, FRAME_attak406, soldier_frames_attack4, soldier_run};
+mmove_t soldier_move_attack4 = {SOLDIER_FRAME_attak401, SOLDIER_FRAME_attak406, soldier_frames_attack4, soldier_run};
 
 #if 0
 // ATTACK5 (prone)
@@ -714,7 +714,7 @@ void soldier_attack5_refire (edict_t *self)
 		return;
 
 	if ( ((skill->value == 3) && (random() < 0.5)) || (range(self, self->enemy) == RANGE_MELEE) )
-		self->monsterinfo.nextframe = FRAME_attak505;
+		self->monsterinfo.nextframe = SOLDIER_FRAME_attak505;
 }
 
 mframe_t soldier_frames_attack5 [] =
@@ -728,7 +728,7 @@ mframe_t soldier_frames_attack5 [] =
 	ai_charge, 0, NULL,
 	ai_charge, 0, soldier_attack5_refire
 };
-mmove_t soldier_move_attack5 = {FRAME_attak501, FRAME_attak508, soldier_frames_attack5, soldier_run};
+mmove_t soldier_move_attack5 = {SOLDIER_FRAME_attak501, SOLDIER_FRAME_attak508, soldier_frames_attack5, soldier_run};
 #endif
 
 // ATTACK6 (run & shoot)
@@ -747,7 +747,7 @@ void soldier_attack6_refire (edict_t *self)
 		return;
 
 	if (skill->value == 3)
-		self->monsterinfo.nextframe = FRAME_runs03;
+		self->monsterinfo.nextframe = SOLDIER_FRAME_runs03;
 }
 
 mframe_t soldier_frames_attack6 [] =
@@ -767,7 +767,7 @@ mframe_t soldier_frames_attack6 [] =
 	ai_charge, 12, NULL,
 	ai_charge, 17, soldier_attack6_refire
 };
-mmove_t soldier_move_attack6 = {FRAME_runs01, FRAME_runs14, soldier_frames_attack6, soldier_run};
+mmove_t soldier_move_attack6 = {SOLDIER_FRAME_runs01, SOLDIER_FRAME_runs14, soldier_frames_attack6, soldier_run};
 
 void soldier_attack(edict_t *self)
 {
@@ -823,7 +823,7 @@ mframe_t soldier_frames_duck [] =
 	ai_move, 0,  soldier_duck_up,
 	ai_move, 5,  NULL
 };
-mmove_t soldier_move_duck = {FRAME_duck01, FRAME_duck05, soldier_frames_duck, soldier_run};
+mmove_t soldier_move_duck = {SOLDIER_FRAME_duck01, SOLDIER_FRAME_duck05, soldier_frames_duck, soldier_run};
 
 void soldier_dodge (edict_t *self, edict_t *attacker, float eta)
 {
@@ -933,7 +933,7 @@ mframe_t soldier_frames_death1 [] =
 	ai_move, 0,   NULL,
 	ai_move, 0,   NULL
 };
-mmove_t soldier_move_death1 = {FRAME_death101, FRAME_death136, soldier_frames_death1, soldier_dead};
+mmove_t soldier_move_death1 = {SOLDIER_FRAME_death101, SOLDIER_FRAME_death136, soldier_frames_death1, soldier_dead};
 
 mframe_t soldier_frames_death2 [] =
 {
@@ -976,7 +976,7 @@ mframe_t soldier_frames_death2 [] =
 	ai_move, 0,   NULL,
 	ai_move, 0,   NULL
 };
-mmove_t soldier_move_death2 = {FRAME_death201, FRAME_death235, soldier_frames_death2, soldier_dead};
+mmove_t soldier_move_death2 = {SOLDIER_FRAME_death201, SOLDIER_FRAME_death235, soldier_frames_death2, soldier_dead};
 
 mframe_t soldier_frames_death3 [] =
 {
@@ -1030,7 +1030,7 @@ mframe_t soldier_frames_death3 [] =
 	ai_move, 0,   NULL,
 	ai_move, 0,   NULL,
 };
-mmove_t soldier_move_death3 = {FRAME_death301, FRAME_death345, soldier_frames_death3, soldier_dead};
+mmove_t soldier_move_death3 = {SOLDIER_FRAME_death301, SOLDIER_FRAME_death345, soldier_frames_death3, soldier_dead};
 
 mframe_t soldier_frames_death4 [] =
 {
@@ -1093,7 +1093,7 @@ mframe_t soldier_frames_death4 [] =
 	ai_move, 0,   NULL,
 	ai_move, 0,   NULL
 };
-mmove_t soldier_move_death4 = {FRAME_death401, FRAME_death453, soldier_frames_death4, soldier_dead};
+mmove_t soldier_move_death4 = {SOLDIER_FRAME_death401, SOLDIER_FRAME_death453, soldier_frames_death4, soldier_dead};
 
 mframe_t soldier_frames_death5 [] =
 {
@@ -1124,7 +1124,7 @@ mframe_t soldier_frames_death5 [] =
 	ai_move, 0,   NULL,
 	ai_move, 0,   NULL
 };
-mmove_t soldier_move_death5 = {FRAME_death501, FRAME_death524, soldier_frames_death5, soldier_dead};
+mmove_t soldier_move_death5 = {SOLDIER_FRAME_death501, SOLDIER_FRAME_death524, soldier_frames_death5, soldier_dead};
 
 mframe_t soldier_frames_death6 [] =
 {
@@ -1139,7 +1139,7 @@ mframe_t soldier_frames_death6 [] =
 	ai_move, 0,   NULL,
 	ai_move, 0,   NULL
 };
-mmove_t soldier_move_death6 = {FRAME_death601, FRAME_death610, soldier_frames_death6, soldier_dead};
+mmove_t soldier_move_death6 = {SOLDIER_FRAME_death601, SOLDIER_FRAME_death610, soldier_frames_death6, soldier_dead};
 
 void soldier_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
@@ -1201,7 +1201,7 @@ void SP_monster_soldier_x (edict_t *self)
 {
 
 	self->s.modelindex = gi.modelindex ("models/monsters/soldier/tris.md2");
-	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.scale = SOLDIER_MODEL_SCALE;
 	VectorSet (self->mins, -16, -16, -24);
 	VectorSet (self->maxs, 16, 16, 32);
 	self->movetype = MOVETYPE_STEP;

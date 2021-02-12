@@ -56,7 +56,7 @@ mframe_t berserk_frames_stand [] =
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL
 };
-mmove_t berserk_move_stand = {FRAME_stand1, FRAME_stand5, berserk_frames_stand, NULL};
+mmove_t berserk_move_stand = {BERSERK_FRAME_stand1, BERSERK_FRAME_stand5, berserk_frames_stand, NULL};
 
 void berserk_stand (edict_t *self)
 {
@@ -86,7 +86,7 @@ mframe_t berserk_frames_stand_fidget [] =
 	ai_stand, 0, NULL,
 	ai_stand, 0, NULL
 };
-mmove_t berserk_move_stand_fidget = {FRAME_standb1, FRAME_standb20, berserk_frames_stand_fidget, berserk_stand};
+mmove_t berserk_move_stand_fidget = {BERSERK_FRAME_standb1, BERSERK_FRAME_standb20, berserk_frames_stand_fidget, berserk_stand};
 
 void berserk_fidget (edict_t *self)
 {
@@ -115,7 +115,7 @@ mframe_t berserk_frames_walk [] =
 	ai_walk, 4.7, NULL,
 	ai_walk, 4.8, NULL
 };
-mmove_t berserk_move_walk = {FRAME_walkc1, FRAME_walkc11, berserk_frames_walk, NULL};
+mmove_t berserk_move_walk = {BERSERK_FRAME_walkc1, BERSERK_FRAME_walkc11, berserk_frames_walk, NULL};
 
 void berserk_walk (edict_t *self)
 {
@@ -156,7 +156,7 @@ mframe_t berserk_frames_run1 [] =
 	ai_run, 18, NULL,
 	ai_run, 19, NULL
 };
-mmove_t berserk_move_run1 = {FRAME_run1, FRAME_run6, berserk_frames_run1, NULL};
+mmove_t berserk_move_run1 = {BERSERK_FRAME_run1, BERSERK_FRAME_run6, berserk_frames_run1, NULL};
 
 void berserk_run (edict_t *self)
 {
@@ -190,7 +190,7 @@ mframe_t berserk_frames_attack_spike [] =
 		ai_charge, 0, NULL,
 		ai_charge, 0, NULL
 };
-mmove_t berserk_move_attack_spike = {FRAME_att_c1, FRAME_att_c8, berserk_frames_attack_spike, berserk_run};
+mmove_t berserk_move_attack_spike = {BERSERK_FRAME_att_c1, BERSERK_FRAME_att_c8, berserk_frames_attack_spike, berserk_run};
 
 
 void berserk_attack_club (edict_t *self)
@@ -216,7 +216,7 @@ mframe_t berserk_frames_attack_club [] =
 	ai_charge, 0, NULL,
 	ai_charge, 0, NULL
 };
-mmove_t berserk_move_attack_club = {FRAME_att_c9, FRAME_att_c20, berserk_frames_attack_club, berserk_run};
+mmove_t berserk_move_attack_club = {BERSERK_FRAME_att_c9, BERSERK_FRAME_att_c20, berserk_frames_attack_club, berserk_run};
 
 
 void berserk_strike (edict_t *self)
@@ -243,7 +243,7 @@ mframe_t berserk_frames_attack_strike [] =
 	ai_move, 13.6, NULL
 };
 	
-mmove_t berserk_move_attack_strike = {FRAME_att_c21, FRAME_att_c34, berserk_frames_attack_strike, berserk_run};
+mmove_t berserk_move_attack_strike = {BERSERK_FRAME_att_c21, BERSERK_FRAME_att_c34, berserk_frames_attack_strike, berserk_run};
 
 
 void berserk_melee (edict_t *self)
@@ -284,7 +284,7 @@ mframe_t berserk_frames_pain1 [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t berserk_move_pain1 = {FRAME_painc1, FRAME_painc4, berserk_frames_pain1, berserk_run};
+mmove_t berserk_move_pain1 = {BERSERK_FRAME_painc1, BERSERK_FRAME_painc4, berserk_frames_pain1, berserk_run};
 
 
 mframe_t berserk_frames_pain2 [] =
@@ -310,7 +310,7 @@ mframe_t berserk_frames_pain2 [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t berserk_move_pain2 = {FRAME_painb1, FRAME_painb20, berserk_frames_pain2, berserk_run};
+mmove_t berserk_move_pain2 = {BERSERK_FRAME_painb1, BERSERK_FRAME_painb20, berserk_frames_pain2, berserk_run};
 
 void berserk_pain (edict_t *self, edict_t *other, float kick, int damage)
 {
@@ -361,7 +361,7 @@ mframe_t berserk_frames_death1 [] =
 	ai_move, 0, NULL
 	
 };
-mmove_t berserk_move_death1 = {FRAME_death1, FRAME_death13, berserk_frames_death1, berserk_dead};
+mmove_t berserk_move_death1 = {BERSERK_FRAME_death1, BERSERK_FRAME_death13, berserk_frames_death1, berserk_dead};
 
 
 mframe_t berserk_frames_death2 [] =
@@ -375,7 +375,7 @@ mframe_t berserk_frames_death2 [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t berserk_move_death2 = {FRAME_deathc1, FRAME_deathc8, berserk_frames_death2, berserk_dead};
+mmove_t berserk_move_death2 = {BERSERK_FRAME_deathc1, BERSERK_FRAME_deathc8, berserk_frames_death2, berserk_dead};
 
 
 void berserk_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -449,7 +449,7 @@ void SP_monster_berserk (edict_t *self)
 	self->monsterinfo.search = berserk_search;
 
 	self->monsterinfo.currentmove = &berserk_move_stand;
-	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.scale = BERSERK_MODEL_SCALE;
 
 	gi.linkentity (self);
 

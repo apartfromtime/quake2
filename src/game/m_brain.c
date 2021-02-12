@@ -99,7 +99,7 @@ mframe_t brain_frames_stand [] =
 	ai_stand,	0,	NULL,
 	ai_stand,	0,	NULL
 };
-mmove_t brain_move_stand = {FRAME_stand01, FRAME_stand30, brain_frames_stand, NULL};
+mmove_t brain_move_stand = {BRAIN_FRAME_stand01, BRAIN_FRAME_stand30, brain_frames_stand, NULL};
 
 void brain_stand (edict_t *self)
 {
@@ -146,7 +146,7 @@ mframe_t brain_frames_idle [] =
 	ai_stand,	0,	NULL,
 	ai_stand,	0,	NULL
 };
-mmove_t brain_move_idle = {FRAME_stand31, FRAME_stand60, brain_frames_idle, brain_stand};
+mmove_t brain_move_idle = {BRAIN_FRAME_stand31, BRAIN_FRAME_stand60, brain_frames_idle, brain_stand};
 
 void brain_idle (edict_t *self)
 {
@@ -172,14 +172,14 @@ mframe_t brain_frames_walk1 [] =
 	ai_walk,	-1,	NULL,
 	ai_walk,	2,	NULL
 };
-mmove_t brain_move_walk1 = {FRAME_walk101, FRAME_walk111, brain_frames_walk1, NULL};
+mmove_t brain_move_walk1 = {BRAIN_FRAME_walk101, BRAIN_FRAME_walk111, brain_frames_walk1, NULL};
 
 // walk2 is FUBAR, do not use
 #if 0
 void brain_walk2_cycle (edict_t *self)
 {
 	if (random() > 0.1)
-		self->monsterinfo.nextframe = FRAME_walk220;
+		self->monsterinfo.nextframe = BRAIN_FRAME_walk220;
 }
 
 mframe_t brain_frames_walk2 [] =
@@ -228,7 +228,7 @@ mframe_t brain_frames_walk2 [] =
 	ai_walk,	-1,	NULL,
 	ai_walk,	-5,	NULL
 };
-mmove_t brain_move_walk2 = {FRAME_walk201, FRAME_walk240, brain_frames_walk2, NULL};
+mmove_t brain_move_walk2 = {BRAIN_FRAME_walk201, BRAIN_FRAME_walk240, brain_frames_walk2, NULL};
 #endif
 
 void brain_walk (edict_t *self)
@@ -253,7 +253,7 @@ mframe_t brain_frames_defense [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t brain_move_defense = {FRAME_defens01, FRAME_defens08, brain_frames_defense, NULL};
+mmove_t brain_move_defense = {BRAIN_FRAME_defens01, BRAIN_FRAME_defens08, brain_frames_defense, NULL};
 
 mframe_t brain_frames_pain3 [] =
 {
@@ -264,7 +264,7 @@ mframe_t brain_frames_pain3 [] =
 	ai_move,	0,	NULL,
 	ai_move,	-4,	NULL
 };
-mmove_t brain_move_pain3 = {FRAME_pain301, FRAME_pain306, brain_frames_pain3, brain_run};
+mmove_t brain_move_pain3 = {BRAIN_FRAME_pain301, BRAIN_FRAME_pain306, brain_frames_pain3, brain_run};
 
 mframe_t brain_frames_pain2 [] =
 {
@@ -277,7 +277,7 @@ mframe_t brain_frames_pain2 [] =
 	ai_move,	1,	NULL,
 	ai_move,	-2,	NULL
 };
-mmove_t brain_move_pain2 = {FRAME_pain201, FRAME_pain208, brain_frames_pain2, brain_run};
+mmove_t brain_move_pain2 = {BRAIN_FRAME_pain201, BRAIN_FRAME_pain208, brain_frames_pain2, brain_run};
 
 mframe_t brain_frames_pain1 [] =
 {
@@ -303,7 +303,7 @@ mframe_t brain_frames_pain1 [] =
 	ai_move,	3,	NULL,
 	ai_move,	-1,	NULL
 };
-mmove_t brain_move_pain1 = {FRAME_pain101, FRAME_pain121, brain_frames_pain1, brain_run};
+mmove_t brain_move_pain1 = {BRAIN_FRAME_pain101, BRAIN_FRAME_pain121, brain_frames_pain1, brain_run};
 
 
 //
@@ -347,7 +347,7 @@ mframe_t brain_frames_duck [] =
 	ai_move,	-6,	NULL,
 	ai_move,	-6,	NULL
 };
-mmove_t brain_move_duck = {FRAME_duck01, FRAME_duck08, brain_frames_duck, brain_run};
+mmove_t brain_move_duck = {BRAIN_FRAME_duck01, BRAIN_FRAME_duck08, brain_frames_duck, brain_run};
 
 void brain_dodge (edict_t *self, edict_t *attacker, float eta)
 {
@@ -370,7 +370,7 @@ mframe_t brain_frames_death2 [] =
 	ai_move,	9,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t brain_move_death2 = {FRAME_death201, FRAME_death205, brain_frames_death2, brain_dead};
+mmove_t brain_move_death2 = {BRAIN_FRAME_death201, BRAIN_FRAME_death205, brain_frames_death2, brain_dead};
 
 mframe_t brain_frames_death1 [] =
 {
@@ -393,7 +393,7 @@ mframe_t brain_frames_death1 [] =
 	ai_move,	0,	NULL,
 	ai_move,	0,	NULL
 };
-mmove_t brain_move_death1 = {FRAME_death101, FRAME_death118, brain_frames_death1, brain_dead};
+mmove_t brain_move_death1 = {BRAIN_FRAME_death101, BRAIN_FRAME_death118, brain_frames_death1, brain_dead};
 
 
 //
@@ -449,7 +449,7 @@ mframe_t brain_frames_attack1 [] =
 	ai_charge,	2,	NULL,
 	ai_charge,	-11,NULL
 };
-mmove_t brain_move_attack1 = {FRAME_attak101, FRAME_attak118, brain_frames_attack1, brain_run};
+mmove_t brain_move_attack1 = {BRAIN_FRAME_attak101, BRAIN_FRAME_attak118, brain_frames_attack1, brain_run};
 
 void brain_chest_open (edict_t *self)
 {
@@ -498,7 +498,7 @@ mframe_t brain_frames_attack2 [] =
 	ai_charge,	-3,	NULL,
 	ai_charge,	-6,	NULL
 };
-mmove_t brain_move_attack2 = {FRAME_attak201, FRAME_attak217, brain_frames_attack2, brain_run};
+mmove_t brain_move_attack2 = {BRAIN_FRAME_attak201, BRAIN_FRAME_attak217, brain_frames_attack2, brain_run};
 
 void brain_melee(edict_t *self)
 {
@@ -527,7 +527,7 @@ mframe_t brain_frames_run [] =
 	ai_run,	-1,	NULL,
 	ai_run,	2,	NULL
 };
-mmove_t brain_move_run = {FRAME_walk101, FRAME_walk111, brain_frames_run, NULL};
+mmove_t brain_move_run = {BRAIN_FRAME_walk101, BRAIN_FRAME_walk111, brain_frames_run, NULL};
 
 void brain_run (edict_t *self)
 {
@@ -670,7 +670,7 @@ void SP_monster_brain (edict_t *self)
 	gi.linkentity (self);
 
 	self->monsterinfo.currentmove = &brain_move_stand;	
-	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.scale = BRAIN_MODEL_SCALE;
 
 	walkmonster_start (self);
 }

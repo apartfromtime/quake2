@@ -213,7 +213,7 @@ mframe_t medic_frames_stand [] =
 	ai_stand, 0, NULL,
 
 };
-mmove_t medic_move_stand = {FRAME_wait1, FRAME_wait90, medic_frames_stand, NULL};
+mmove_t medic_move_stand = {MEDIC_FRAME_wait1, MEDIC_FRAME_wait90, medic_frames_stand, NULL};
 
 void medic_stand (edict_t *self)
 {
@@ -236,7 +236,7 @@ mframe_t medic_frames_walk [] =
 	ai_walk, 14,	NULL,
 	ai_walk, 9.3,	NULL
 };
-mmove_t medic_move_walk = {FRAME_walk1, FRAME_walk12, medic_frames_walk, NULL};
+mmove_t medic_move_walk = {MEDIC_FRAME_walk1, MEDIC_FRAME_walk12, medic_frames_walk, NULL};
 
 void medic_walk (edict_t *self)
 {
@@ -254,7 +254,7 @@ mframe_t medic_frames_run [] =
 	ai_run, 35.6,	NULL
 	
 };
-mmove_t medic_move_run = {FRAME_run1, FRAME_run6, medic_frames_run, NULL};
+mmove_t medic_move_run = {MEDIC_FRAME_run1, MEDIC_FRAME_run6, medic_frames_run, NULL};
 
 void medic_run (edict_t *self)
 {
@@ -292,7 +292,7 @@ mframe_t medic_frames_pain1 [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t medic_move_pain1 = {FRAME_paina1, FRAME_paina8, medic_frames_pain1, medic_run};
+mmove_t medic_move_pain1 = {MEDIC_FRAME_paina1, MEDIC_FRAME_paina8, medic_frames_pain1, medic_run};
 
 mframe_t medic_frames_pain2 [] =
 {
@@ -312,7 +312,7 @@ mframe_t medic_frames_pain2 [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t medic_move_pain2 = {FRAME_painb1, FRAME_painb15, medic_frames_pain2, medic_run};
+mmove_t medic_move_pain2 = {MEDIC_FRAME_painb1, MEDIC_FRAME_painb15, medic_frames_pain2, medic_run};
 
 void medic_pain (edict_t *self, edict_t *other, float kick, int damage)
 {
@@ -347,9 +347,9 @@ void medic_fire_blaster (edict_t *self)
 	vec3_t	dir;
 	int		effect;
 
-	if ((self->s.frame == FRAME_attack9) || (self->s.frame == FRAME_attack12))
+	if ((self->s.frame == MEDIC_FRAME_attack9) || (self->s.frame == MEDIC_FRAME_attack12))
 		effect = EF_BLASTER;
-	else if ((self->s.frame == FRAME_attack19) || (self->s.frame == FRAME_attack22) || (self->s.frame == FRAME_attack25) || (self->s.frame == FRAME_attack28))
+	else if ((self->s.frame == MEDIC_FRAME_attack19) || (self->s.frame == MEDIC_FRAME_attack22) || (self->s.frame == MEDIC_FRAME_attack25) || (self->s.frame == MEDIC_FRAME_attack28))
 		effect = EF_HYPERBLASTER;
 	else
 		effect = 0;
@@ -408,7 +408,7 @@ mframe_t medic_frames_death [] =
 	ai_move, 0, NULL,
 	ai_move, 0, NULL
 };
-mmove_t medic_move_death = {FRAME_death1, FRAME_death30, medic_frames_death, medic_dead};
+mmove_t medic_move_death = {MEDIC_FRAME_death1, MEDIC_FRAME_death30, medic_frames_death, medic_dead};
 
 void medic_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
@@ -489,7 +489,7 @@ mframe_t medic_frames_duck [] =
 	ai_move, -1,	NULL,
 	ai_move, -1,	NULL
 };
-mmove_t medic_move_duck = {FRAME_duck1, FRAME_duck16, medic_frames_duck, medic_run};
+mmove_t medic_move_duck = {MEDIC_FRAME_duck1, MEDIC_FRAME_duck16, medic_frames_duck, medic_run};
 
 void medic_dodge (edict_t *self, edict_t *attacker, float eta)
 {
@@ -521,7 +521,7 @@ mframe_t medic_frames_attackHyperBlaster [] =
 	ai_charge, 0,	medic_fire_blaster,
 	ai_charge, 0,	medic_fire_blaster
 };
-mmove_t medic_move_attackHyperBlaster = {FRAME_attack15, FRAME_attack30, medic_frames_attackHyperBlaster, medic_run};
+mmove_t medic_move_attackHyperBlaster = {MEDIC_FRAME_attack15, MEDIC_FRAME_attack30, medic_frames_attackHyperBlaster, medic_run};
 
 
 void medic_continue (edict_t *self)
@@ -549,7 +549,7 @@ mframe_t medic_frames_attackBlaster [] =
 	ai_charge, 0,	NULL,
 	ai_charge, 0,	medic_continue	// Change to medic_continue... Else, go to frame 32
 };
-mmove_t medic_move_attackBlaster = {FRAME_attack1, FRAME_attack14, medic_frames_attackBlaster, medic_run};
+mmove_t medic_move_attackBlaster = {MEDIC_FRAME_attack1, MEDIC_FRAME_attack14, medic_frames_attackBlaster, medic_run};
 
 
 void medic_hook_launch (edict_t *self)
@@ -584,7 +584,7 @@ void medic_cable_attack (edict_t *self)
 		return;
 
 	AngleVectors (self->s.angles, f, r, NULL);
-	VectorCopy (medic_cable_offsets[self->s.frame - FRAME_attack42], offset);
+	VectorCopy (medic_cable_offsets[self->s.frame - MEDIC_FRAME_attack42], offset);
 	G_ProjectSource (self->s.origin, offset, f, r, start);
 
 	// check for max distance
@@ -604,12 +604,12 @@ void medic_cable_attack (edict_t *self)
 	if (tr.fraction != 1.0 && tr.ent != self->enemy)
 		return;
 
-	if (self->s.frame == FRAME_attack43)
+	if (self->s.frame == MEDIC_FRAME_attack43)
 	{
 		gi.sound (self->enemy, CHAN_AUTO, sound_hook_hit, 1, ATTN_NORM, 0);
 		self->enemy->monsterinfo.aiflags |= AI_RESURRECTING;
 	}
-	else if (self->s.frame == FRAME_attack50)
+	else if (self->s.frame == MEDIC_FRAME_attack50)
 	{
 		self->enemy->spawnflags = 0;
 		self->enemy->monsterinfo.aiflags = 0;
@@ -634,7 +634,7 @@ void medic_cable_attack (edict_t *self)
 	}
 	else
 	{
-		if (self->s.frame == FRAME_attack44)
+		if (self->s.frame == MEDIC_FRAME_attack44)
 			gi.sound (self, CHAN_WEAPON, sound_hook_heal, 1, ATTN_NORM, 0);
 	}
 
@@ -690,7 +690,7 @@ mframe_t medic_frames_attackCable [] =
 	ai_move, 1.2,	NULL,
 	ai_move, 1.3,	NULL
 };
-mmove_t medic_move_attackCable = {FRAME_attack33, FRAME_attack60, medic_frames_attackCable, medic_run};
+mmove_t medic_move_attackCable = {MEDIC_FRAME_attack33, MEDIC_FRAME_attack60, medic_frames_attackCable, medic_run};
 
 
 void medic_attack(edict_t *self)
@@ -763,7 +763,7 @@ void SP_monster_medic (edict_t *self)
 	gi.linkentity (self);
 
 	self->monsterinfo.currentmove = &medic_move_stand;
-	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.scale = MEDIC_MODEL_SCALE;
 
 	walkmonster_start (self);
 }

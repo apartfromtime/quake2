@@ -567,22 +567,22 @@ void player_die (edict_t *self, edict_t *inflictor, edict_t *attacker, int damag
 			self->client->anim_priority = ANIM_DEATH;
 			if (self->client->ps.pmove.pm_flags & PMF_DUCKED)
 			{
-				self->s.frame = FRAME_crdeath1-1;
-				self->client->anim_end = FRAME_crdeath5;
+				self->s.frame = PLAYER_FRAME_crdeath1-1;
+				self->client->anim_end = PLAYER_FRAME_crdeath5;
 			}
 			else switch (i)
 			{
 			case 0:
-				self->s.frame = FRAME_death101-1;
-				self->client->anim_end = FRAME_death106;
+				self->s.frame = PLAYER_FRAME_death101-1;
+				self->client->anim_end = PLAYER_FRAME_death106;
 				break;
 			case 1:
-				self->s.frame = FRAME_death201-1;
-				self->client->anim_end = FRAME_death206;
+				self->s.frame = PLAYER_FRAME_death201-1;
+				self->client->anim_end = PLAYER_FRAME_death206;
 				break;
 			case 2:
-				self->s.frame = FRAME_death301-1;
-				self->client->anim_end = FRAME_death308;
+				self->s.frame = PLAYER_FRAME_death301-1;
+				self->client->anim_end = PLAYER_FRAME_death308;
 				break;
 			}
 			gi.sound (self, CHAN_VOICE, gi.soundindex(va("*death%i.wav", (rand()%4)+1)), 1, ATTN_NORM, 0);

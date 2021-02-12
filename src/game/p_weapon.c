@@ -215,13 +215,13 @@ void ChangeWeapon (edict_t *ent)
 	ent->client->anim_priority = ANIM_PAIN;
 	if(ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
-			ent->s.frame = FRAME_crpain1;
-			ent->client->anim_end = FRAME_crpain4;
+			ent->s.frame = PLAYER_FRAME_crpain1;
+			ent->client->anim_end = PLAYER_FRAME_crpain4;
 	}
 	else
 	{
-			ent->s.frame = FRAME_pain301;
-			ent->client->anim_end = FRAME_pain304;
+			ent->s.frame = PLAYER_FRAME_pain301;
+			ent->client->anim_end = PLAYER_FRAME_pain304;
 			
 	}
 }
@@ -398,13 +398,13 @@ void Weapon_Generic (edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE_LAST,
 			ent->client->anim_priority = ANIM_REVERSE;
 			if(ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 			{
-				ent->s.frame = FRAME_crpain4+1;
-				ent->client->anim_end = FRAME_crpain1;
+				ent->s.frame = PLAYER_FRAME_crpain4+1;
+				ent->client->anim_end = PLAYER_FRAME_crpain1;
 			}
 			else
 			{
-				ent->s.frame = FRAME_pain304+1;
-				ent->client->anim_end = FRAME_pain301;
+				ent->s.frame = PLAYER_FRAME_pain304+1;
+				ent->client->anim_end = PLAYER_FRAME_pain301;
 				
 			}
 		}
@@ -436,13 +436,13 @@ void Weapon_Generic (edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE_LAST,
 			ent->client->anim_priority = ANIM_REVERSE;
 			if(ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 			{
-				ent->s.frame = FRAME_crpain4+1;
-				ent->client->anim_end = FRAME_crpain1;
+				ent->s.frame = PLAYER_FRAME_crpain4+1;
+				ent->client->anim_end = PLAYER_FRAME_crpain1;
 			}
 			else
 			{
-				ent->s.frame = FRAME_pain304+1;
-				ent->client->anim_end = FRAME_pain301;
+				ent->s.frame = PLAYER_FRAME_pain304+1;
+				ent->client->anim_end = PLAYER_FRAME_pain301;
 				
 			}
 		}
@@ -464,13 +464,13 @@ void Weapon_Generic (edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE_LAST,
 				ent->client->anim_priority = ANIM_ATTACK;
 				if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 				{
-					ent->s.frame = FRAME_crattak1-1;
-					ent->client->anim_end = FRAME_crattak9;
+					ent->s.frame = PLAYER_FRAME_crattak1-1;
+					ent->client->anim_end = PLAYER_FRAME_crattak9;
 				}
 				else
 				{
-					ent->s.frame = FRAME_attack1-1;
-					ent->client->anim_end = FRAME_attack8;
+					ent->s.frame = PLAYER_FRAME_attack1-1;
+					ent->client->anim_end = PLAYER_FRAME_attack8;
 				}
 			}
 			else
@@ -581,14 +581,14 @@ void weapon_grenade_fire (edict_t *ent, qboolean held)
 	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
 		ent->client->anim_priority = ANIM_ATTACK;
-		ent->s.frame = FRAME_crattak1-1;
-		ent->client->anim_end = FRAME_crattak3;
+		ent->s.frame = PLAYER_FRAME_crattak1-1;
+		ent->client->anim_end = PLAYER_FRAME_crattak3;
 	}
 	else
 	{
 		ent->client->anim_priority = ANIM_REVERSE;
-		ent->s.frame = FRAME_wave08;
-		ent->client->anim_end = FRAME_wave01;
+		ent->s.frame = PLAYER_FRAME_wave08;
+		ent->client->anim_end = PLAYER_FRAME_wave01;
 	}
 }
 
@@ -911,13 +911,13 @@ void Weapon_HyperBlaster_Fire (edict_t *ent)
 			ent->client->anim_priority = ANIM_ATTACK;
 			if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 			{
-				ent->s.frame = FRAME_crattak1 - 1;
-				ent->client->anim_end = FRAME_crattak9;
+				ent->s.frame = PLAYER_FRAME_crattak1 - 1;
+				ent->client->anim_end = PLAYER_FRAME_crattak9;
 			}
 			else
 			{
-				ent->s.frame = FRAME_attack1 - 1;
-				ent->client->anim_end = FRAME_attack8;
+				ent->s.frame = PLAYER_FRAME_attack1 - 1;
+				ent->client->anim_end = PLAYER_FRAME_attack8;
 			}
 		}
 
@@ -1026,13 +1026,13 @@ void Machinegun_Fire (edict_t *ent)
 	ent->client->anim_priority = ANIM_ATTACK;
 	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
-		ent->s.frame = FRAME_crattak1 - (int) (random()+0.25);
-		ent->client->anim_end = FRAME_crattak9;
+		ent->s.frame = PLAYER_FRAME_crattak1 - (int) (random()+0.25);
+		ent->client->anim_end = PLAYER_FRAME_crattak9;
 	}
 	else
 	{
-		ent->s.frame = FRAME_attack1 - (int) (random()+0.25);
-		ent->client->anim_end = FRAME_attack8;
+		ent->s.frame = PLAYER_FRAME_attack1 - (int) (random()+0.25);
+		ent->client->anim_end = PLAYER_FRAME_attack8;
 	}
 }
 
@@ -1092,13 +1092,13 @@ void Chaingun_Fire (edict_t *ent)
 	ent->client->anim_priority = ANIM_ATTACK;
 	if (ent->client->ps.pmove.pm_flags & PMF_DUCKED)
 	{
-		ent->s.frame = FRAME_crattak1 - (ent->client->ps.gunframe & 1);
-		ent->client->anim_end = FRAME_crattak9;
+		ent->s.frame = PLAYER_FRAME_crattak1 - (ent->client->ps.gunframe & 1);
+		ent->client->anim_end = PLAYER_FRAME_crattak9;
 	}
 	else
 	{
-		ent->s.frame = FRAME_attack1 - (ent->client->ps.gunframe & 1);
-		ent->client->anim_end = FRAME_attack8;
+		ent->s.frame = PLAYER_FRAME_attack1 - (ent->client->ps.gunframe & 1);
+		ent->client->anim_end = PLAYER_FRAME_attack8;
 	}
 
 	if (ent->client->ps.gunframe <= 9)

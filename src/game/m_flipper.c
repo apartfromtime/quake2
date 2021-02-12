@@ -46,7 +46,7 @@ mframe_t flipper_frames_stand [] =
 	ai_stand, 0, NULL
 };
 	
-mmove_t	flipper_move_stand = {FRAME_flphor01, FRAME_flphor01, flipper_frames_stand, NULL};
+mmove_t	flipper_move_stand = {FLIPPER_FRAME_flphor01, FLIPPER_FRAME_flphor01, flipper_frames_stand, NULL};
 
 void flipper_stand (edict_t *self)
 {
@@ -84,7 +84,7 @@ mframe_t flipper_frames_run [] =
 	ai_run, FLIPPER_RUN_SPEED, NULL,
 	ai_run, FLIPPER_RUN_SPEED, NULL		// 29
 };
-mmove_t flipper_move_run_loop = {FRAME_flpver06, FRAME_flpver29, flipper_frames_run, NULL};
+mmove_t flipper_move_run_loop = {FLIPPER_FRAME_flpver06, FLIPPER_FRAME_flpver29, flipper_frames_run, NULL};
 
 void flipper_run_loop (edict_t *self)
 {
@@ -100,7 +100,7 @@ mframe_t flipper_frames_run_start [] =
 	ai_run, 8, NULL,
 	ai_run, 8, NULL
 };
-mmove_t flipper_move_run_start = {FRAME_flpver01, FRAME_flpver06, flipper_frames_run_start, flipper_run_loop};
+mmove_t flipper_move_run_start = {FLIPPER_FRAME_flpver01, FLIPPER_FRAME_flpver06, flipper_frames_run_start, flipper_run_loop};
 
 void flipper_run (edict_t *self)
 {
@@ -135,7 +135,7 @@ mframe_t flipper_frames_walk [] =
 	ai_walk, 4, NULL,
 	ai_walk, 4, NULL
 };
-mmove_t flipper_move_walk = {FRAME_flphor01, FRAME_flphor24, flipper_frames_walk, NULL};
+mmove_t flipper_move_walk = {FLIPPER_FRAME_flphor01, FLIPPER_FRAME_flphor24, flipper_frames_walk, NULL};
 
 void flipper_walk (edict_t *self)
 {
@@ -150,7 +150,7 @@ mframe_t flipper_frames_start_run [] =
 	ai_run, 8, NULL,
 	ai_run, 8, flipper_run
 };
-mmove_t flipper_move_start_run = {FRAME_flphor01, FRAME_flphor05, flipper_frames_start_run, NULL};
+mmove_t flipper_move_start_run = {FLIPPER_FRAME_flphor01, FLIPPER_FRAME_flphor05, flipper_frames_start_run, NULL};
 
 void flipper_start_run (edict_t *self)
 {
@@ -165,7 +165,7 @@ mframe_t flipper_frames_pain2 [] =
 	ai_move, 0,	NULL,
 	ai_move, 0, NULL
 };
-mmove_t flipper_move_pain2 = {FRAME_flppn101, FRAME_flppn105, flipper_frames_pain2, flipper_run};
+mmove_t flipper_move_pain2 = {FLIPPER_FRAME_flppn101, FLIPPER_FRAME_flppn105, flipper_frames_pain2, flipper_run};
 
 mframe_t flipper_frames_pain1 [] =
 {
@@ -175,7 +175,7 @@ mframe_t flipper_frames_pain1 [] =
 	ai_move, 0,	NULL,
 	ai_move, 0, NULL
 };
-mmove_t flipper_move_pain1 = {FRAME_flppn201, FRAME_flppn205, flipper_frames_pain1, flipper_run};
+mmove_t flipper_move_pain1 = {FLIPPER_FRAME_flppn201, FLIPPER_FRAME_flppn205, flipper_frames_pain1, flipper_run};
 
 void flipper_bite (edict_t *self)
 {
@@ -213,7 +213,7 @@ mframe_t flipper_frames_attack [] =
 	ai_charge, 0,	flipper_bite,
 	ai_charge, 0,	NULL
 };
-mmove_t flipper_move_attack = {FRAME_flpbit01, FRAME_flpbit20, flipper_frames_attack, flipper_run};
+mmove_t flipper_move_attack = {FLIPPER_FRAME_flpbit01, FLIPPER_FRAME_flpbit20, flipper_frames_attack, flipper_run};
 
 void flipper_melee(edict_t *self)
 {
@@ -322,7 +322,7 @@ mframe_t flipper_frames_death [] =
 	ai_move, 0,	 NULL,
 	ai_move, 0,	 NULL
 };
-mmove_t flipper_move_death = {FRAME_flpdth01, FRAME_flpdth56, flipper_frames_death, flipper_dead};
+mmove_t flipper_move_death = {FLIPPER_FRAME_flpdth01, FLIPPER_FRAME_flpdth56, flipper_frames_death, flipper_dead};
 
 void flipper_sight (edict_t *self, edict_t *other)
 {
@@ -397,7 +397,7 @@ void SP_monster_flipper (edict_t *self)
 	gi.linkentity (self);
 
 	self->monsterinfo.currentmove = &flipper_move_stand;	
-	self->monsterinfo.scale = MODEL_SCALE;
+	self->monsterinfo.scale = FLIPPER_MODEL_SCALE;
 
 	swimmonster_start (self);
 }
