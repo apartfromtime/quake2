@@ -1526,7 +1526,7 @@ void Common_UnloadGameDLL(void)
 		Sys_DLL_Unload( gameDLL );
 	}
 
-	gameDLL = NULL;
+	gameDLL = 0;
 }
 
 /*
