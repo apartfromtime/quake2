@@ -716,7 +716,7 @@ IN_Commands
 */
 void IN_Commands (void)
 {
-	int i, key_index;
+	unsigned int i, key_index;
 	DWORD buttonstate, povstate;
 
 	if ( !joy_avail ) {

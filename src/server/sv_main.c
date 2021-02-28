@@ -342,7 +342,7 @@ void SVC_DirectConnect (void)
 			&& ( cl->netchan.qport == qport 
 			|| adr.port == cl->netchan.remote_address.port ) )
 		{
-			if (!NET_IsLocalAddress (adr) && (svs.realtime - cl->lastconnect) < ((int)sv_reconnect_limit->value * 1000))
+			if (!NET_IsLocalAddress (adr) && (svs.realtime - cl->lastconnect) < (sv_reconnect_limit->value * 1000))
 			{
 				Com_DPrintf ("%s:reconnect rejected : too soon\n", NET_AdrToString (adr));
 				return;
@@ -673,7 +673,7 @@ void SV_CheckTimeouts (void)
 	for (i=0,cl=svs.clients ; i<maxclients->value ; i++,cl++)
 	{
 		// message times may be wrong across a changelevel
-		if (cl->lastmessage > svs.realtime)
+		if (cl->lastmessage > (int)svs.realtime)
 			cl->lastmessage = svs.realtime;
 
 		if (cl->state == cs_zombie
@@ -837,7 +837,7 @@ void Master_Heartbeat (void)
 		return;		// a private dedicated game
 
 	// check for time wraparound
-	if (svs.last_heartbeat > svs.realtime)
+	if (svs.last_heartbeat > (int)svs.realtime)
 		svs.last_heartbeat = svs.realtime;
 
 	if (svs.realtime - svs.last_heartbeat < HEARTBEAT_SECONDS*1000)

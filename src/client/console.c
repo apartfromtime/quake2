@@ -568,11 +568,12 @@ Draws the console with the solid background
 */
 void Con_DrawConsole (float frac)
 {
-	int				i, j, x, y, n;
-	int				rows;
+	unsigned int i, j;
+	unsigned int x, y, n;
+	unsigned int rows;
 	char			*text;
 	int				row;
-	int				lines;
+	unsigned int lines;
 	char			version[64];
 	char			dlbar[1024];
 
@@ -609,7 +610,7 @@ void Con_DrawConsole (float frac)
 	if (con.display != con.current)
 	{
 	// draw arrows to show the buffer is backscrolled
-		for (x=0 ; x<con.linewidth ; x+=4)
+		for (x=0 ; x<(unsigned int)con.linewidth ; x+=4)
 			re.DrawChar ( (x+1)<<3, y, '^');
 	
 		y -= 8;
@@ -626,7 +627,7 @@ void Con_DrawConsole (float frac)
 			
 		text = con.text + (row % con.totallines)*con.linewidth;
 
-		for (x=0 ; x<con.linewidth ; x++)
+		for (x=0 ; x<(unsigned int)con.linewidth ; x++)
 			re.DrawChar ( (x+1)<<3, y, text[x]);
 	}
 

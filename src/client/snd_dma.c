@@ -1111,8 +1111,8 @@ void GetSoundtime(void)
 
 void S_Update_(void)
 {
-	unsigned        endtime;
-	int				samps;
+	unsigned endtime;
+	unsigned int samps;
 
 	if (!sound_started)
 		return;

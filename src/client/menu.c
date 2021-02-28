@@ -1789,7 +1789,7 @@ static const char *roguecredits[] =
 
 void M_Credits_MenuDraw( void )
 {
-	int i, y;
+	unsigned int i, y;
 
 	/*
 	** draw the credits

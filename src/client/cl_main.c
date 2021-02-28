@@ -223,7 +223,7 @@ void CL_Record_f (void)
 	{
 		if (cl.configstrings[i][0])
 		{
-			if (buf.cursize + strlen (cl.configstrings[i]) + 32 > buf.maxsize)
+			if (buf.cursize + (int)strlen(cl.configstrings[i]) + 32 > buf.maxsize)
 			{	// write it out
 				len = LittleLong (buf.cursize);
 				fwrite (&len, 4, 1, cls.demofile);

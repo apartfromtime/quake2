@@ -179,7 +179,7 @@ extern	int		key_repeats[MAX_KEYS];
 
 extern	int	anykeydown;
 extern char chat_buffer[];
-extern	int chat_bufferlen;
+extern unsigned int chat_bufferlen;
 extern	qboolean	chat_team;
 
 void Key_Event (int key, qboolean down, unsigned time);

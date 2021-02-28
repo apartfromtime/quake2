@@ -161,7 +161,7 @@ typedef struct
 typedef struct
 {
 	qboolean	initialized;				// sv_init has completed
-	int			realtime;					// always increasing, no clamping, etc
+	unsigned			realtime;					// always increasing, no clamping, etc
 
 	char		mapcmd[MAX_TOKEN_CHARS];	// ie: *intro.cin+base 
 
