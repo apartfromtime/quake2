@@ -501,16 +501,19 @@ void SCR_RunConsole (void)
 	else
 		scr_conlines = 0;				// none visible
 	
+	/* TODO:: add signed\unsigned cvar values, so we don't have to add the
+		kruft.
+	*/
 	if (scr_conlines < scr_con_current)
 	{
-		scr_con_current -= scr_conspeed->value*cls.frametime;
+		scr_con_current -= fabs(scr_conspeed->value)*cls.frametime;
 		if (scr_conlines > scr_con_current)
 			scr_con_current = scr_conlines;
 
 	}
 	else if (scr_conlines > scr_con_current)
 	{
-		scr_con_current += scr_conspeed->value*cls.frametime;
+		scr_con_current += fabs(scr_conspeed->value)*cls.frametime;
 		if (scr_conlines < scr_con_current)
 			scr_con_current = scr_conlines;
 	}
