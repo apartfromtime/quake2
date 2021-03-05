@@ -67,7 +67,8 @@ void SCR_LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *h
 	pcx_t	*pcx;
 	int		x, y;
 	int		len;
-	int		dataByte, runLength;
+	byte dataByte;
+	int runLength;
 	byte	*out, *pix;
 
 	*pic = NULL;
@@ -290,11 +291,15 @@ void Huff1TableInit (void)
 	}
 }
 
+
 /*
 ==================
 Huff1Decompress
 ==================
 */
+
+static int HUFFMAN_NODES_IN_BLOCK = 8;
+
 cblock_t Huff1Decompress (cblock_t in)
 {
 	byte		*input;
@@ -317,103 +322,37 @@ cblock_t Huff1Decompress (cblock_t in)
 
 	hnodes = hnodesbase;
 	nodenum = cin.numhnodes1[0];
-	while (count)
-	{
+
+	while ( count ) {
+
+		int i = 0;
 		inbyte = *input++;
-		//-----------
-		if (nodenum < 256)
-		{
-			hnodes = hnodesbase + (nodenum<<9);
-			*out_p++ = nodenum;
-			if (!--count)
-				break;
-			nodenum = cin.numhnodes1[nodenum];
+
+		for (i = 0; i < HUFFMAN_NODES_IN_BLOCK; ++i) {
+			
+			if ( nodenum < 256 ) {
+
+				hnodes = hnodesbase + ( nodenum << 9);
+				
+				*out_p++ = ( byte )nodenum;
+
+				if ( !--count ) {
+					break;
+				}
+				
+				nodenum = cin.numhnodes1[nodenum];
+			}
+			
+			nodenum = hnodes[nodenum * 2 + ( inbyte & 1 )];
+			inbyte >>= 1;
 		}
-		nodenum = hnodes[nodenum*2 + (inbyte&1)];
-		inbyte >>=1;
-		//-----------
-		if (nodenum < 256)
-		{
-			hnodes = hnodesbase + (nodenum<<9);
-			*out_p++ = nodenum;
-			if (!--count)
-				break;
-			nodenum = cin.numhnodes1[nodenum];
-		}
-		nodenum = hnodes[nodenum*2 + (inbyte&1)];
-		inbyte >>=1;
-		//-----------
-		if (nodenum < 256)
-		{
-			hnodes = hnodesbase + (nodenum<<9);
-			*out_p++ = nodenum;
-			if (!--count)
-				break;
-			nodenum = cin.numhnodes1[nodenum];
-		}
-		nodenum = hnodes[nodenum*2 + (inbyte&1)];
-		inbyte >>=1;
-		//-----------
-		if (nodenum < 256)
-		{
-			hnodes = hnodesbase + (nodenum<<9);
-			*out_p++ = nodenum;
-			if (!--count)
-				break;
-			nodenum = cin.numhnodes1[nodenum];
-		}
-		nodenum = hnodes[nodenum*2 + (inbyte&1)];
-		inbyte >>=1;
-		//-----------
-		if (nodenum < 256)
-		{
-			hnodes = hnodesbase + (nodenum<<9);
-			*out_p++ = nodenum;
-			if (!--count)
-				break;
-			nodenum = cin.numhnodes1[nodenum];
-		}
-		nodenum = hnodes[nodenum*2 + (inbyte&1)];
-		inbyte >>=1;
-		//-----------
-		if (nodenum < 256)
-		{
-			hnodes = hnodesbase + (nodenum<<9);
-			*out_p++ = nodenum;
-			if (!--count)
-				break;
-			nodenum = cin.numhnodes1[nodenum];
-		}
-		nodenum = hnodes[nodenum*2 + (inbyte&1)];
-		inbyte >>=1;
-		//-----------
-		if (nodenum < 256)
-		{
-			hnodes = hnodesbase + (nodenum<<9);
-			*out_p++ = nodenum;
-			if (!--count)
-				break;
-			nodenum = cin.numhnodes1[nodenum];
-		}
-		nodenum = hnodes[nodenum*2 + (inbyte&1)];
-		inbyte >>=1;
-		//-----------
-		if (nodenum < 256)
-		{
-			hnodes = hnodesbase + (nodenum<<9);
-			*out_p++ = nodenum;
-			if (!--count)
-				break;
-			nodenum = cin.numhnodes1[nodenum];
-		}
-		nodenum = hnodes[nodenum*2 + (inbyte&1)];
-		inbyte >>=1;
 	}
 
 	if (input - in.data != in.count && input - in.data != in.count+1)
 	{
 		Com_Printf ("Decompression overread by %i", (input - in.data) - in.count);
 	}
+
 	out.count = out_p - out.data;
 
 	return out;
@@ -506,7 +445,8 @@ void SCR_RunCinematic (void)
 		return;
 	}
 
-	frame = (cls.realtime - cl.cinematictime)*14.0/1000;
+	/* FIXME:: why the magic number 14? */
+	frame = ( ( cls.realtime - cl.cinematictime ) * 14 ) / 1000;
 	if (frame <= cl.cinematicframe)
 		return;
 	if (frame > cl.cinematicframe+1)
