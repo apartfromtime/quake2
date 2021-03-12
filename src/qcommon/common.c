@@ -674,6 +674,8 @@ void MSG_WriteDeltaEntity (entity_state_t *from, entity_state_t *to, sizebuf_t *
 // reading functions
 //
 
+/* TODO:: should the read functions return base type? */
+
 void MSG_BeginReading (sizebuf_t *msg)
 {
 	msg->readcount = 0;

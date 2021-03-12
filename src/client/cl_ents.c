@@ -537,32 +537,35 @@ void CL_ParsePlayerstate (frame_t *oldframe, frame_t *newframe)
 
 	if (flags & PS_M_ORIGIN)
 	{
-		state->pmove.origin[0] = MSG_ReadShort (&net_message);
-		state->pmove.origin[1] = MSG_ReadShort (&net_message);
-		state->pmove.origin[2] = MSG_ReadShort (&net_message);
+		state->pmove.origin[0] = ( short )MSG_ReadShort( &net_message );
+		state->pmove.origin[1] = ( short )MSG_ReadShort( &net_message );
+		state->pmove.origin[2] = ( short )MSG_ReadShort( &net_message );
 	}
 
 	if (flags & PS_M_VELOCITY)
 	{
-		state->pmove.velocity[0] = MSG_ReadShort (&net_message);
-		state->pmove.velocity[1] = MSG_ReadShort (&net_message);
-		state->pmove.velocity[2] = MSG_ReadShort (&net_message);
+		state->pmove.velocity[0] = ( short )MSG_ReadShort( &net_message );
+		state->pmove.velocity[1] = ( short )MSG_ReadShort( &net_message );
+		state->pmove.velocity[2] = ( short )MSG_ReadShort( &net_message );
 	}
 
-	if (flags & PS_M_TIME)
-		state->pmove.pm_time = MSG_ReadByte (&net_message);
+	if (flags & PS_M_TIME) {
+		state->pmove.pm_time = ( byte )MSG_ReadByte( &net_message );
+	}
 
-	if (flags & PS_M_FLAGS)
-		state->pmove.pm_flags = MSG_ReadByte (&net_message);
+	if (flags & PS_M_FLAGS) {
+		state->pmove.pm_flags = ( byte )MSG_ReadByte( &net_message );
+	}
 
-	if (flags & PS_M_GRAVITY)
-		state->pmove.gravity = MSG_ReadShort (&net_message);
+	if (flags & PS_M_GRAVITY) {
+		state->pmove.gravity = ( short )MSG_ReadShort( &net_message );
+	}
 
 	if (flags & PS_M_DELTA_ANGLES)
 	{
-		state->pmove.delta_angles[0] = MSG_ReadShort (&net_message);
-		state->pmove.delta_angles[1] = MSG_ReadShort (&net_message);
-		state->pmove.delta_angles[2] = MSG_ReadShort (&net_message);
+		state->pmove.delta_angles[0] = ( short )MSG_ReadShort( &net_message );
+		state->pmove.delta_angles[1] = ( short )MSG_ReadShort( &net_message );
+		state->pmove.delta_angles[2] = ( short )MSG_ReadShort( &net_message );
 	}
 
 	if (cl.attractloop)
@@ -573,9 +576,9 @@ void CL_ParsePlayerstate (frame_t *oldframe, frame_t *newframe)
 	//
 	if (flags & PS_VIEWOFFSET)
 	{
-		state->viewoffset[0] = MSG_ReadChar (&net_message) * 0.25;
-		state->viewoffset[1] = MSG_ReadChar (&net_message) * 0.25;
-		state->viewoffset[2] = MSG_ReadChar (&net_message) * 0.25;
+		state->viewoffset[0] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
+		state->viewoffset[1] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
+		state->viewoffset[2] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
 	}
 
 	if (flags & PS_VIEWANGLES)
@@ -587,9 +590,9 @@ void CL_ParsePlayerstate (frame_t *oldframe, frame_t *newframe)
 
 	if (flags & PS_KICKANGLES)
 	{
-		state->kick_angles[0] = MSG_ReadChar (&net_message) * 0.25;
-		state->kick_angles[1] = MSG_ReadChar (&net_message) * 0.25;
-		state->kick_angles[2] = MSG_ReadChar (&net_message) * 0.25;
+		state->kick_angles[0] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
+		state->kick_angles[1] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
+		state->kick_angles[2] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
 	}
 
 	if (flags & PS_WEAPONINDEX)
@@ -600,33 +603,36 @@ void CL_ParsePlayerstate (frame_t *oldframe, frame_t *newframe)
 	if (flags & PS_WEAPONFRAME)
 	{
 		state->gunframe = MSG_ReadByte (&net_message);
-		state->gunoffset[0] = MSG_ReadChar (&net_message)*0.25;
-		state->gunoffset[1] = MSG_ReadChar (&net_message)*0.25;
-		state->gunoffset[2] = MSG_ReadChar (&net_message)*0.25;
-		state->gunangles[0] = MSG_ReadChar (&net_message)*0.25;
-		state->gunangles[1] = MSG_ReadChar (&net_message)*0.25;
-		state->gunangles[2] = MSG_ReadChar (&net_message)*0.25;
+		state->gunoffset[0] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
+		state->gunoffset[1] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
+		state->gunoffset[2] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
+		state->gunangles[0] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
+		state->gunangles[1] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
+		state->gunangles[2] = ( float )MSG_ReadChar( &net_message ) * 0.25f;
 	}
 
 	if (flags & PS_BLEND)
 	{
-		state->blend[0] = MSG_ReadByte (&net_message)/255.0;
-		state->blend[1] = MSG_ReadByte (&net_message)/255.0;
-		state->blend[2] = MSG_ReadByte (&net_message)/255.0;
-		state->blend[3] = MSG_ReadByte (&net_message)/255.0;
+		state->blend[0] = MSG_ReadByte( &net_message ) / 255.0f;
+		state->blend[1] = MSG_ReadByte( &net_message ) / 255.0f;
+		state->blend[2] = MSG_ReadByte( &net_message ) / 255.0f;
+		state->blend[3] = MSG_ReadByte( &net_message ) / 255.0f;
 	}
 
 	if (flags & PS_FOV)
-		state->fov = MSG_ReadByte (&net_message);
+		state->fov = ( float )MSG_ReadByte( &net_message );
 
 	if (flags & PS_RDFLAGS)
 		state->rdflags = MSG_ReadByte (&net_message);
 
 	// parse stats
 	statbits = MSG_ReadLong (&net_message);
-	for (i=0 ; i<MAX_STATS ; i++)
-		if (statbits & (1<<i) )
-			state->stats[i] = MSG_ReadShort(&net_message);
+	
+	for (i=0 ; i<MAX_STATS ; i++) {
+		if ( statbits & ( 1 << i ) ) {
+			state->stats[i] = ( short )MSG_ReadShort( &net_message );
+		}
+	}
 }
 
 
@@ -753,14 +759,20 @@ void CL_ParseFrame (void)
 		{
 			cls.state = ca_active;
 			cl.force_refdef = true;
-			cl.predicted_origin[0] = cl.frame.playerstate.pmove.origin[0]*0.125;
-			cl.predicted_origin[1] = cl.frame.playerstate.pmove.origin[1]*0.125;
-			cl.predicted_origin[2] = cl.frame.playerstate.pmove.origin[2]*0.125;
+			cl.predicted_origin[0] = cl.frame.playerstate.pmove.origin[0] *
+				0.125f;
+			cl.predicted_origin[1] = cl.frame.playerstate.pmove.origin[1] *
+				0.125f;
+			cl.predicted_origin[2] = cl.frame.playerstate.pmove.origin[2] *
+				0.125f;
 			VectorCopy (cl.frame.playerstate.viewangles, cl.predicted_angles);
+			
 			if (cls.disable_servercount != cl.servercount
-				&& cl.refresh_prepped)
+				&& cl.refresh_prepped) {
 				SCR_EndLoadingPlaque ();	// get rid of loading plaque
+			}
 		}
+
 		cl.sound_prepped = true;	// can start mixing ambient sounds
 	
 		// fire entity events
@@ -847,7 +859,7 @@ void CL_AddPacketEntities (frame_t *frame)
 	unsigned int		effects, renderfx;
 
 	// bonus items rotate at a fixed rate
-	autorotate = anglemod(cl.time/10);
+	autorotate = anglemod( cl.time / 10.0f );
 
 	// brush models can auto animate their frames
 	autoanim = 2*cl.time/1000;
@@ -907,7 +919,7 @@ void CL_AddPacketEntities (frame_t *frame)
 // pmm
 //======
 		ent.oldframe = cent->prev.frame;
-		ent.backlerp = 1.0 - cl.lerpfrac;
+		ent.backlerp = 1.0f - cl.lerpfrac;
 
 		if (renderfx & (RF_FRAMELERP|RF_BEAM))
 		{	// step origin discretely, because the frames
@@ -1000,7 +1012,7 @@ void CL_AddPacketEntities (frame_t *frame)
 		else if (effects & EF_SPINNINGLIGHTS)
 		{
 			ent.angles[0] = 0;
-			ent.angles[1] = anglemod(cl.time/2) + s1->angles[1];
+			ent.angles[1] = anglemod( cl.time / 2.0f ) + s1->angles[1];
 			ent.angles[2] = 180;
 			{
 				vec3_t forward;
@@ -1238,7 +1250,7 @@ void CL_AddPacketEntities (frame_t *frame)
 				{
 					i = bfg_lightramp[s1->frame];
 				}
-				V_AddLight (ent.origin, i, 0, 1, 0);
+				V_AddLight (ent.origin, ( float )i, 0, 1, 0);
 			}
 			// RAFAEL
 			else if (effects & EF_TRAP)
@@ -1246,7 +1258,7 @@ void CL_AddPacketEntities (frame_t *frame)
 				ent.origin[2] += 32;
 				CL_TrapParticles (&ent);
 				i = (rand()%100) + 100;
-				V_AddLight (ent.origin, i, 1, 0.8, 0.1);
+				V_AddLight (ent.origin, ( float )i, 1, 0.8, 0.1);
 			}
 			else if (effects & EF_FLAG1)
 			{
@@ -1267,21 +1279,23 @@ void CL_AddPacketEntities (frame_t *frame)
 			}
 			else if (effects & EF_TRACKERTRAIL)
 			{
-				if (effects & EF_TRACKER)
-				{
+				if ( effects & EF_TRACKER ) {
+
 					float intensity;
 
-					intensity = 50 + (500 * (sin(cl.time/500.0) + 1.0));
+					intensity = 50.0f + ( 500.0f * ( ( float )sin( cl.time /
+						500.0f ) + 1.0f ) );
 					// FIXME - check out this effect in rendition
-					if(vidref_val == VIDREF_GL)
-						V_AddLight (ent.origin, intensity, -1.0, -1.0, -1.0);
-					else
-						V_AddLight (ent.origin, -1.0 * intensity, 1.0, 1.0, 1.0);
+					if ( vidref_val == VIDREF_GL ) {
+						V_AddLight( ent.origin, intensity, -1.0f, -1.0f,
+							-1.0f );
+					} else {
+						V_AddLight( ent.origin, -1.0f * intensity, 1.0f, 1.0f,
+							1.0f );
 					}
-				else
-				{
-					CL_Tracker_Shell (cent->lerp_origin);
-					V_AddLight (ent.origin, 155, -1.0, -1.0, -1.0);
+				} else {
+					CL_Tracker_Shell( cent->lerp_origin );
+					V_AddLight( ent.origin, 155.0f, -1.0f, -1.0f, -1.0f );
 				}
 			}
 			else if (effects & EF_TRACKER)
@@ -1379,7 +1393,7 @@ void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
 	}
 
 	gun.flags = RF_MINLIGHT | RF_DEPTHHACK | RF_WEAPONMODEL;
-	gun.backlerp = 1.0 - cl.lerpfrac;
+	gun.backlerp = 1.0f - cl.lerpfrac;
 	VectorCopy (gun.origin, gun.oldorigin);	// don't lerp at all
 	V_AddEntity (&gun);
 }
@@ -1422,7 +1436,7 @@ void CL_CalcViewValues (void)
 	{	// use predicted values
 		unsigned	delta;
 
-		backlerp = 1.0 - lerp;
+		backlerp = 1.0f - lerp;
 		for (i=0 ; i<3 ; i++)
 		{
 			cl.refdef.vieworg[i] = cl.predicted_origin[i] + ops->viewoffset[i] 
@@ -1433,14 +1447,15 @@ void CL_CalcViewValues (void)
 		// smooth out stair climbing
 		delta = cls.realtime - cl.predicted_step_time;
 		if (delta < 100)
-			cl.refdef.vieworg[2] -= cl.predicted_step * (100 - delta) * 0.01;
+			cl.refdef.vieworg[2] -= cl.predicted_step * (100 - delta) * 0.01f;
 	}
 	else
 	{	// just use interpolated values
 		for (i=0 ; i<3 ; i++)
-			cl.refdef.vieworg[i] = ops->pmove.origin[i]*0.125 + ops->viewoffset[i] 
-				+ lerp * (ps->pmove.origin[i]*0.125 + ps->viewoffset[i] 
-				- (ops->pmove.origin[i]*0.125 + ops->viewoffset[i]) );
+			cl.refdef.vieworg[i] = ops->pmove.origin[i] * 0.125f +
+				ops->viewoffset[i] + lerp * ( ps->pmove.origin[i] * 0.125f +
+				ps->viewoffset[i] - ( ops->pmove.origin[i] * 0.125f +
+				ops->viewoffset[i] ) );
 	}
 
 	// if not running a demo or on a locked frame, add the local angle movement
@@ -1498,7 +1513,7 @@ void CL_AddEntities (void)
 		cl.lerpfrac = 0;
 	}
 	else
-		cl.lerpfrac = 1.0 - (cl.frame.servertime - cl.time) * 0.01;
+		cl.lerpfrac = 1.0f - ( cl.frame.servertime - cl.time ) * 0.01f;
 
 	if (cl_timedemo->value)
 		cl.lerpfrac = 1.0;
