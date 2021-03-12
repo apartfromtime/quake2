@@ -391,8 +391,9 @@ void Con_Print (char *txt)
 		{
 			Con_Linefeed ();
 		// mark time for transparent overlay
-			if (con.current >= 0)
+			if ( con.current >= 0 ) {
 				con.times[con.current % NUM_CON_TIMES] = cls.realtime;
+			}
 		}
 
 		switch (c)
@@ -408,7 +409,7 @@ void Con_Print (char *txt)
 
 		default:	// display character and advance
 			y = con.current % con.totallines;
-			con.text[y*con.linewidth+con.x] = c | mask | con.ormask;
+			con.text[y * con.linewidth + con.x] = ( char )( c | mask | con.ormask );
 			con.x++;
 			if (con.x >= con.linewidth)
 				con.x = 0;
@@ -577,7 +578,7 @@ void Con_DrawConsole (float frac)
 	char			version[64];
 	char			dlbar[1024];
 
-	lines = viddef.height * frac;
+	lines = ( unsigned int )( ( float )viddef.height * frac );
 	if (lines <= 0)
 		return;
 
