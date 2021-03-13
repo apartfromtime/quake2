@@ -395,7 +395,7 @@ void Key_Console (int key)
 		
 	if (key_linepos < MAXCMDLINE-1)
 	{
-		key_lines[edit_line][key_linepos] = key;
+		key_lines[edit_line][key_linepos] = ( char )key;
 		key_linepos++;
 		key_lines[edit_line][key_linepos] = 0;
 	}
@@ -450,7 +450,7 @@ void Key_Message (int key)
 	if (chat_bufferlen == sizeof(chat_buffer)-1)
 		return; // all full
 
-	chat_buffer[chat_bufferlen++] = key;
+	chat_buffer[chat_bufferlen++] = ( char )key;
 	chat_buffer[chat_bufferlen] = 0;
 }
 
@@ -501,7 +501,7 @@ char *Key_KeynumToString (int keynum)
 		return "<KEY NOT FOUND>";
 	if (keynum > 32 && keynum < 127)
 	{	// printable ascii
-		tinystr[0] = keynum;
+		tinystr[0] = ( char )keynum;
 		tinystr[1] = 0;
 		return tinystr;
 	}
