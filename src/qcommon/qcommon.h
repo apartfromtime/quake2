@@ -797,8 +797,6 @@ typedef struct event_s
 	int y;
 } event_t;
 
-extern const event_t null_event;
-
 void Event_Queue(unsigned time, unsigned int type, int x, int y);
 event_t Event_Get(unsigned int type);
 

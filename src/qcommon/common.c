@@ -1404,8 +1404,7 @@ Common Event
 
 /* TODO:: maybe merge events to a single queue */
 #define MAX_EVENTS 		128
-/* IMPORTANT:: constant, do not assign to this variable */
-const event_t null_event = { 0 };
+static const event_t null_event = { 0 };
 
 typedef struct queue_s
 {
