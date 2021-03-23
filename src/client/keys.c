@@ -25,7 +25,6 @@
 #define		MAXCMDLINE	256
 char	key_lines[32][MAXCMDLINE];
 int		key_linepos;
-int		shift_down=false;
 int	anykeydown;
 
 int		edit_line=0;
@@ -35,8 +34,7 @@ char * keybindings[MAX_KEYS];
 qboolean consolekeys[MAX_KEYS];			// if true, can't be rebound while in console
 qboolean menubound[MAX_KEYS];			// if true, can't be rebound while in menu
 int keyshift[MAX_KEYS];			// key to map to if shift held down in console
-int key_repeats[MAX_KEYS];			// if > 1, it is autorepeating
-qboolean keydown[MAX_KEYS];
+unsigned char keydown[MAX_KEYS];
 
 typedef struct
 {
@@ -55,6 +53,9 @@ keyname_t keynames[] =
 	{"DOWNARROW", K_DOWNARROW},
 	{"LEFTARROW", K_LEFTARROW},
 	{"RIGHTARROW", K_RIGHTARROW},
+	{"LWIN", K_LWIN},
+	{"RWIN", K_RWIN},
+	{"MENU", K_MENU},
 
 	{"ALT", K_ALT},
 	{"CTRL", K_CTRL},
@@ -63,6 +64,7 @@ keyname_t keynames[] =
 	{"COMMAND", K_COMMAND},
 
 	{"CAPSLOCK", K_CAPSLOCK},
+	{"SCROLL", K_SCROLL},
 	
 	{"F1", K_F1},
 	{"F2", K_F2},
@@ -770,28 +772,28 @@ void Key_Event (int key, qboolean down, unsigned time)
 	char	cmd[1024];
 
 	// update auto-repeat status
-	if (down)
-	{
-		key_repeats[key]++;
+	if ( down ) {
+
+		if ( keydown[key] < 255 ) {
+			keydown[key]++;
+		}
+
 		if (key != K_BACKSPACE 
 			&& key != K_PAUSE 
 			&& key != K_PGUP 
 			&& key != K_KP_PGUP 
 			&& key != K_PGDN
 			&& key != K_KP_PGDN
-			&& key_repeats[key] > 1)
+			&& keydown[key] > 1) {
 			return;	// ignore most autorepeats
+		}
 			
-		if (key >= 200 && !keybindings[key])
-			Com_Printf ("%s is unbound, hit F4 to set.\n", Key_KeynumToString (key) );
+		if ( key >= 200 && !keybindings[key] ) {
+			Com_Printf( "%s is unbound, hit F4 to set.\n", Key_KeynumToString( key ) );
+		}
+	} else {
+		keydown[key] = 0;
 	}
-	else
-	{
-		key_repeats[key] = 0;
-	}
-
-	if (key == K_SHIFT)
-		shift_down = down;
 
 	// console key is hardcoded, so the user can never unbind it
 	if (key == '`' || key == '~')
@@ -838,16 +840,18 @@ void Key_Event (int key, qboolean down, unsigned time)
 
 	// track if any key is down for BUTTON_ANY
 	keydown[key] = down;
-	if (down)
-	{
-		if (key_repeats[key] == 1)
+	
+	if ( down ) {
+		if ( keydown[key] == 1 ) {
 			anykeydown++;
-	}
-	else
-	{
+		}
+	} else {
+
 		anykeydown--;
-		if (anykeydown < 0)
+
+		if ( anykeydown < 0 ) {
 			anykeydown = 0;
+		}
 	}
 
 //
@@ -904,8 +908,9 @@ void Key_Event (int key, qboolean down, unsigned time)
 	if (!down)
 		return;		// other systems only care about key down events
 
-	if (shift_down)
+	if ( keydown[K_SHIFT] ) {
 		key = keyshift[key];
+	}
 
 	switch (cls.key_dest)
 	{
@@ -938,9 +943,10 @@ void Key_ClearStates (void)
 
 	for (i=0 ; i<256 ; i++)
 	{
-		if ( keydown[i] || key_repeats[i] )
+		if ( keydown[i] ) {
 			Key_Event( i, false, 0 );
+		}
+
 		keydown[i] = 0;
-		key_repeats[i] = 0;
 	}
 }

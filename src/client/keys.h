@@ -39,6 +39,7 @@ typedef enum keynum_s
 
 	K_COMMAND = 128,			/* windows key */
 	K_CAPSLOCK,
+	K_SCROLL,
 	K_POWER,
 	K_PAUSE,
 
@@ -46,6 +47,11 @@ typedef enum keynum_s
 	K_DOWNARROW,
 	K_LEFTARROW,
 	K_RIGHTARROW,
+
+	// The 3 windows keys
+	K_LWIN = 137,
+	K_RWIN,
+	K_MENU,
 
 	K_ALT,
 	K_CTRL,
@@ -175,7 +181,6 @@ typedef enum keynum_s
 } keynum_t;
 
 extern char * keybindings[MAX_KEYS];
-extern	int		key_repeats[MAX_KEYS];
 
 extern	int	anykeydown;
 extern char chat_buffer[];
