@@ -180,13 +180,9 @@ typedef enum keynum_s
 	K_NUM
 } keynum_t;
 
-extern char * keybindings[MAX_KEYS];
-
-extern	int	anykeydown;
-extern char chat_buffer[];
-extern unsigned int chat_bufferlen;
-extern	qboolean	chat_team;
-
+int Key_AnyKeyDown(void);
+int Key_GetKeyBindNum(int key, char * binding);
+char * Key_GetKeyBindName(char * binding);
 void Key_Event (int key, qboolean down, unsigned time);
 void Key_Init (void);
 void Key_WriteBindings (FILE *f);

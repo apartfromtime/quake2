@@ -65,7 +65,7 @@ CL_DrawInventory
 
 void CL_DrawInventory (void)
 {
-	int		i, j;
+	int		i;
 	int		num, selected_num, item;
 	int		index[MAX_ITEMS];
 	char	string[1024];
@@ -116,12 +116,8 @@ void CL_DrawInventory (void)
 		// search for a binding
 		Com_sprintf (binding, sizeof(binding), "use %s", cl.configstrings[CS_ITEMS+item]);
 		bind = "";
-		for (j=0 ; j<256 ; j++)
-			if (keybindings[j] && !Q_stricmp (keybindings[j], binding))
-			{
-				bind = Key_KeynumToString(j);
-				break;
-			}
+
+		bind = Key_GetKeyBindName( binding );
 
 		Com_sprintf (string, sizeof(string), "%6s %3i %s", bind, cl.inventory[item],
 			cl.configstrings[CS_ITEMS+item] );

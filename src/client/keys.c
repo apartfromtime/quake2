@@ -17,6 +17,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 * 02111-1307, USA.
 */
+
 #include <ctype.h>
 #include "client.h"
 
@@ -404,60 +405,10 @@ void Key_Console (int key)
 
 }
 
-//============================================================================
-
-qboolean	chat_team;
-char		chat_buffer[MAXCMDLINE];
-unsigned int chat_bufferlen = 0;
-
-void Key_Message (int key)
+int Key_AnyKeyDown(void)
 {
-
-	if ( key == K_ENTER || key == K_KP_ENTER )
-	{
-		if (chat_team)
-			Cbuf_AddText ("say_team \"");
-		else
-			Cbuf_AddText ("say \"");
-		Cbuf_AddText(chat_buffer);
-		Cbuf_AddText("\"\n");
-
-		cls.key_dest = key_game;
-		chat_bufferlen = 0;
-		chat_buffer[0] = 0;
-		return;
-	}
-
-	if (key == K_ESCAPE)
-	{
-		cls.key_dest = key_game;
-		chat_bufferlen = 0;
-		chat_buffer[0] = 0;
-		return;
-	}
-
-	if (key < 32 || key > 127)
-		return;	// non printable
-
-	if (key == K_BACKSPACE)
-	{
-		if (chat_bufferlen)
-		{
-			chat_bufferlen--;
-			chat_buffer[chat_bufferlen] = 0;
-		}
-		return;
-	}
-
-	if (chat_bufferlen == sizeof(chat_buffer)-1)
-		return; // all full
-
-	chat_buffer[chat_bufferlen++] = ( char )key;
-	chat_buffer[chat_bufferlen] = 0;
+	return anykeydown;
 }
-
-//============================================================================
-
 
 /*
 ===================
@@ -515,6 +466,37 @@ char *Key_KeynumToString (int keynum)
 	return "<UNKNOWN KEYNUM>";
 }
 
+/*
+===================
+Key_GetKeyBindNum
+===================
+*/
+int Key_GetKeyBindNum(int keynum, char * binding)
+{
+	int i;
+
+	if (keynum < 0) {
+		keynum = 0;
+	}
+
+	for (i = keynum; i < 256; i++) {
+		if ( keybindings[i] && !Q_stricmp( keybindings[i], binding ) ) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+/*
+===================
+Key_GetKeyBindName
+===================
+*/
+char * Key_GetKeyBindName(char * binding)
+{
+	return Key_KeynumToString( Key_GetKeyBindNum( 0, binding ) );
+}
 
 /*
 ===================
@@ -712,9 +694,14 @@ void Key_Init (void)
 	consolekeys[K_KP_INS] = true;
 	consolekeys[K_KP_DEL] = true;
 	consolekeys[K_KP_SLASH] = true;
+	consolekeys[K_KP_STAR] = true;
 	consolekeys[K_KP_PLUS] = true;
 	consolekeys[K_KP_MINUS] = true;
 	consolekeys[K_KP_5] = true;
+	consolekeys[K_MWHEELUP] = true;
+	consolekeys[K_MWHEELDOWN] = true;
+	consolekeys[K_MOUSE4] = true;
+	consolekeys[K_MOUSE5] = true;
 
 	consolekeys['`'] = false;
 	consolekeys['~'] = false;
@@ -869,15 +856,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 			Com_sprintf (cmd, sizeof(cmd), "-%s %i %i\n", kb+1, key, time);
 			Cbuf_AddText (cmd);
 		}
-		if (keyshift[key] != key)
-		{
-			kb = keybindings[keyshift[key]];
-			if (kb && kb[0] == '+')
-			{
-				Com_sprintf (cmd, sizeof(cmd), "-%s %i %i\n", kb+1, key, time);
-				Cbuf_AddText (cmd);
-			}
-		}
+
 		return;
 	}
 
@@ -920,7 +899,6 @@ void Key_Event (int key, qboolean down, unsigned time)
 	case key_menu:
 		M_Keydown (key);
 		break;
-
 	case key_game:
 	case key_console:
 		Key_Console (key);
@@ -937,12 +915,11 @@ Key_ClearStates
 */
 void Key_ClearStates (void)
 {
-	int		i;
+	int i;
 
 	anykeydown = false;
 
-	for (i=0 ; i<256 ; i++)
-	{
+	for (i = 0; i < MAX_KEYS; i++) {
 		if ( keydown[i] ) {
 			Key_Event( i, false, 0 );
 		}

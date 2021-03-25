@@ -27,6 +27,11 @@ cvar_t		*con_notifytime;
 
 
 #define		MAXCMDLINE	256
+
+qboolean	chat_team;
+char		chat_buffer[MAXCMDLINE];
+unsigned int chat_bufferlen = 0;
+
 extern	char	key_lines[32][MAXCMDLINE];
 extern	int		edit_line;
 extern	int		key_linepos;
@@ -681,4 +686,48 @@ void Con_DrawConsole (float frac)
 	Con_DrawInput ();
 }
 
+void Key_Message(int key)
+{
 
+	if ( key == K_ENTER || key == K_KP_ENTER )
+	{
+		if (chat_team)
+			Cbuf_AddText ("say_team \"");
+		else
+			Cbuf_AddText ("say \"");
+		Cbuf_AddText(chat_buffer);
+		Cbuf_AddText("\"\n");
+
+		cls.key_dest = key_game;
+		chat_bufferlen = 0;
+		chat_buffer[0] = 0;
+		return;
+	}
+
+	if (key == K_ESCAPE)
+	{
+		cls.key_dest = key_game;
+		chat_bufferlen = 0;
+		chat_buffer[0] = 0;
+		return;
+	}
+
+	if (key < 32 || key > 127)
+		return;	// non printable
+
+	if (key == K_BACKSPACE)
+	{
+		if (chat_bufferlen)
+		{
+			chat_bufferlen--;
+			chat_buffer[chat_bufferlen] = 0;
+		}
+		return;
+	}
+
+	if (chat_bufferlen == sizeof(chat_buffer)-1)
+		return; // all full
+
+	chat_buffer[chat_bufferlen++] = ( char )key;
+	chat_buffer[chat_bufferlen] = 0;
+}

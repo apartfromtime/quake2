@@ -675,46 +675,24 @@ static menuaction_s		s_keys_help_computer_action;
 
 static void M_UnbindCommand (char *command)
 {
-	int		j;
-	int		l;
-	char	*b;
+	int keynum;
 
-	l = strlen(command);
-
-	for (j=0 ; j<256 ; j++)
-	{
-		b = keybindings[j];
-		if (!b)
-			continue;
-		if (!strncmp (b, command, l) )
-			Key_SetBinding (j, "");
-	}
+	keynum = Key_GetKeyBindNum( 0, command );
+	Key_SetBinding( keynum, "" );
 }
 
 static void M_FindKeysForCommand (char *command, int *twokeys)
 {
-	int		count;
-	int		j;
-	int		l;
-	char	*b;
+	int keynum = 0;
 
-	twokeys[0] = twokeys[1] = -1;
-	l = strlen(command);
-	count = 0;
-
-	for (j=0 ; j<256 ; j++)
-	{
-		b = keybindings[j];
-		if (!b)
-			continue;
-		if (!strncmp (b, command, l) )
-		{
-			twokeys[count] = j;
-			count++;
-			if (count == 2)
-				break;
-		}
+	if (twokeys == NULL) {
+		return;
 	}
+
+	keynum = Key_GetKeyBindNum( keynum + 0, command );
+	twokeys[0] = keynum;
+	keynum = Key_GetKeyBindNum( keynum + 1, command );
+	twokeys[1] = keynum;
 }
 
 static void KeyCursorDrawFunc( menuframework_s *menu )
