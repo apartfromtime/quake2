@@ -1152,24 +1152,17 @@ static void UpdateCDVolumeFunc( void *unused )
 	Cvar_SetValue( "cd_nocd", !s_options_cdvolume_box.curvalue );
 }
 
-static void ConsoleFunc( void *unused )
+static void ConsoleFunc(void * unused)
 {
-	/*
-	** the proper way to do this is probably to have ToggleConsole_f accept a parameter
-	*/
-	extern void Key_ClearTyping( void );
+	if ( cl.attractloop ) {
 
-	if ( cl.attractloop )
-	{
-		Cbuf_AddText ("killserver\n");
+		Cbuf_AddText( "killserver\n" );
+		
 		return;
 	}
 
-	Key_ClearTyping ();
-	Con_ClearNotify ();
-
-	M_ForceMenuOff ();
-	cls.key_dest = key_console;
+	Cbuf_AddText( "toggleconsole clear\n" );
+	M_ForceMenuOff();
 }
 
 static void UpdateSoundQualityFunc( void *unused )

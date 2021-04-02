@@ -180,6 +180,8 @@ typedef enum keynum_s
 	K_NUM
 } keynum_t;
 
+void Key_ClearTyping(void);
+qboolean Key_IsDown(int keynum);
 int Key_AnyKeyDown(void);
 int Key_GetKeyBindNum(int key, char * binding);
 char * Key_GetKeyBindName(char * binding);

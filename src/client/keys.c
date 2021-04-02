@@ -35,7 +35,7 @@ char * keybindings[MAX_KEYS];
 qboolean consolekeys[MAX_KEYS];			// if true, can't be rebound while in console
 qboolean menubound[MAX_KEYS];			// if true, can't be rebound while in menu
 int keyshift[MAX_KEYS];			// key to map to if shift held down in console
-unsigned char keydown[MAX_KEYS];
+unsigned char keydown[MAX_KEYS];			// keydown and keyrepeat state
 
 typedef struct
 {
@@ -404,6 +404,26 @@ void Key_Console (int key)
 	}
 
 }
+
+/*
+===================
+Key_IsDown
+===================
+*/
+qboolean Key_IsDown(int keynum)
+{
+	if ( keynum == -1 ) {
+		return false;
+	}
+
+	return keydown[keynum] != 0;
+}
+
+/*
+===================
+Key_AnyKeyDown
+===================
+*/
 
 int Key_AnyKeyDown(void)
 {
@@ -785,9 +805,12 @@ void Key_Event (int key, qboolean down, unsigned time)
 	// console key is hardcoded, so the user can never unbind it
 	if (key == '`' || key == '~')
 	{
-		if (!down)
+		if ( !down ) {
 			return;
-		Con_ToggleConsole_f ();
+		}
+
+		Cbuf_AddText( "toggleconsole clear\n" );
+		
 		return;
 	}
 
@@ -906,6 +929,17 @@ void Key_Event (int key, qboolean down, unsigned time)
 	default:
 		Com_Error (ERR_FATAL, "Bad cls.key_dest");
 	}
+}
+
+/*
+===================
+Key_ClearTyping
+===================
+*/
+void Key_ClearTyping(void)
+{
+	key_lines[edit_line][1] = 0;			// clear any typing
+	key_linepos = 1;
 }
 
 /*

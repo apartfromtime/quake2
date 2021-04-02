@@ -57,20 +57,16 @@ void DrawAltString (int x, int y, char *s)
 	}
 }
 
-
-void Key_ClearTyping (void)
-{
-	key_lines[edit_line][1] = 0;	// clear any typing
-	key_linepos = 1;
-}
-
 /*
 ================
 Con_ToggleConsole_f
 ================
 */
-void Con_ToggleConsole_f (void)
+void Con_ToggleConsole_f(void)
 {
+	int c = 0;
+	qboolean clear = false;
+
 	SCR_EndLoadingPlaque ();	// get rid of loading plaque
 
 	if (cl.attractloop)
@@ -85,8 +81,18 @@ void Con_ToggleConsole_f (void)
 		return;
 	}
 
-	Key_ClearTyping ();
-	Con_ClearNotify ();
+	c = Cmd_Argc();
+
+	if ( c == 2 ) {
+		if ( !strcmp( Cmd_Argv( 1 ), "clear" ) ) {
+			clear = true;
+		}
+	}
+
+	if ( clear ) {
+		Key_ClearTyping();
+		Con_ClearNotify();
+	}
 
 	if (cls.key_dest == key_console)
 	{
@@ -111,7 +117,7 @@ Con_ToggleChat_f
 */
 void Con_ToggleChat_f (void)
 {
-	Key_ClearTyping ();
+	Key_ClearTyping();
 
 	if (cls.key_dest == key_console)
 	{

@@ -622,9 +622,8 @@ void VID_CheckChanges (void)
 			/*
 			** drop the console if we fail to load a refresh
 			*/
-			if ( cls.key_dest != key_console )
-			{
-				Con_ToggleConsole_f();
+			if ( cls.key_dest != key_console ) {
+				Cbuf_AddText( "toggleconsole\n" );
 			}
 		}
 		cls.disable_screen = false;
