@@ -37,139 +37,146 @@ qboolean menubound[MAX_KEYS];			// if true, can't be rebound while in menu
 int keyshift[MAX_KEYS];			// key to map to if shift held down in console
 unsigned char keydown[MAX_KEYS];			// keydown and keyrepeat state
 
-typedef struct
+typedef struct keyname_s
 {
-	char	*name;
-	int		keynum;
+	char * name;
+	int keynum;
 } keyname_t;
 
-keyname_t keynames[] =
+static keyname_t keynames[] =
 {
-	{"TAB", K_TAB},
-	{"ENTER", K_ENTER},
-	{"ESCAPE", K_ESCAPE},
-	{"SPACE", K_SPACE},
-	{"BACKSPACE", K_BACKSPACE},
-	{"UPARROW", K_UPARROW},
-	{"DOWNARROW", K_DOWNARROW},
-	{"LEFTARROW", K_LEFTARROW},
-	{"RIGHTARROW", K_RIGHTARROW},
-	{"LWIN", K_LWIN},
-	{"RWIN", K_RWIN},
-	{"MENU", K_MENU},
+	{ "TAB", K_TAB },
+	{ "ENTER", K_ENTER },
+	{ "ESCAPE", K_ESCAPE },
+	{ "SPACE", K_SPACE },
 
-	{"ALT", K_ALT},
-	{"CTRL", K_CTRL},
-	{"SHIFT", K_SHIFT},
+	{ "SEMICOLON", ';' },
+	{ "DOUBLEQUOTE", '"' },
+	{ "DOLLAR", '$' },
+	{ "PLUS", '+' },
+	{ "MINUS", '-' },
 
-	{"COMMAND", K_COMMAND},
+	{ "BACKSPACE", K_BACKSPACE },
 
-	{"CAPSLOCK", K_CAPSLOCK},
-	{"SCROLL", K_SCROLL},
+	{ "UPARROW", K_UPARROW },
+	{ "DOWNARROW", K_DOWNARROW },
+	{ "LEFTARROW", K_LEFTARROW },
+	{ "RIGHTARROW", K_RIGHTARROW },
 	
-	{"F1", K_F1},
-	{"F2", K_F2},
-	{"F3", K_F3},
-	{"F4", K_F4},
-	{"F5", K_F5},
-	{"F6", K_F6},
-	{"F7", K_F7},
-	{"F8", K_F8},
-	{"F9", K_F9},
-	{"F10", K_F10},
-	{"F11", K_F11},
-	{"F12", K_F12},
+	{ "LWIN", K_LWIN },
+	{ "RWIN", K_RWIN },
+	{ "MENU", K_MENU },
 
-	{"INS", K_INS},
-	{"DEL", K_DEL},
-	{"PGDN", K_PGDN},
-	{"PGUP", K_PGUP},
-	{"HOME", K_HOME},
-	{"END", K_END},
+	{ "ALT", K_ALT },
+	{ "CTRL", K_CTRL },
+	{ "SHIFT", K_SHIFT },
 
-	{"MOUSE1", K_MOUSE1},
-	{"MOUSE2", K_MOUSE2},
-	{"MOUSE3", K_MOUSE3},
-	{"MOUSE4", K_MOUSE4},
-	{"MOUSE5", K_MOUSE5},
+	{ "COMMAND", K_COMMAND },
 
-	{"MWHEELUP",	K_MWHEELUP },
-	{"MWHEELDOWN",	K_MWHEELDOWN },
-
-	{"JOY1", K_JOY1},
-	{"JOY2", K_JOY2},
-	{"JOY3", K_JOY3},
-	{"JOY4", K_JOY4},
-	{"JOY5", K_JOY5},
-	{"JOY6", K_JOY6},
-	{"JOY7", K_JOY7},
-	{"JOY8", K_JOY8},
-	{"JOY9", K_JOY9},
-	{"JOY10", K_JOY10},
-	{"JOY11", K_JOY11},
-	{"JOY12", K_JOY12},
-	{"JOY13", K_JOY13},
-	{"JOY14", K_JOY14},
-	{"JOY15", K_JOY15},
-	{"JOY16", K_JOY16},
-	{"JOY17", K_JOY17},
-	{"JOY18", K_JOY18},
-	{"JOY19", K_JOY19},
-	{"JOY20", K_JOY20},
-	{"JOY21", K_JOY21},
-	{"JOY22", K_JOY22},
-	{"JOY23", K_JOY23},
-	{"JOY24", K_JOY24},
-	{"JOY25", K_JOY25},
-	{"JOY26", K_JOY26},
-	{"JOY27", K_JOY27},
-	{"JOY28", K_JOY28},
-	{"JOY29", K_JOY29},
-	{"JOY30", K_JOY30},
-	{"JOY31", K_JOY31},
-	{"JOY32", K_JOY32},
-
-	{"AUX1", K_AUX1},
-	{"AUX2", K_AUX2},
-	{"AUX3", K_AUX3},
-	{"AUX4", K_AUX4},
-	{"AUX5", K_AUX5},
-	{"AUX6", K_AUX6},
-	{"AUX7", K_AUX7},
-	{"AUX8", K_AUX8},
-	{"AUX9", K_AUX9},
-	{"AUX10", K_AUX10},
-	{"AUX11", K_AUX11},
-	{"AUX12", K_AUX12},
-	{"AUX13", K_AUX13},
-	{"AUX14", K_AUX14},
-	{"AUX15", K_AUX15},
-	{"AUX16", K_AUX16},
-
-	{"KP_HOME",			K_KP_HOME },
-	{"KP_UPARROW",		K_KP_UPARROW },
-	{"KP_PGUP",			K_KP_PGUP },
-	{"KP_LEFTARROW",	K_KP_LEFTARROW },
-	{"KP_5",			K_KP_5 },
-	{"KP_RIGHTARROW",	K_KP_RIGHTARROW },
-	{"KP_END",			K_KP_END },
-	{"KP_DOWNARROW",	K_KP_DOWNARROW },
-	{"KP_PGDN",			K_KP_PGDN },
-	{"KP_ENTER",		K_KP_ENTER },
-	{"KP_INS",			K_KP_INS },
-	{"KP_DEL",			K_KP_DEL },
-	{"KP_SLASH",		K_KP_SLASH },
-	{"KP_MINUS",		K_KP_MINUS },
-	{"KP_PLUS",			K_KP_PLUS },
-	{"KP_NUMLOCK",		K_KP_NUMLOCK },
-	{"KP_STAR",			K_KP_STAR },
-	{"KP_EQUALS",		K_KP_EQUALS },
-
-	{"PAUSE", K_PAUSE},
+	{ "CAPSLOCK", K_CAPSLOCK },
+	{ "SCROLL", K_SCROLL },
 	
-	{"SEMICOLON", ';'},	// because a raw semicolon seperates commands
+	{ "F1", K_F1 },
+	{ "F2", K_F2 },
+	{ "F3", K_F3 },
+	{ "F4", K_F4 },
+	{ "F5", K_F5 },
+	{ "F6", K_F6 },
+	{ "F7", K_F7 },
+	{ "F8", K_F8 },
+	{ "F9", K_F9 },
+	{ "F10", K_F10 },
+	{ "F11", K_F11 },
+	{ "F12", K_F12 },
 
-	{NULL,0}
+	{ "INS", K_INS },
+	{ "DEL", K_DEL },
+	{ "PGDN", K_PGDN },
+	{ "PGUP", K_PGUP },
+	{ "HOME", K_HOME },
+	{ "END", K_END },
+
+	{ "MOUSE1", K_MOUSE1 },
+	{ "MOUSE2", K_MOUSE2 },
+	{ "MOUSE3", K_MOUSE3 },
+	{ "MOUSE4", K_MOUSE4 },
+	{ "MOUSE5", K_MOUSE5 },
+
+	{ "MWHEELUP", K_MWHEELUP },
+	{ "MWHEELDOWN", K_MWHEELDOWN },
+
+	{ "JOY1", K_JOY1 },
+	{ "JOY2", K_JOY2 },
+	{ "JOY3", K_JOY3 },
+	{ "JOY4", K_JOY4 },
+	{ "JOY5", K_JOY5 },
+	{ "JOY6", K_JOY6 },
+	{ "JOY7", K_JOY7 },
+	{ "JOY8", K_JOY8 },
+	{ "JOY9", K_JOY9 },
+	{ "JOY10", K_JOY10 },
+	{ "JOY11", K_JOY11 },
+	{ "JOY12", K_JOY12 },
+	{ "JOY13", K_JOY13 },
+	{ "JOY14", K_JOY14 },
+	{ "JOY15", K_JOY15 },
+	{ "JOY16", K_JOY16 },
+	{ "JOY17", K_JOY17 },
+	{ "JOY18", K_JOY18 },
+	{ "JOY19", K_JOY19 },
+	{ "JOY20", K_JOY20 },
+	{ "JOY21", K_JOY21 },
+	{ "JOY22", K_JOY22 },
+	{ "JOY23", K_JOY23 },
+	{ "JOY24", K_JOY24 },
+	{ "JOY25", K_JOY25 },
+	{ "JOY26", K_JOY26 },
+	{ "JOY27", K_JOY27 },
+	{ "JOY28", K_JOY28 },
+	{ "JOY29", K_JOY29 },
+	{ "JOY30", K_JOY30 },
+	{ "JOY31", K_JOY31 },
+	{ "JOY32", K_JOY32 },
+
+	{ "AUX1", K_AUX1 },
+	{ "AUX2", K_AUX2 },
+	{ "AUX3", K_AUX3 },
+	{ "AUX4", K_AUX4 },
+	{ "AUX5", K_AUX5 },
+	{ "AUX6", K_AUX6 },
+	{ "AUX7", K_AUX7 },
+	{ "AUX8", K_AUX8 },
+	{ "AUX9", K_AUX9 },
+	{ "AUX10", K_AUX10 },
+	{ "AUX11", K_AUX11 },
+	{ "AUX12", K_AUX12 },
+	{ "AUX13", K_AUX13 },
+	{ "AUX14", K_AUX14 },
+	{ "AUX15", K_AUX15 },
+	{ "AUX16", K_AUX16 },
+
+	{ "KP_HOME", K_KP_HOME },
+	{ "KP_UPARROW",	K_KP_UPARROW },
+	{ "KP_PGUP", K_KP_PGUP },
+	{ "KP_LEFTARROW", K_KP_LEFTARROW },
+	{ "KP_5", K_KP_5 },
+	{ "KP_RIGHTARROW", K_KP_RIGHTARROW },
+	{ "KP_END",	K_KP_END },
+	{ "KP_DOWNARROW", K_KP_DOWNARROW },
+	{ "KP_PGDN", K_KP_PGDN },
+	{ "KP_ENTER", K_KP_ENTER },
+	{ "KP_INS",	K_KP_INS },
+	{ "KP_DEL",	K_KP_DEL },
+	{ "KP_SLASH", K_KP_SLASH },
+	{ "KP_MINUS", K_KP_MINUS },
+	{ "KP_PLUS", K_KP_PLUS },
+	{ "KP_NUMLOCK",	K_KP_NUMLOCK },
+	{ "KP_STAR", K_KP_STAR },
+	{ "KP_EQUALS", K_KP_EQUALS },
+
+	{ "PAUSE", K_PAUSE },
+
+	{ NULL,	0 }
 };
 
 /*
@@ -434,25 +441,30 @@ int Key_AnyKeyDown(void)
 ===================
 Key_StringToKeynum
 
-Returns a key number to be used to index keybindings[] by looking at
-the given string.  Single ascii characters return themselves, while
-the K_* names are matched up.
+Returns a key number to be used to index keybindings[] by looking at the given
+string. Single ascii characters return themselves, while the K_* names are
+matched up.
 ===================
 */
-int Key_StringToKeynum (char *str)
+int Key_StringToKeynum(char * str)
 {
-	keyname_t	*kn;
+	keyname_t * kn;
 	
-	if (!str || !str[0])
+	if ( !str || !str[0] ) {
 		return -1;
-	if (!str[1])
-		return str[0];
-
-	for (kn=keynames ; kn->name ; kn++)
-	{
-		if (!Q_strcasecmp(str,kn->name))
-			return kn->keynum;
 	}
+
+	if ( !str[1] ) {
+		return str[0];
+	}
+
+	for (kn = keynames; kn->name; kn++)
+	{
+		if ( !Q_strcasecmp( str, kn->name ) ) {
+			return kn->keynum;
+		}
+	}
+
 	return -1;
 }
 
@@ -460,28 +472,39 @@ int Key_StringToKeynum (char *str)
 ===================
 Key_KeynumToString
 
-Returns a string (either a single ascii char, or a K_* name) for the
-given keynum.
-FIXME: handle quote special (general escape sequence?)
+Returns a string (either a single ascii char, or a K_* name) for the given
+keynum.
 ===================
 */
-char *Key_KeynumToString (int keynum)
+char * Key_KeynumToString(int keynum)
 {
-	keyname_t	*kn;	
-	static	char	tinystr[2];
+	keyname_t * kn;	
+	static char tinystr[2] = { 0 };
 	
-	if (keynum == -1)
+	if ( keynum == -1 ) {
 		return "<KEY NOT FOUND>";
-	if (keynum > 32 && keynum < 127)
-	{	// printable ascii
+	}
+
+
+	if ( ( keynum > 32 ) && ( keynum < 127 ) && keynum != ';' && keynum != '"'
+		&& keynum != '$' && keynum != '+' && keynum != '-') {
+		
+		/* printable ascii, except for quotes or general escape sequences ';',
+		'$' used to expand cvars to values in macros or commands and '+' or '-'
+		that are used in configuration files and on the command line */
+
 		tinystr[0] = ( char )keynum;
 		tinystr[1] = 0;
+
 		return tinystr;
 	}
 	
-	for (kn=keynames ; kn->name ; kn++)
-		if (keynum == kn->keynum)
+	for (kn = keynames; kn->name; kn++)
+	{
+		if ( keynum == kn->keynum ) {
 			return kn->name;
+		}
+	}
 
 	return "<UNKNOWN KEYNUM>";
 }
@@ -561,7 +584,8 @@ void Key_Unbind_f (void)
 		return;
 	}
 	
-	b = Key_StringToKeynum (Cmd_Argv(1));
+	b = Key_StringToKeynum( Cmd_Argv( 1 ) );
+
 	if (b==-1)
 	{
 		Com_Printf ("\"%s\" isn't a valid key\n", Cmd_Argv(1));
@@ -598,7 +622,9 @@ void Key_Bind_f (void)
 		Com_Printf ("bind <key> [command] : attach a command to a key\n");
 		return;
 	}
-	b = Key_StringToKeynum (Cmd_Argv(1));
+
+	b = Key_StringToKeynum( Cmd_Argv( 1 ) );
+	
 	if (b==-1)
 	{
 		Com_Printf ("\"%s\" isn't a valid key\n", Cmd_Argv(1));
@@ -639,7 +665,7 @@ void Key_WriteBindings (FILE *f)
 
 	for (i=0 ; i<256 ; i++)
 		if (keybindings[i] && keybindings[i][0])
-			fprintf (f, "bind %s \"%s\"\n", Key_KeynumToString(i), keybindings[i]);
+			fprintf (f, "bind %s \"%s\"\n", Key_KeynumToString( i ), keybindings[i]);
 }
 
 
@@ -655,7 +681,7 @@ void Key_Bindlist_f (void)
 
 	for (i=0 ; i<256 ; i++)
 		if (keybindings[i] && keybindings[i][0])
-			Com_Printf ("%s \"%s\"\n", Key_KeynumToString(i), keybindings[i]);
+			Com_Printf ("%s \"%s\"\n", Key_KeynumToString( i ), keybindings[i]);
 }
 
 
@@ -796,7 +822,8 @@ void Key_Event (int key, qboolean down, unsigned time)
 		}
 			
 		if ( key >= 200 && !keybindings[key] ) {
-			Com_Printf( "%s is unbound, hit F4 to set.\n", Key_KeynumToString( key ) );
+			Com_Printf( "%s is unbound, hit F4 to set.\n",
+				Key_KeynumToString( key ) );
 		}
 	} else {
 		keydown[key] = 0;

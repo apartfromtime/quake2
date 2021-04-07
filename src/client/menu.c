@@ -719,7 +719,7 @@ static void DrawKeyBindingFunc( void *self )
 		int x;
 		const char *name;
 
-		name = Key_KeynumToString (keys[0]);
+		name = Key_KeynumToString( keys[0] );
 
 		Menu_DrawString( a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, name );
 
@@ -728,7 +728,7 @@ static void DrawKeyBindingFunc( void *self )
 		if (keys[1] != -1)
 		{
 			Menu_DrawString( a->generic.x + a->generic.parent->x + 24 + x, a->generic.y + a->generic.parent->y, "or" );
-			Menu_DrawString( a->generic.x + a->generic.parent->x + 48 + x, a->generic.y + a->generic.parent->y, Key_KeynumToString (keys[1]) );
+			Menu_DrawString( a->generic.x + a->generic.parent->x + 48 + x, a->generic.y + a->generic.parent->y, Key_KeynumToString( keys[1] ) );
 		}
 	}
 }
@@ -987,7 +987,7 @@ static const char *Keys_MenuKey( int key )
 		{
 			char cmd[1024];
 
-			Com_sprintf (cmd, sizeof(cmd), "bind \"%s\" \"%s\"\n", Key_KeynumToString(key), bindnames[item->generic.localdata[0]][0]);
+			Com_sprintf (cmd, sizeof(cmd), "bind \"%s\" \"%s\"\n", Key_KeynumToString( key ), bindnames[item->generic.localdata[0]][0]);
 			Cbuf_InsertText (cmd);
 		}
 		
