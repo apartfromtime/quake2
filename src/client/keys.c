@@ -512,6 +512,8 @@ char * Key_KeynumToString(int keynum)
 /*
 ===================
 Key_GetKeyBindNum
+
+keynum offset into keybindings to begin search.
 ===================
 */
 int Key_GetKeyBindNum(int keynum, char * binding)
@@ -546,27 +548,30 @@ char * Key_GetKeyBindName(char * binding)
 Key_SetBinding
 ===================
 */
-void Key_SetBinding (int keynum, char *binding)
+void Key_SetBinding(int keynum, char * binding)
 {
-	char	*new;
-	int		l;
+	char * newbind;
+	int	l;
 			
-	if (keynum == -1)
+	if ( keynum == -1 ) {
 		return;
+	}
 
-// free old bindings
-	if (keybindings[keynum])
-	{
-		Z_Free (keybindings[keynum]);
+	/* free old bindings */
+	if ( keybindings[keynum] ) {
+
+		Z_Free( keybindings[keynum] );
 		keybindings[keynum] = NULL;
 	}
-			
-// allocate memory for new binding
-	l = strlen (binding);	
-	new = Z_Malloc (l+1);
-	strcpy (new, binding);
-	new[l] = 0;
-	keybindings[keynum] = new;	
+
+	/* allocate memory for new binding */
+	l = strlen( binding );
+	
+	newbind = Z_Malloc( l + 1 );
+	strcpy( newbind, binding );
+	newbind[l] = 0;
+	
+	keybindings[keynum] = newbind;	
 }
 
 /*
