@@ -675,10 +675,13 @@ static menuaction_s		s_keys_help_computer_action;
 
 static void M_UnbindCommand (char *command)
 {
-	int keynum;
+	int keynum = 0;
 
-	keynum = Key_GetKeyBindNum( 0, command );
-	Key_SetBinding( keynum, "" );
+	while ( keynum != -1 ) {
+		
+		keynum = Key_GetKeyBindNum( keynum, command );
+		Key_SetBinding( keynum, "" );
+	}
 }
 
 static void M_FindKeysForCommand (char *command, int *twokeys)
