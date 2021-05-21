@@ -1142,8 +1142,8 @@ void R_BeginFrame( float camera_separation )
 				ri.Cvar_SetValue( "vid_fullscreen", 0);
 				ri.Con_Printf( PRINT_ALL, "ref_soft::R_BeginFrame() - fullscreen unavailable in this mode\n" );
 				sw_state.prev_mode = sw_mode->value;
-//				vid_fullscreen->modified = false;
-//				sw_mode->modified = false;
+				vid_fullscreen->modified = false;
+				sw_mode->modified = false;
 			}
 			else
 			{

@@ -35,7 +35,7 @@ char * keybindings[MAX_KEYS];
 qboolean consolekeys[MAX_KEYS];			// if true, can't be rebound while in console
 qboolean menubound[MAX_KEYS];			// if true, can't be rebound while in menu
 int keyshift[MAX_KEYS];			// key to map to if shift held down in console
-unsigned char keydown[MAX_KEYS];			// keydown and keyrepeat state
+unsigned char keydown[MAX_KEYS];// keydown and keyrepeat state, > 1 is autorepeating
 
 typedef struct keyname_s
 {
@@ -806,9 +806,10 @@ Should NOT be called during an interrupt!
 */
 void Key_Event (int key, qboolean down, unsigned time)
 {
+	cvar_t * fullscreen;
 	char	*kb;
 	char	cmd[1024];
-
+	
 	// update auto-repeat status
 	if ( down ) {
 
@@ -816,13 +817,13 @@ void Key_Event (int key, qboolean down, unsigned time)
 			keydown[key]++;
 		}
 
-		if (key != K_BACKSPACE 
+		if ( key != K_BACKSPACE 
 			&& key != K_PAUSE 
 			&& key != K_PGUP 
 			&& key != K_KP_PGUP 
 			&& key != K_PGDN
 			&& key != K_KP_PGDN
-			&& keydown[key] > 1) {
+			&& keydown[key] > 1 ) {
 			return;	// ignore most autorepeats
 		}
 			
@@ -832,6 +833,15 @@ void Key_Event (int key, qboolean down, unsigned time)
 		}
 	} else {
 		keydown[key] = 0;
+	}
+
+	if ( keydown[K_ALT] && ( down && key == K_ENTER ) ) {
+
+		fullscreen = Cvar_Get( "vid_fullscreen", "0", CVAR_ARCHIVE );
+		Cvar_SetValue( "vid_fullscreen", !fullscreen->value );
+		Cbuf_AddText( "vid_restart\n" );
+
+		return;
 	}
 
 	// console key is hardcoded, so the user can never unbind it
@@ -847,7 +857,6 @@ void Key_Event (int key, qboolean down, unsigned time)
 	}
 
 	if ( !cls.disable_screen ) {
-
 
 		/* any key during the attract mode will bring up the menu */
 		if ( cl.attractloop && cls.key_dest != key_menu &&
@@ -995,7 +1004,7 @@ void Key_ClearTyping(void)
 Key_ClearStates
 ===================
 */
-void Key_ClearStates (void)
+void Key_ClearStates(void)
 {
 	int i;
 

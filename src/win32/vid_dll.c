@@ -193,7 +193,7 @@ MapKey
 Map from windows to quake keynums
 =======
 */
-int MapKey (int key)
+int MapKey(int key)
 {
 	unsigned char result = 0;
 	int modified = ( key >> 16 ) & 255;
@@ -356,27 +356,23 @@ void Sys_SendKeyEvents(void)
 
 				IN_MouseEvent( temp );
 			} break;
+			case WM_KEYDOWN:
 			case WM_SYSKEYDOWN:
 			{
-				if ( msg.wParam == 13 )
-				{
-					if ( vid_fullscreen )
-					{
-						Cvar_SetValue( "vid_fullscreen", !vid_fullscreen->value );
-					}
-					
-					break;
-				}
-			}
-			/* fall through */
-			case WM_KEYDOWN:
-			{
-				Event_Queue(time, EVENT_KEYBD, MapKey( msg.lParam ), true);
+				Event_Queue( time, EVENT_KEYBD, MapKey( msg.lParam ), true );
 			} break;
 			case WM_SYSKEYUP:
 			case WM_KEYUP:
 			{
-				Event_Queue(time, EVENT_KEYBD, MapKey( msg.lParam ), false);
+				int code = MapKey( msg.lParam );
+				
+				/* Alt + Enter requires special handling */
+				if ( Key_IsDown( K_ALT ) && code == K_ENTER ) {
+					Event_Queue( time, EVENT_KEYBD, code,
+						true );	
+				}
+
+				Event_Queue( time, EVENT_KEYBD, code, false );
 			} break;
             default:
             {
@@ -551,6 +547,8 @@ qboolean VID_LoadRefresh( char *name )
 		VID_FreeReflib ();
 		return false;
 	}
+
+	Key_ClearStates();
 
 	Com_Printf( "------------------------------------\n");
 	reflib_active = true;
