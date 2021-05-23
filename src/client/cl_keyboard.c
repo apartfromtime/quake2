@@ -32,10 +32,10 @@ int		edit_line=0;
 int		history_line=0;
 
 char * keybindings[MAX_KEYS];
-qboolean consolekeys[MAX_KEYS];			// if true, can't be rebound while in console
-qboolean menubound[MAX_KEYS];			// if true, can't be rebound while in menu
-int keyshift[MAX_KEYS];			// key to map to if shift held down in console
-unsigned char keydown[MAX_KEYS];// keydown and keyrepeat state, > 1 is autorepeating
+qboolean consolekeys[MAX_KEYS];	// if true, can't be rebound while in console
+qboolean menubound[MAX_KEYS];		// if true, can't be rebound while in menu
+// keydown and keyrepeat state, > 1 is autorepeating
+unsigned char keydown[MAX_KEYS];
 
 typedef struct keyname_s
 {
@@ -757,32 +757,6 @@ void Key_Init (void)
 	consolekeys['`'] = false;
 	consolekeys['~'] = false;
 
-	for (i=0 ; i<256 ; i++)
-		keyshift[i] = i;
-	for (i='a' ; i<='z' ; i++)
-		keyshift[i] = i - 'a' + 'A';
-	keyshift['1'] = '!';
-	keyshift['2'] = '@';
-	keyshift['3'] = '#';
-	keyshift['4'] = '$';
-	keyshift['5'] = '%';
-	keyshift['6'] = '^';
-	keyshift['7'] = '&';
-	keyshift['8'] = '*';
-	keyshift['9'] = '(';
-	keyshift['0'] = ')';
-	keyshift['-'] = '_';
-	keyshift['='] = '+';
-	keyshift[','] = '<';
-	keyshift['.'] = '>';
-	keyshift['/'] = '?';
-	keyshift[';'] = ':';
-	keyshift['\''] = '"';
-	keyshift['['] = '{';
-	keyshift[']'] = '}';
-	keyshift['`'] = '~';
-	keyshift['\\'] = '|';
-
 	menubound[K_ESCAPE] = true;
 	for (i=0 ; i<12 ; i++)
 		menubound[K_F1+i] = true;
@@ -966,10 +940,6 @@ void Key_Event (int key, qboolean down, unsigned time)
 
 	if (!down)
 		return;		// other systems only care about key down events
-
-	if ( keydown[K_SHIFT] ) {
-		key = keyshift[key];
-	}
 
 	switch (cls.key_dest)
 	{
