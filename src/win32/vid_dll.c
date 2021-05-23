@@ -203,6 +203,10 @@ int MapKey(int key)
 		return 0;
 	}
 
+	if ( GetKeyState( VK_SHIFT ) & 0x8000 ) {
+        modified += 128;
+	}
+
 	result = s_scantokey[modified];
 
 	if ( !extended ) {

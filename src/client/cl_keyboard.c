@@ -266,9 +266,9 @@ void Key_Console (int key)
 		break;
 	}
 
-	if ( ( toupper( key ) == 'V' && keydown[K_CTRL] ) ||
-		 ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keydown[K_SHIFT] ) )
-	{
+	if ( ( tolower( key ) == 'v' && keydown[K_CTRL] ) ||
+		( ( key == K_INS || key == K_KP_INS ) && keydown[K_SHIFT] ) ) {
+		
 		char * cbd;
 		
 		if ( ( cbd = Sys_GetClipboardData() ) != 0 ) {
@@ -294,13 +294,10 @@ void Key_Console (int key)
 		return;
 	}
 
-	if ( key == 'l' ) 
-	{
-		if ( keydown[K_CTRL] )
-		{
-			Cbuf_AddText ("clear\n");
-			return;
-		}
+	if ( tolower( key ) == 'l' && keydown[K_CTRL] ) {
+
+		Cbuf_AddText( "clear\n" );
+		return;
 	}
 
 	if ( key == K_ENTER || key == K_KP_ENTER )
@@ -336,41 +333,45 @@ void Key_Console (int key)
 		return;
 	}
 
-	if ( ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ||
-		 ( ( key == 'p' ) && keydown[K_CTRL] ) )
-	{
-		do
-		{
-			history_line = (history_line - 1) & 31;
-		} while (history_line != edit_line
-				&& !key_lines[history_line][1]);
-		if (history_line == edit_line)
-			history_line = (edit_line+1)&31;
-		strcpy(key_lines[edit_line], key_lines[history_line]);
-		key_linepos = strlen(key_lines[edit_line]);
+	if ( ( key == K_MWHEELUP && keydown[K_SHIFT] )
+		|| ( key == K_UPARROW ) || ( key == K_KP_UPARROW )
+		|| ( ( tolower( key ) == 'p' ) && keydown[K_CTRL] ) ) {
+		
+		do {
+			history_line = ( history_line - 1 ) & 31;
+		} while ( history_line != edit_line && !key_lines[history_line][1] );
+		
+		if ( history_line == edit_line ) {
+			history_line = ( edit_line + 1 ) & 31;
+		}
+		
+		strcpy( key_lines[edit_line], key_lines[history_line] );
+		key_linepos = strlen( key_lines[edit_line] );
+		
 		return;
 	}
 
-	if ( ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW ) ||
-		 ( ( key == 'n' ) && keydown[K_CTRL] ) )
-	{
-		if (history_line == edit_line) return;
-		do
-		{
-			history_line = (history_line + 1) & 31;
-		}
-		while (history_line != edit_line
-			&& !key_lines[history_line][1]);
-		if (history_line == edit_line)
-		{
+	if ( ( key == K_MWHEELDOWN && keydown[K_SHIFT] )
+		|| ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW )
+		|| ( ( tolower( key ) == 'n' ) && keydown[K_CTRL] ) ) {
+		
+		if ( history_line == edit_line ) return;
+		
+		do {
+			history_line = ( history_line + 1 ) & 31;
+		} while ( history_line != edit_line && !key_lines[history_line][1] );
+		
+		if ( history_line == edit_line ) {
+
 			key_lines[edit_line][0] = ']';
 			key_linepos = 1;
+
+		} else {
+
+			strcpy( key_lines[edit_line], key_lines[history_line] );
+			key_linepos = strlen( key_lines[edit_line] );
 		}
-		else
-		{
-			strcpy(key_lines[edit_line], key_lines[history_line]);
-			key_linepos = strlen(key_lines[edit_line]);
-		}
+
 		return;
 	}
 
@@ -409,7 +410,6 @@ void Key_Console (int key)
 		key_linepos++;
 		key_lines[edit_line][key_linepos] = 0;
 	}
-
 }
 
 /*
