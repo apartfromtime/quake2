@@ -21,21 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-console_t	con;
+console_t con;
 
-cvar_t		*con_notifytime;
+cvar_t * con_notifytime;
 
+#define MAXCMDLINE	256
 
-#define		MAXCMDLINE	256
-
-qboolean	chat_team;
-char		chat_buffer[MAXCMDLINE];
-unsigned int chat_bufferlen = 0;
-
-extern	char	key_lines[32][MAXCMDLINE];
-extern	int		edit_line;
-extern	int		key_linepos;
-		
+qboolean chat_team;
 
 void DrawString (int x, int y, char *s)
 {
@@ -469,36 +461,45 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 void Con_DrawInput (void)
 {
-	int		y;
-	int		i;
-	char	*text;
+	int y;
+	int i;
+	char buffer[MAXCMDLINE] = { 0 };
+	char * text = &buffer[0];
 
-	if (cls.key_dest == key_menu)
+	if ( cls.key_dest == key_menu ) {
 		return;
-	if (cls.key_dest != key_console && cls.state == ca_active)
-		return;		// don't draw anything (always draw if not active)
+	}
 
-	text = key_lines[edit_line];
+	if ( cls.key_dest != key_console && cls.state == ca_active ) {
+		return;			/* don't draw anything ( always draw if not active ) */
+	}
+
+	strcpy( &buffer[0], GetText() );
 	
-// add the cursor frame
-	text[key_linepos] = 10+((int)(cls.realtime>>8)&1);
+	/* add the cursor frame */
+	text[GetTextPos()] = 10 + ( ( int )( cls.realtime >> 8 ) & 1 );
 	
-// fill out remainder with spaces
-	for (i=key_linepos+1 ; i< con.linewidth ; i++)
+	/* fill out remainder with spaces */
+	for (i = strlen( &buffer[0] ); i < con.linewidth; i++)
+	{
 		text[i] = ' ';
+	}
 		
-//	prestep if horizontally scrolling
-	if (key_linepos >= con.linewidth)
-		text += 1 + key_linepos - con.linewidth;
+	/* prestep if horizontally scrolling */
+	if ( GetTextPos() >= con.linewidth ) {
+		text += 1 + GetTextPos() - con.linewidth;
+	}
 		
-// draw it
-	y = con.vislines-16;
+	/* draw it */
+	y = con.vislines - 16;
 
-	for (i=0 ; i<con.linewidth ; i++)
-		re.DrawChar ( (i+1)<<3, con.vislines - 22, text[i]);
+	for (i = 0; i < con.linewidth; i++)
+	{
+		re.DrawChar( ( i + 1 ) << 3, con.vislines - 22, text[i] );
+	}
 
-// remove cursor
-	key_lines[edit_line][key_linepos] = 0;
+	// remove cursor
+	buffer[GetTextPos()] = '\0';			/* we don't need to do this */
 }
 
 
@@ -515,7 +516,8 @@ void Con_DrawNotify (void)
 	char	*text;
 	int		i;
 	int		time;
-	char	*s;
+	char buffer[MAXCMDLINE] = { 0 };
+	char * s = &buffer[0];
 	int		skip;
 
 	v = 0;
@@ -551,9 +553,12 @@ void Con_DrawNotify (void)
 			skip = 5;
 		}
 
-		s = chat_buffer;
-		if (chat_bufferlen > (viddef.width>>3)-(skip+1))
-			s += chat_bufferlen - ((viddef.width>>3)-(skip+1));
+		strcpy( &buffer[0], GetChat() );
+
+		if ( GetChatPos() > ( int )( viddef.width >> 3 ) - ( skip + 1 ) ) {
+			s += GetChatPos() - ( ( viddef.width >> 3 ) - ( skip + 1 ) );
+		}
+
 		x = 0;
 		while(s[x])
 		{
@@ -690,50 +695,4 @@ void Con_DrawConsole (float frac)
 
 // draw the input prompt, user text, and cursor if desired
 	Con_DrawInput ();
-}
-
-void Key_Message(int key)
-{
-
-	if ( key == K_ENTER || key == K_KP_ENTER )
-	{
-		if (chat_team)
-			Cbuf_AddText ("say_team \"");
-		else
-			Cbuf_AddText ("say \"");
-		Cbuf_AddText(chat_buffer);
-		Cbuf_AddText("\"\n");
-
-		cls.key_dest = key_game;
-		chat_bufferlen = 0;
-		chat_buffer[0] = 0;
-		return;
-	}
-
-	if (key == K_ESCAPE)
-	{
-		cls.key_dest = key_game;
-		chat_bufferlen = 0;
-		chat_buffer[0] = 0;
-		return;
-	}
-
-	if (key < 32 || key > 127)
-		return;	// non printable
-
-	if (key == K_BACKSPACE)
-	{
-		if (chat_bufferlen)
-		{
-			chat_bufferlen--;
-			chat_buffer[chat_bufferlen] = 0;
-		}
-		return;
-	}
-
-	if (chat_bufferlen == sizeof(chat_buffer)-1)
-		return; // all full
-
-	chat_buffer[chat_bufferlen++] = ( char )key;
-	chat_buffer[chat_bufferlen] = 0;
 }

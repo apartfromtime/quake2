@@ -23,13 +23,31 @@
 
 /* key up events are sent even if in console mode */
 
-#define		MAXCMDLINE	256
-char	key_lines[32][MAXCMDLINE];
-int		key_linepos;
-int	anykeydown;
+#define MAX_LINES 		32
+#define MAXCMDLINE		256
 
-int		edit_line=0;
-int		history_line=0;
+/* TODO:: save and restore commandline history */
+typedef struct list_s
+{
+    char cmd[MAX_LINES][MAXCMDLINE];			/* input commands */
+    int num;            /* number of commands */
+    int pos;            /* edit input command */
+    int que;            /* next input command */
+} list_t;
+
+list_t history = { 0 };
+
+typedef struct field_s
+{
+    char input[MAXCMDLINE];			/* input line */
+    int pos;            /* edit input char position */
+} field_t;
+
+/* TODO:: add option for saving chat log */
+field_t chat = { 0 };
+field_t edit = { 0 };
+
+int	anykeydown;
 
 char * keybindings[MAX_KEYS];
 qboolean consolekeys[MAX_KEYS];	// if true, can't be rebound while in console
@@ -189,25 +207,177 @@ static keyname_t keynames[] =
 
 void CompleteCommand (void)
 {
-	char	*cmd, *s;
+	char * cmd, * s;
 
-	s = key_lines[edit_line]+1;
-	if (*s == '\\' || *s == '/')
+	s = &edit.input[1];
+
+	if (*s == '\\' || *s == '/') {
 		s++;
+	}
 
-	cmd = Cmd_CompleteCommand (s);
-	if (!cmd)
-		cmd = Cvar_CompleteVariable (s);
-	if (cmd)
-	{
-		key_lines[edit_line][1] = '/';
-		strcpy (key_lines[edit_line]+2, cmd);
-		key_linepos = strlen(cmd)+2;
-		key_lines[edit_line][key_linepos] = ' ';
-		key_linepos++;
-		key_lines[edit_line][key_linepos] = 0;
+	cmd = Cmd_CompleteCommand( s );
+
+	if ( !cmd ) {
+		cmd = Cvar_CompleteVariable( s );
+	}
+
+	if ( cmd ) {
+
+		edit.input[1] = '/';
+		strcpy( &edit.input[2], cmd );
+		edit.pos = strlen( cmd ) + 2;
+		edit.input[edit.pos] = ' ';
+		edit.pos++;
+		edit.input[edit.pos] = '\0';
+		
 		return;
 	}
+}
+
+/* inserts character into string */
+void Q_strinsert(char * str, unsigned int pos, char c)
+{
+	unsigned int i = 0;
+	char * p = NULL, * q = NULL;
+
+	p = &str[pos];
+	q = &str[strlen( str )];
+
+	while( q > p ) {
+		*q = *( q - 1 );
+		q--;
+	}
+
+	str[pos] = c;
+	str[strlen( str )] = '\0';
+}
+
+/* removes characters from string */
+void Q_strdelete(char * str, unsigned int pos, unsigned int count)
+{
+	unsigned int i = 0;
+	char * p = NULL, * q = NULL;
+
+	for (i = 0; i < count; ++i)
+	{
+		p = &str[strlen( str )];
+		q = &str[pos + i];
+
+		while( q < p ) {
+			*q = *( q + 1 );
+			q++;
+		}
+
+		str[strlen( str ) - i] = '\0';
+	}
+}
+
+/*
+===================
+GetChatPos
+
+Returns chat length
+===================
+*/
+int GetChatPos(void)
+{
+	return chat.pos;
+}
+
+/*
+===================
+GetChat
+
+Returns chat buffer
+===================
+*/
+char * GetChat(void)
+{
+	return &chat.input[0];
+}
+
+extern qboolean chat_team;
+
+/*
+===================
+Key_Message
+
+Interactive chat
+===================
+*/
+void Key_Message(int key)
+{
+	if ( key == K_ENTER || key == K_KP_ENTER ) {
+
+		if ( chat_team ) {
+			Cbuf_AddText( "say_team \"" );
+		} else {
+			Cbuf_AddText( "say \"" );
+		}
+
+		Cbuf_AddText( chat.input );
+		Cbuf_AddText( "\"\n" );
+
+		cls.key_dest = key_game;
+		memset( chat.input, 0, MAXCMDLINE );
+		chat.pos = 0;
+
+		return;
+	}
+
+	if ( key == K_ESCAPE ) {
+
+		cls.key_dest = key_game;
+		memset( chat.input, 0, MAXCMDLINE );
+		chat.pos = 0;
+		
+		return;
+	}
+
+	if ( key < 32 || key > 127 ) {
+		return;			/* non printable */
+	}
+
+	/* TODO:: add interactive line editing with K_LEFTARROW, K_RIGHTARROW */
+	if ( key == K_BACKSPACE ) {
+		if ( chat.pos ) {
+			
+			Q_strdelete( chat.input, chat.pos - 1, 1 );
+	        chat.pos--;
+		}
+
+		return;
+	}
+
+	if ( chat.pos == MAXCMDLINE - 1 ) {
+		return;			/* all full */
+	}
+
+	Q_strinsert( chat.input, chat.pos++, ( char )key );
+}
+
+/*
+===================
+GetTextPos
+
+Returns edit length
+===================
+*/
+int GetTextPos(void)
+{
+	return edit.pos;
+}
+
+/*
+===================
+GetText
+
+Returns edit buffer
+===================
+*/
+char * GetText(void)
+{
+	return &edit.input[0];
 }
 
 /*
@@ -217,9 +387,8 @@ Key_Console
 Interactive line editing and console scrollback
 ====================
 */
-void Key_Console (int key)
+void Key_Console(int key)
 {
-
 	switch ( key )
 	{
 	case K_KP_SLASH:
@@ -266,6 +435,7 @@ void Key_Console (int key)
 		break;
 	}
 
+	/* TODO:: add overstrike mode through K_INS */	
 	if ( ( tolower( key ) == 'v' && keydown[K_CTRL] ) ||
 		( ( key == K_INS || key == K_KP_INS ) && keydown[K_SHIFT] ) ) {
 		
@@ -277,15 +447,16 @@ void Key_Console (int key)
 
 			i = strlen( cbd );
 			
-			if ( i + key_linepos >= MAXCMDLINE ) {
-				i = MAXCMDLINE - key_linepos;
+			if ( i + edit.pos >= MAXCMDLINE ) {
+				i = MAXCMDLINE - edit.pos;
 			}
 
 			if ( i > 0 ) {
 
 				cbd[i] = 0;
-				strcat( key_lines[edit_line], cbd );
-				key_linepos += i;
+				
+				strcat( edit.input, cbd );
+				edit.pos += i;
 			}
 
 			free( cbd );
@@ -300,115 +471,143 @@ void Key_Console (int key)
 		return;
 	}
 
-	if ( key == K_ENTER || key == K_KP_ENTER )
-	{	// backslash text are commands, else chat
-		if (key_lines[edit_line][1] == '\\' || key_lines[edit_line][1] == '/')
-			Cbuf_AddText (key_lines[edit_line]+2);	// skip the >
-		else
-			Cbuf_AddText (key_lines[edit_line]+1);	// valid command
+    if ( ( key == K_ENTER )  || ( key == K_KP_ENTER ) ) {
 
-		Cbuf_AddText ("\n");
-		Com_Printf ("%s\n",key_lines[edit_line]);
-		edit_line = (edit_line + 1) & 31;
-		history_line = edit_line;
-		key_lines[edit_line][0] = ']';
-		key_linepos = 1;
-		if (cls.state == ca_disconnected)
-			SCR_UpdateScreen ();	// force an update, because the command
-									// may take some time
+    	/* empty command */
+    	if ( strlen( edit.input ) == 1 ) {
+    		return;
+    	}
+
+        if ( edit.input[1] == '\\' || edit.input[1] == '/' ) {
+        	Cbuf_AddText( &edit.input[2] );			/* skip the > */
+        } else {
+        	Cbuf_AddText( &edit.input[1] );			/* valid command */
+        }
+
+        Cbuf_AddText( "\n" );
+		Com_Printf( "%s\n", edit.input );
+        
+        /* add str to queue of commands */
+        strcpy( history.cmd[history.pos], edit.input );
+        history.pos = ( history.pos + 1 ) & ( MAX_LINES - 1 );
+		history.que = history.pos;
+        history.cmd[history.pos][0] = ']';
+        history.num++;
+
+        /* clear the edit field */
+        memset( edit.input, 0, MAXCMDLINE );
+        edit.input[0] = ']';
+        edit.pos = 1;
+
+		if ( cls.state == ca_disconnected ) {
+			/* force an update, because the command may take some time */
+			SCR_UpdateScreen();
+		}
+
+        return;
+    }
+
+	if ( key == K_TAB ) {
+
+		CompleteCommand();
 		return;
 	}
 
-	if (key == K_TAB)
-	{	// command completion
-		CompleteCommand ();
-		return;
-	}
-	
-	// TODO:: add interactive line editing with K_LEFTARROW, K_RIGHTARROW
-	if ( ( key == K_BACKSPACE ) || ( key == K_LEFTARROW ) || ( key == K_KP_LEFTARROW ) || ( ( key == 'h' ) && ( keydown[K_CTRL] ) ) )
-	{
-		if (key_linepos > 1)
-			key_linepos--;
-		return;
-	}
+    if ( ( key == K_LEFTARROW ) || ( key == K_KP_LEFTARROW ) ) {
 
-	if ( ( key == K_MWHEELUP && keydown[K_SHIFT] )
+    	if ( edit.pos > 1 ) {
+    		edit.pos--;
+    	}
+    }
+
+    if ( ( key == K_RIGHTARROW ) || ( key == K_KP_RIGHTARROW ) ) {
+
+    	if ( edit.pos < ( int )strlen( edit.input ) ) {
+    		edit.pos++;
+    	}
+    }
+
+	/* erase characters from string */
+    if ( ( key == K_BACKSPACE )
+    	|| ( ( key == 'h' ) && ( keydown[K_CTRL] ) ) ) {
+
+    	if ( edit.pos > 1 ) {
+
+            Q_strdelete( edit.input, edit.pos - 1, 1 );
+	        edit.pos--;
+    	}
+
+        return;
+    }
+
+	/* check for command or input scroll */
+    if ( ( key == K_MWHEELUP && keydown[K_SHIFT] )
 		|| ( key == K_UPARROW ) || ( key == K_KP_UPARROW )
 		|| ( ( tolower( key ) == 'p' ) && keydown[K_CTRL] ) ) {
-		
-		do {
-			history_line = ( history_line - 1 ) & 31;
-		} while ( history_line != edit_line && !key_lines[history_line][1] );
-		
-		if ( history_line == edit_line ) {
-			history_line = ( edit_line + 1 ) & 31;
-		}
-		
-		strcpy( key_lines[edit_line], key_lines[history_line] );
-		key_linepos = strlen( key_lines[edit_line] );
+
+    	if ( history.pos - history.que < MAX_LINES && history.que ) {
+    		history.que--;
+    	}
+
+		strncpy( edit.input, history.cmd[history.que], MAXCMDLINE );
+		edit.pos = strlen( edit.input );
 		
 		return;
 	}
 
-	if ( ( key == K_MWHEELDOWN && keydown[K_SHIFT] )
+    if ( ( key == K_MWHEELDOWN && keydown[K_SHIFT] )
 		|| ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW )
 		|| ( ( tolower( key ) == 'n' ) && keydown[K_CTRL] ) ) {
-		
-		if ( history_line == edit_line ) return;
-		
-		do {
-			history_line = ( history_line + 1 ) & 31;
-		} while ( history_line != edit_line && !key_lines[history_line][1] );
-		
-		if ( history_line == edit_line ) {
 
-			key_lines[edit_line][0] = ']';
-			key_linepos = 1;
+    	if ( history.que == history.pos ) {
+    		return;
+    	}
 
-		} else {
+    	history.que++;
 
-			strcpy( key_lines[edit_line], key_lines[history_line] );
-			key_linepos = strlen( key_lines[edit_line] );
-		}
+    	strncpy( edit.input, history.cmd[history.que], MAX_LINES );
+			edit.pos = ( int )strlen( edit.input );
 
 		return;
 	}
 
-	if (key == K_PGUP || key == K_KP_PGUP )
-	{
+	if ( key == K_PGUP || key == K_KP_PGUP ) {
+
 		con.display -= 2;
 		return;
 	}
 
-	if (key == K_PGDN || key == K_KP_PGDN ) 
-	{
+	if ( key == K_PGDN || key == K_KP_PGDN ) {
+		
 		con.display += 2;
-		if (con.display > con.current)
+
+		if ( con.display > con.current ) {
 			con.display = con.current;
+		}
+
 		return;
 	}
 
-	if (key == K_HOME || key == K_KP_HOME )
-	{
+	if ( key == K_HOME || key == K_KP_HOME ) {
+		
 		con.display = con.current - con.totallines + 10;
 		return;
 	}
 
-	if (key == K_END || key == K_KP_END )
-	{
+	if ( key == K_END || key == K_KP_END ) {
+		
 		con.display = con.current;
 		return;
 	}
 	
-	if (key < 32 || key > 127)
-		return;	// non printable
-		
-	if (key_linepos < MAXCMDLINE-1)
-	{
-		key_lines[edit_line][key_linepos] = ( char )key;
-		key_linepos++;
-		key_lines[edit_line][key_linepos] = 0;
+	if ( key < 32 || key > 127 ) {
+		return;			/* non printable */
+	}
+
+	if ( edit.pos < MAXCMDLINE - 1 ) {
+	    
+	    /* update string with user input */
+	    Q_strinsert( edit.input, edit.pos++, ( char )key );
 	}
 }
 
@@ -600,6 +799,11 @@ void Key_Unbind_f (void)
 	Key_SetBinding (b, "");
 }
 
+/*
+===================
+Key_Unbindall_f
+===================
+*/
 void Key_Unbindall_f (void)
 {
 	int		i;
@@ -697,7 +901,7 @@ Key_Init
 */
 void Key_Init (void)
 {
-	int		i;
+	int i;
 	int knum;
 
 	knum = K_NUM;
@@ -708,12 +912,17 @@ void Key_Init (void)
 		return;
 	}
 
-	for (i=0 ; i<32 ; i++)
+	for (i = 0; i < MAX_LINES; i++)
 	{
-		key_lines[i][0] = ']';
-		key_lines[i][1] = 0;
+		history.cmd[i][0] = ']';
+		history.cmd[i][1] = '\0';
 	}
-	key_linepos = 1;
+
+    history.pos = 0;
+    history.que = 0;
+
+	strcpy( &edit.input[0], history.cmd[history.pos] );
+	edit.pos = strlen( edit.input );
 	
 //
 // init ascii characters in console mode
@@ -965,8 +1174,10 @@ Key_ClearTyping
 */
 void Key_ClearTyping(void)
 {
-	key_lines[edit_line][1] = 0;			// clear any typing
-	key_linepos = 1;
+	/* clear any typing */
+    memset( edit.input, 0, MAXCMDLINE );
+    edit.input[0] = ']';
+    edit.pos = 1;
 }
 
 /*

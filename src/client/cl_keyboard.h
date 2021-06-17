@@ -22,6 +22,7 @@
 #define _KEYBOARD_H_
 
 #define MAX_KEYS 256
+
 /*
 client virtual keycodes
 these are the key numbers that should be passed to Key_Event
@@ -180,6 +181,10 @@ typedef enum keynum_s
 	K_NUM
 } keynum_t;
 
+int GetChatPos(void);
+char * GetChat(void);
+int GetTextPos(void);
+char * GetText(void);
 char * Key_KeynumToString(int keynum);
 void Key_ClearTyping(void);
 qboolean Key_IsDown(int keynum);
