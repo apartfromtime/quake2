@@ -1380,7 +1380,6 @@ float	crand(void)
 	return (rand()&32767)* (2.0/32767) - 1;
 }
 
-void Key_Init (void);
 void SCR_EndLoadingPlaque (void);
 
 /*
@@ -1849,6 +1848,7 @@ void Qcommon_Frame (int msec)
 Qcommon_Shutdown
 =================
 */
-void Qcommon_Shutdown (void)
+void Qcommon_Shutdown(void)
 {
+	Key_Shutdown();
 }

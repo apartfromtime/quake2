@@ -192,6 +192,7 @@ int Key_AnyKeyDown(void);
 int Key_GetKeyBindNum(int key, char * binding);
 char * Key_GetKeyBindName(char * binding);
 void Key_Event(int key, qboolean down, unsigned time);
+void Key_Shutdown(void);
 void Key_Init(void);
 void Key_WriteBindings(FILE *f);
 void Key_SetBinding(int keynum, char *binding);

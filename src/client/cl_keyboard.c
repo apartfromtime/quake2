@@ -893,6 +893,24 @@ void Key_Bindlist_f (void)
 			Com_Printf ("%s \"%s\"\n", Key_KeynumToString( i ), keybindings[i]);
 }
 
+/*
+===================
+Key_Shutdown
+===================
+*/
+void Key_Shutdown(void)
+{
+	int i;
+	
+	for (i = 0; i < MAX_KEYS; ++i)
+	{
+		if ( keybindings[i] ) {
+
+			Z_Free( keybindings[i] );
+			keybindings[i] = NULL;
+		}
+	}
+}
 
 /*
 ===================
