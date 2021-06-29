@@ -334,11 +334,20 @@ void Key_Message(int key)
 		return;
 	}
 
-	if ( key < 32 || key > 127 ) {
-		return;			/* non printable */
-	}
+	if ( ( key == K_LEFTARROW ) || ( key == K_KP_LEFTARROW ) ) {
 
-	/* TODO:: add interactive line editing with K_LEFTARROW, K_RIGHTARROW */
+    	if ( chat.pos > 1 ) {
+    		chat.pos--;
+    	}
+    }
+
+    if ( ( key == K_RIGHTARROW ) || ( key == K_KP_RIGHTARROW ) ) {
+
+    	if ( chat.pos < ( int )strlen( chat.input ) ) {
+    		chat.pos++;
+    	}
+    }
+
 	if ( key == K_BACKSPACE ) {
 		if ( chat.pos ) {
 			
@@ -347,6 +356,10 @@ void Key_Message(int key)
 		}
 
 		return;
+	}
+
+	if ( key < 32 || key > 127 ) {
+		return;			/* non printable */
 	}
 
 	if ( chat.pos == MAXCMDLINE - 1 ) {

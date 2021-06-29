@@ -497,9 +497,6 @@ void Con_DrawInput (void)
 	{
 		re.DrawChar( ( i + 1 ) << 3, con.vislines - 22, text[i] );
 	}
-
-	// remove cursor
-	buffer[GetTextPos()] = '\0';			/* we don't need to do this */
 }
 
 
@@ -512,67 +509,83 @@ Draws the last few lines of output transparently over the game top
 */
 void Con_DrawNotify (void)
 {
-	int		x, v;
-	char	*text;
-	int		i;
-	int		time;
+	int x, v;
+	char * text;
+	int i, linewidth;
+	int time;
 	char buffer[MAXCMDLINE] = { 0 };
 	char * s = &buffer[0];
-	int		skip;
+	int skip;
 
 	v = 0;
-	for (i= con.current-NUM_CON_TIMES+1 ; i<=con.current ; i++)
+
+	for (i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++)
 	{
-		if (i < 0)
+		if ( i < 0 ) {
 			continue;
+		}
+
 		time = con.times[i % NUM_CON_TIMES];
-		if (time == 0)
-			continue;
-		time = cls.realtime - time;
-		if (time > con_notifytime->value*1000)
-			continue;
-		text = con.text + (i % con.totallines)*con.linewidth;
 		
-		for (x = 0 ; x < con.linewidth ; x++)
-			re.DrawChar ( (x+1)<<3, v, text[x]);
+		if ( time == 0 ) {
+			continue;
+		}
+
+		time = cls.realtime - time;
+		
+		if ( time > con_notifytime->value * 1000 ) {
+			continue;
+		}
+
+		text = con.text + ( i % con.totallines ) * con.linewidth;
+		
+		for (x = 0 ; x < con.linewidth ; x++) {
+			re.DrawChar( ( x + 1 ) << 3, v, text[x] );
+		}
 
 		v += 8;
 	}
 
+	if (cls.key_dest == key_message) {
 
-	if (cls.key_dest == key_message)
-	{
-		if (chat_team)
-		{
-			DrawString (8, v, "say_team:");
+		if ( chat_team ) {
+
+			DrawString( 8, v, "say_team:" );
 			skip = 11;
-		}
-		else
-		{
-			DrawString (8, v, "say:");
+
+		} else {
+			
+			DrawString ( 8, v, "say:" );
 			skip = 5;
 		}
 
 		strcpy( &buffer[0], GetChat() );
+		
+		/* add the cursor frame */
+		s[GetChatPos()] = 10 + ( ( int )( cls.realtime >> 8 ) & 1 );
 
-		if ( GetChatPos() > ( int )( viddef.width >> 3 ) - ( skip + 1 ) ) {
-			s += GetChatPos() - ( ( viddef.width >> 3 ) - ( skip + 1 ) );
+		/* prestep if horizontally scrolling */
+		linewidth = ( int )( viddef.width >> 3 ) - skip;
+
+		if ( GetChatPos() > linewidth - 1 ) {
+			s += GetChatPos() - ( linewidth - 1 );
 		}
 
+		/* draw it */
 		x = 0;
-		while(s[x])
-		{
-			re.DrawChar ( (x+skip)<<3, v, s[x]);
+		
+		while ( s[x] && x < linewidth ) {
+
+			re.DrawChar( ( x + skip ) << 3, v, s[x] );
 			x++;
 		}
-		re.DrawChar ( (x+skip)<<3, v, 10+((cls.realtime>>8)&1));
+
 		v += 8;
 	}
 	
-	if (v)
-	{
-		SCR_AddDirtyPoint (0,0);
-		SCR_AddDirtyPoint (viddef.width-1, v);
+	if ( v ) {
+		SCR_AddDirtyPoint( 0, 0);
+		SCR_AddDirtyPoint( viddef.width - 1, v );
 	}
 }
 
