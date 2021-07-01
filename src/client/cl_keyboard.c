@@ -26,7 +26,6 @@
 #define MAX_LINES 		32
 #define MAXCMDLINE		256
 
-/* TODO:: save and restore commandline history */
 typedef struct list_s
 {
     char cmd[MAX_LINES][MAXCMDLINE];			/* input commands */
@@ -232,6 +231,78 @@ void CompleteCommand (void)
 		
 		return;
 	}
+}
+
+/* restore console command-line history */
+static void ReadHistory(void)
+{
+	char path[MAX_QPATH];
+	FILE * file;
+	int i;
+
+	Com_sprintf( path, MAX_QPATH,"%s/history.txt", Sys_Cwd() );	
+	file = fopen( path, "r" );
+
+	if ( !file ) {
+
+		Com_Printf( "Failed to open %s for reading!\n", path );
+		return;
+	}
+	
+	for (i = 0; i < MAX_LINES; ++i)
+	{
+		if ( fgets( &edit.input[edit.pos], MAXCMDLINE - edit.pos,
+			file ) == NULL ) {
+			break;
+		}
+
+		/* remove the new-line character */
+		edit.input[strlen( edit.input ) - 1] = '\0';
+
+		/* add str to queue of commands */
+		strncpy( history.cmd[history.pos], edit.input, MAXCMDLINE );
+        history.pos = ( history.pos + 1 ) & ( MAX_LINES - 1 );
+		history.que = history.pos;
+        history.cmd[history.pos][0] = ']';
+
+        /* clear the edit field */
+        memset( edit.input, 0, MAXCMDLINE );
+        edit.input[0] = ']';
+        edit.pos = 1;
+	}
+
+	fclose( file );
+}
+
+/* dumps console command-line history to disk */
+static void SaveHistory(void)
+{
+	char path[MAX_QPATH];
+	FILE * file;
+	int i;
+
+	Com_sprintf( path, MAX_QPATH,"%s/history.txt", Sys_Cwd() );	
+	file = fopen( path, "w" );
+
+	if ( !file ) {
+
+		Com_Printf( "Failed to open %s for writing!\n", path );
+		return;
+	}
+	
+	for (i = 0; i < MAX_LINES; ++i)
+	{
+		int idx = ( history.pos + i ) & ( MAX_LINES - 1 );
+
+		/* skip the command-line prompt */
+		if ( history.cmd[idx][1] != '\0' ) {
+
+			fputs( &history.cmd[idx][1], file );
+			fputc( '\n', file );
+		}
+	}
+
+	fclose( file );
 }
 
 /* inserts character into string */
@@ -915,6 +986,8 @@ void Key_Shutdown(void)
 {
 	int i;
 	
+	SaveHistory();
+
 	for (i = 0; i < MAX_KEYS; ++i)
 	{
 		if ( keybindings[i] ) {
@@ -923,6 +996,7 @@ void Key_Shutdown(void)
 			keybindings[i] = NULL;
 		}
 	}
+
 }
 
 /*
@@ -955,6 +1029,8 @@ void Key_Init (void)
 	strcpy( &edit.input[0], history.cmd[history.pos] );
 	edit.pos = strlen( edit.input );
 	
+    ReadHistory();
+    
 //
 // init ascii characters in console mode
 //
