@@ -496,10 +496,11 @@ Scroll it up or down
 void SCR_RunConsole (void)
 {
 // decide on the height of the console
-	if (cls.key_dest == key_console)
-		scr_conlines = 0.5;		// half screen
-	else
-		scr_conlines = 0;				// none visible
+	if ( cls.key_dest == KEY_CONSOLE ) {
+		scr_conlines = 0.5;			// half screen
+	} else {
+		scr_conlines = 0;			// none visible
+	}
 	
 	/* console speed must be a positive value, otherwise produces undefined
 	behaviour, clamp it */
@@ -551,8 +552,9 @@ void SCR_DrawConsole (void)
 	}
 	else
 	{
-		if (cls.key_dest == key_game || cls.key_dest == key_message)
-			Con_DrawNotify ();	// only draw notify in game
+		if ( cls.key_dest == KEY_GAME || cls.key_dest == KEY_MESSAGE ) {
+			Con_DrawNotify();			/* only draw notify in game */
+		}
 	}
 }
 
@@ -574,8 +576,11 @@ void SCR_BeginLoadingPlaque (void)
 		return;
 	if (cls.state == ca_disconnected)
 		return;	// if at console, don't bring up the plaque
-	if (cls.key_dest == key_console)
+
+	if ( cls.key_dest == KEY_CONSOLE ) {
 		return;
+	}
+	
 	if (cl.cinematictime > 0)
 		scr_draw_loading = 2;	// clear to balack first
 	else
@@ -1333,27 +1338,25 @@ void SCR_UpdateScreen (void)
 		} 
 		// if a cinematic is supposed to be running, handle menus
 		// and console specially
-		else if (cl.cinematictime > 0)
-		{
-			if (cls.key_dest == key_menu)
-			{
-				if (cl.cinematicpalette_active)
-				{
+		else if ( cl.cinematictime > 0 ) {
+			if ( cls.key_dest == KEY_MENU ) {
+				if ( cl.cinematicpalette_active ) {
+
 					re.CinematicSetPalette(NULL);
 					cl.cinematicpalette_active = false;
 				}
-				M_Draw ();
+
+				M_Draw();
 //				re.EndFrame();
 //				return;
-			}
-			else if (cls.key_dest == key_console)
-			{
-				if (cl.cinematicpalette_active)
-				{
-					re.CinematicSetPalette(NULL);
+			} else if ( cls.key_dest == KEY_CONSOLE ) {
+				if ( cl.cinematicpalette_active ) {
+
+					re.CinematicSetPalette( NULL );
 					cl.cinematicpalette_active = false;
 				}
-				SCR_DrawConsole ();
+
+				SCR_DrawConsole();
 //				re.EndFrame();
 //				return;
 			}

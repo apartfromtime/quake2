@@ -624,7 +624,7 @@ void VID_CheckChanges (void)
 			/*
 			** drop the console if we fail to load a refresh
 			*/
-			if ( cls.key_dest != key_console ) {
+			if ( cls.key_dest != KEY_CONSOLE ) {
 				Cbuf_AddText( "toggleconsole\n" );
 			}
 		}

@@ -487,8 +487,8 @@ void IN_Frame(void)
 		return;
 	}
 
-	if ( !cl.refresh_prepped || cls.key_dest == key_console
-		|| cls.key_dest == key_menu ) {
+	if ( !cl.refresh_prepped || cls.key_dest == KEY_CONSOLE
+		|| cls.key_dest == KEY_MENU ) {
 
 		/* temporarily deactivate if in fullscreen */
 		if ( Cvar_VariableValue("vid_fullscreen") == 0 ) {

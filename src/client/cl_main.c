@@ -1782,8 +1782,9 @@ void CL_Init (void)
 	if (dedicated->value)
 		return;		// nothing running on the client
 
-	// all archived variables will now be loaded
+	cls.key_dest = KEY_GAME;
 
+	// all archived variables will now be loaded
 	Con_Init ();	
 #if defined __linux__ || defined __sgi
 	S_Init ();	

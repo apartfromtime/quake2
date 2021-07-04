@@ -439,9 +439,10 @@ void SCR_RunCinematic (void)
 	if (cl.cinematicframe == -1)
 		return;		// static image
 
-	if (cls.key_dest != key_game)
-	{	// pause if menu or console is up
-		cl.cinematictime = cls.realtime - cl.cinematicframe*1000/14;
+	/* pause if menu or console is up */
+	if ( cls.key_dest != KEY_GAME ) {
+
+		cl.cinematictime = cls.realtime - cl.cinematicframe * 1000 / 14;
 		return;
 	}
 
@@ -485,10 +486,12 @@ qboolean SCR_DrawCinematic (void)
 		return false;
 	}
 
-	if (cls.key_dest == key_menu)
-	{	// blank screen and pause if menu is up
-		re.CinematicSetPalette(NULL);
+	/* blank screen and pause if menu is up */
+	if ( cls.key_dest == KEY_MENU ) {
+
+		re.CinematicSetPalette( NULL );
 		cl.cinematicpalette_active = false;
+		
 		return true;
 	}
 

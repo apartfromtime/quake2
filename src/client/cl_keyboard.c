@@ -42,14 +42,12 @@ typedef struct field_s
     int pos;            /* edit input char position */
 } field_t;
 
-/* TODO:: add option for saving chat log */
 field_t chat = { 0 };
 field_t edit = { 0 };
 
 int	anykeydown;
 
 char * keybindings[MAX_KEYS];
-qboolean consolekeys[MAX_KEYS];	// if true, can't be rebound while in console
 qboolean menubound[MAX_KEYS];		// if true, can't be rebound while in menu
 // keydown and keyrepeat state, > 1 is autorepeating
 unsigned char keydown[MAX_KEYS];
@@ -389,7 +387,7 @@ void Key_Message(int key)
 		Cbuf_AddText( chat.input );
 		Cbuf_AddText( "\"\n" );
 
-		cls.key_dest = key_game;
+		cls.key_dest = KEY_GAME;
 		memset( chat.input, 0, MAXCMDLINE );
 		chat.pos = 0;
 
@@ -398,7 +396,7 @@ void Key_Message(int key)
 
 	if ( key == K_ESCAPE ) {
 
-		cls.key_dest = key_game;
+		cls.key_dest = KEY_GAME;
 		memset( chat.input, 0, MAXCMDLINE );
 		chat.pos = 0;
 		
@@ -1030,48 +1028,6 @@ void Key_Init (void)
 	edit.pos = strlen( edit.input );
 	
     ReadHistory();
-    
-//
-// init ascii characters in console mode
-//
-	for (i=32 ; i<128 ; i++)
-		consolekeys[i] = true;
-	consolekeys[K_ENTER] = true;
-	consolekeys[K_KP_ENTER] = true;
-	consolekeys[K_TAB] = true;
-	consolekeys[K_LEFTARROW] = true;
-	consolekeys[K_KP_LEFTARROW] = true;
-	consolekeys[K_RIGHTARROW] = true;
-	consolekeys[K_KP_RIGHTARROW] = true;
-	consolekeys[K_UPARROW] = true;
-	consolekeys[K_KP_UPARROW] = true;
-	consolekeys[K_DOWNARROW] = true;
-	consolekeys[K_KP_DOWNARROW] = true;
-	consolekeys[K_BACKSPACE] = true;
-	consolekeys[K_HOME] = true;
-	consolekeys[K_KP_HOME] = true;
-	consolekeys[K_END] = true;
-	consolekeys[K_KP_END] = true;
-	consolekeys[K_PGUP] = true;
-	consolekeys[K_KP_PGUP] = true;
-	consolekeys[K_PGDN] = true;
-	consolekeys[K_KP_PGDN] = true;
-	consolekeys[K_SHIFT] = true;
-	consolekeys[K_INS] = true;
-	consolekeys[K_KP_INS] = true;
-	consolekeys[K_KP_DEL] = true;
-	consolekeys[K_KP_SLASH] = true;
-	consolekeys[K_KP_STAR] = true;
-	consolekeys[K_KP_PLUS] = true;
-	consolekeys[K_KP_MINUS] = true;
-	consolekeys[K_KP_5] = true;
-	consolekeys[K_MWHEELUP] = true;
-	consolekeys[K_MWHEELDOWN] = true;
-	consolekeys[K_MOUSE4] = true;
-	consolekeys[K_MOUSE5] = true;
-
-	consolekeys['`'] = false;
-	consolekeys['~'] = false;
 
 	menubound[K_ESCAPE] = true;
 	for (i=0 ; i<12 ; i++)
@@ -1096,11 +1052,11 @@ Should NOT be called during an interrupt!
 */
 void Key_Event (int key, qboolean down, unsigned time)
 {
+	char cmd[1024];
 	cvar_t * fullscreen;
-	char	*kb;
-	char	cmd[1024];
+	char * kb;
 	
-	// update auto-repeat status
+	/* update auto-repeat status */
 	if ( down ) {
 
 		if ( keydown[key] < 255 ) {
@@ -1114,7 +1070,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 			&& key != K_PGDN
 			&& key != K_KP_PGDN
 			&& keydown[key] > 1 ) {
-			return;	// ignore most autorepeats
+			return;			/* ignore most autorepeats */
 		}
 			
 		if ( key >= 200 && !keybindings[key] ) {
@@ -1134,7 +1090,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 		return;
 	}
 
-	// console key is hardcoded, so the user can never unbind it
+	/* console key is hardcoded, so the user can never unbind it */
 	if ( key == '`' || key == '~' ) {
 		
 		if ( !down ) {
@@ -1149,7 +1105,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 	if ( !cls.disable_screen ) {
 
 		/* any key during the attract mode will bring up the menu */
-		if ( cl.attractloop && cls.key_dest != key_menu &&
+		if ( cl.attractloop && cls.key_dest != KEY_MENU &&
 			!( key >= K_F1 && key <= K_F12 ) ) {
 			key = K_ESCAPE;
 		}
@@ -1162,7 +1118,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 			}
 
 			if ( cl.frame.playerstate.stats[STAT_LAYOUTS] &&
-				cls.key_dest == key_game ) {
+				cls.key_dest == KEY_GAME ) {
 				
 				/* put away help computer / inventory */
 				Cbuf_AddText( "cmd putaway\n" );
@@ -1172,16 +1128,16 @@ void Key_Event (int key, qboolean down, unsigned time)
 
 			switch ( cls.key_dest )
 			{
-				case key_message:
+				case KEY_MESSAGE:
 				{
 					Key_Message( key );
 				} break;
-				case key_menu:
+				case KEY_MENU:
 				{
 					M_Keydown( key );
 				} break;
-				case key_game:
-				case key_console:
+				case KEY_GAME:
+				case KEY_CONSOLE:
 				{
 					M_Menu_Main_f();
 				} break;
@@ -1210,67 +1166,69 @@ void Key_Event (int key, qboolean down, unsigned time)
 			anykeydown = 0;
 		}
 	}
+	
+	/* key up events only generate commands if the game key binding is
+	a button command (leading + sign). These will occur even in console mode,
+	to keep the character from continuing an action started before a console
+	switch.  Button commands include the kenum as a parameter, so multiple
+	downs can be matched with ups */
+	if ( !down ) {
 
-//
-// key up events only generate commands if the game key binding is
-// a button command (leading + sign).  These will occur even in console mode,
-// to keep the character from continuing an action started before a console
-// switch.  Button commands include the kenum as a parameter, so multiple
-// downs can be matched with ups
-//
-	if (!down)
-	{
 		kb = keybindings[key];
-		if (kb && kb[0] == '+')
-		{
-			Com_sprintf (cmd, sizeof(cmd), "-%s %i %i\n", kb+1, key, time);
-			Cbuf_AddText (cmd);
+		
+		if ( kb && kb[0] == '+' ) {
+
+			Com_sprintf( cmd, sizeof( cmd ), "-%s %i %i\n", kb + 1, key, time );
+			Cbuf_AddText( cmd );
+		}
+
+		return;
+
+	} else if ( ( cls.key_dest == KEY_MENU && menubound[key] )
+		|| ( cls.key_dest == KEY_GAME && ( cls.state == ca_active ) ) ) {
+
+		kb = keybindings[key];
+		
+		if ( kb ) {
+			if ( kb[0] == '+' ) {
+
+				// button commands add keynum and time as a parm
+				Com_sprintf( cmd, sizeof( cmd ), "%s %i %i\n", kb, key, time );
+				Cbuf_AddText( cmd );
+
+			} else {
+				
+				Cbuf_AddText( kb );
+				Cbuf_AddText( "\n" );
+			}
 		}
 
 		return;
 	}
 
-//
-// if not a consolekey, send to the interpreter no matter what mode is
-//
-	if ( (cls.key_dest == key_menu && menubound[key])
-	|| (cls.key_dest == key_console && !consolekeys[key])
-	|| (cls.key_dest == key_game && ( cls.state == ca_active || !consolekeys[key] ) ) )
-	{
-		kb = keybindings[key];
-		if (kb)
-		{
-			if (kb[0] == '+')
-			{	// button commands add keynum and time as a parm
-				Com_sprintf (cmd, sizeof(cmd), "%s %i %i\n", kb, key, time);
-				Cbuf_AddText (cmd);
-			}
-			else
-			{
-				Cbuf_AddText (kb);
-				Cbuf_AddText ("\n");
-			}
-		}
-		return;
+	if ( !down ) {
+		return;			/* other systems only care about key down events */
 	}
 
-	if (!down)
-		return;		// other systems only care about key down events
-
-	switch (cls.key_dest)
+	switch ( cls.key_dest )
 	{
-	case key_message:
-		Key_Message (key);
-		break;
-	case key_menu:
-		M_Keydown (key);
-		break;
-	case key_game:
-	case key_console:
-		Key_Console (key);
-		break;
-	default:
-		Com_Error (ERR_FATAL, "Bad cls.key_dest");
+		case KEY_MESSAGE:
+		{
+			Key_Message( key );
+		} break;
+		case KEY_MENU:
+		{
+			M_Keydown( key );
+		} break;
+		case KEY_GAME:
+		case KEY_CONSOLE:
+		{
+			Key_Console( key );
+		} break;
+		default:
+		{
+			Com_Error( ERR_FATAL, "Bad cls.key_dest" );
+		}
 	}
 }
 

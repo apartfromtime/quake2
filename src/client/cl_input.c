@@ -425,7 +425,7 @@ void CL_FinishMove (usercmd_t *cmd)
 		cmd->buttons |= BUTTON_USE;
 	in_use.state &= ~2;
 
-	if ( Key_AnyKeyDown() && cls.key_dest == key_game ) {
+	if ( Key_AnyKeyDown() && cls.key_dest == KEY_GAME ) {
 		cmd->buttons |= BUTTON_ANY;
 	}
 

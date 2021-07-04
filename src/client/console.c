@@ -86,7 +86,7 @@ void Con_ToggleConsole_f(void)
 		Con_ClearNotify();
 	}
 
-	if (cls.key_dest == key_console)
+	if (cls.key_dest == KEY_CONSOLE)
 	{
 		M_ForceMenuOff ();
 		Cvar_Set ("paused", "0");
@@ -94,7 +94,7 @@ void Con_ToggleConsole_f(void)
 	else
 	{
 		M_ForceMenuOff ();
-		cls.key_dest = key_console;	
+		cls.key_dest = KEY_CONSOLE;	
 
 		if (Cvar_VariableValue ("maxclients") == 1 
 			&& Com_ServerState ())
@@ -111,16 +111,15 @@ void Con_ToggleChat_f (void)
 {
 	Key_ClearTyping();
 
-	if (cls.key_dest == key_console)
-	{
-		if (cls.state == ca_active)
-		{
-			M_ForceMenuOff ();
-			cls.key_dest = key_game;
+	if ( cls.key_dest == KEY_CONSOLE ) {
+		if ( cls.state == ca_active ) {
+			
+			M_ForceMenuOff();
+			cls.key_dest = KEY_GAME;
 		}
+	} else {
+		cls.key_dest = KEY_CONSOLE;
 	}
-	else
-		cls.key_dest = key_console;
 	
 	Con_ClearNotify ();
 }
@@ -224,7 +223,7 @@ Con_MessageMode_f
 void Con_MessageMode_f (void)
 {
 	chat_team = false;
-	cls.key_dest = key_message;
+	cls.key_dest = KEY_MESSAGE;
 }
 
 /*
@@ -235,7 +234,7 @@ Con_MessageMode2_f
 void Con_MessageMode2_f (void)
 {
 	chat_team = true;
-	cls.key_dest = key_message;
+	cls.key_dest = KEY_MESSAGE;
 }
 
 /*
@@ -466,11 +465,11 @@ void Con_DrawInput (void)
 	char buffer[MAXCMDLINE] = { 0 };
 	char * text = &buffer[0];
 
-	if ( cls.key_dest == key_menu ) {
+	if ( cls.key_dest == KEY_MENU ) {
 		return;
 	}
 
-	if ( cls.key_dest != key_console && cls.state == ca_active ) {
+	if ( cls.key_dest != KEY_CONSOLE && cls.state == ca_active ) {
 		return;			/* don't draw anything ( always draw if not active ) */
 	}
 
@@ -546,7 +545,7 @@ void Con_DrawNotify (void)
 		v += 8;
 	}
 
-	if (cls.key_dest == key_message) {
+	if ( cls.key_dest == KEY_MESSAGE ) {
 
 		if ( chat_team ) {
 

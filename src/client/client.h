@@ -200,7 +200,14 @@ typedef enum {
 	dl_single
 } dltype_t;		// download type
 
-typedef enum {key_game, key_console, key_message, key_menu} keydest_t;
+/* in order from highest priority to lowest */
+typedef enum {
+	KEY_NONE 	= 0x00,
+	KEY_CONSOLE = 0x01,
+	KEY_MENU 	= 0x02,
+	KEY_MESSAGE = 0x04,
+	KEY_GAME 	= 0x08
+} keydest_t;
 
 typedef struct
 {

@@ -111,14 +111,14 @@ void M_PushMenu ( void (*draw) (void), const char *(*key) (int k) )
 
 	m_entersound = true;
 
-	cls.key_dest = key_menu;
+	cls.key_dest = KEY_MENU;
 }
 
 void M_ForceMenuOff (void)
 {
 	m_drawfunc = 0;
 	m_keyfunc = 0;
-	cls.key_dest = key_game;
+	cls.key_dest = KEY_GAME;
 	m_menudepth = 0;
 	Key_ClearStates ();
 	Cvar_Set ("paused", "0");
@@ -1904,7 +1904,7 @@ static void StartGame( void )
 	Cvar_SetValue( "gamerules", 0 );		//PGM
 
 	Cbuf_AddText ("loading ; killserver ; wait ; newgame\n");
-	cls.key_dest = key_game;
+	cls.key_dest = KEY_GAME;
 }
 
 static void EasyGameFunc( void *data )
@@ -3911,10 +3911,10 @@ const char *M_Quit_Key (int key)
 
 	case 'Y':
 	case 'y':
-		cls.key_dest = key_console;
-		CL_Quit_f ();
-		break;
-
+	{
+		cls.key_dest = KEY_CONSOLE;
+		CL_Quit_f();
+	} break;
 	default:
 		break;
 	}
@@ -3977,8 +3977,9 @@ M_Draw
 */
 void M_Draw (void)
 {
-	if (cls.key_dest != key_menu)
+	if ( cls.key_dest != KEY_MENU ) {
 		return;
+	}
 
 	// repaint everything next frame
 	SCR_DirtyScreen ();
