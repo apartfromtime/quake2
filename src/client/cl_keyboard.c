@@ -48,8 +48,7 @@ field_t edit = { 0 };
 int	anykeydown;
 
 char * keybindings[MAX_KEYS];
-qboolean menubound[MAX_KEYS];		// if true, can't be rebound while in menu
-// keydown and keyrepeat state, > 1 is autorepeating
+/* keydown and keyrepeat state, > 1 is autorepeating */
 unsigned char keydown[MAX_KEYS];
 
 typedef struct keyname_s
@@ -1029,17 +1028,11 @@ void Key_Init (void)
 	
     ReadHistory();
 
-	menubound[K_ESCAPE] = true;
-	for (i=0 ; i<12 ; i++)
-		menubound[K_F1+i] = true;
-
-//
-// register our functions
-//
-	Cmd_AddCommand ("bind",Key_Bind_f);
-	Cmd_AddCommand ("unbind",Key_Unbind_f);
-	Cmd_AddCommand ("unbindall",Key_Unbindall_f);
-	Cmd_AddCommand ("bindlist",Key_Bindlist_f);
+	/* register our functions */
+	Cmd_AddCommand( "bind", Key_Bind_f );
+	Cmd_AddCommand( "unbind", Key_Unbind_f );
+	Cmd_AddCommand( "unbindall", Key_Unbindall_f );
+	Cmd_AddCommand( "bindlist", Key_Bindlist_f );
 }
 
 /*
@@ -1151,7 +1144,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 		}
 	}
 
-	// track if any key is down for BUTTON_ANY
+	/* track if any key is down for BUTTON_ANY */
 	keydown[key] = down;
 	
 	if ( down ) {
@@ -1184,15 +1177,14 @@ void Key_Event (int key, qboolean down, unsigned time)
 
 		return;
 
-	} else if ( ( cls.key_dest == KEY_MENU && menubound[key] )
-		|| ( cls.key_dest == KEY_GAME && ( cls.state == ca_active ) ) ) {
+	} else if ( ( cls.key_dest == KEY_GAME && ( cls.state == ca_active ) ) ) {
 
 		kb = keybindings[key];
 		
 		if ( kb ) {
 			if ( kb[0] == '+' ) {
 
-				// button commands add keynum and time as a parm
+				/* button commands add keynum and time as a parm */
 				Com_sprintf( cmd, sizeof( cmd ), "%s %i %i\n", kb, key, time );
 				Cbuf_AddText( cmd );
 
